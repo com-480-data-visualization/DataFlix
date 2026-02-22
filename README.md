@@ -4,7 +4,7 @@
 | -------------- | ------ |
 | Lin Xiaoya | 423134 |
 | Wu Yiqian | 423147 |
-| Liu | |
+| Liu Tingsen | 422014 |
 
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
