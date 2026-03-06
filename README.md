@@ -74,6 +74,8 @@ Our project takes the high-quality data provided by the World Bank Open Data (da
 
 We use Life Expectancy at birth to measure the overall impact of NCDs, while using Life Expectancy at 60 as a validation metric. This comparison allows us to distinguish between nations that efficiently use GDP for prevention (reducing 30-70 mortality, thus raising At-birth expectancy) versus those that use it primarily for treatment (having high NCD mortality but long life expectancy for survivors at 60). Visually, we were inspired by the clean, interactive aesthetics of The Pudding (pudding.cool). By bringing GDP, NCD mortality, and gendered longevity into one animated interface, we transform complex public health statistics into an interactive journey.
 
+(Note: The datasets utilized in this project have not been explored by our team in any previous ML, ADA, or semester projects).
+
 ## Milestone 2 (18th April, 5pm)
 
 **10% of the final grade**
