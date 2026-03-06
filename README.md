@@ -69,11 +69,10 @@ However, substantial variance remains even among high-income countries.
 
 ### Related work
 
+While giants like Gapminder (gapminder.org/tools) and the IHME’s GBD Compare (vizhub.healthdata.org/gbd-compare/) offer comprehensive data on health and wealth, they function more like digital encyclopedias than narrative tools. For the casual user, uncovering how preventable middle-age mortality intersects with economic status requires tedious cross-referencing across multiple platforms. The data is "there," but it isn't always "alive."
+Our project takes the high-quality data provided by the World Bank Open Data (data.worldbank.org/indicator/SH.DYN.NCOM.ZS) but aims to strip away the academic density. While these databases are excellent for finding individual indicators, they can be intimidating for those looking for a cohesive narrative. Our approach is original because we focus on the "Survival Filter": specifically linking the wealth of a nation (GDP) to the likelihood of a citizen surviving their "prime years" (ages 30 to 70) without falling victim to Non-Communicable Diseases (NCDs) like heart disease or cancer. This variable acts as the primary gatekeeper for overall longevity.
 
-> - What others have already done with the data?
-> - Why is your approach original?
-> - What source of inspiration do you take? Visualizations that you found on other websites or magazines (might be unrelated to your data).
-> - In case you are using a dataset that you have already explored in another context (ML or ADA course, semester project...), you are required to share the report of that work to outline the differences with the submission for this class.
+We use Life Expectancy at birth to measure the overall impact of NCDs, while using Life Expectancy at 60 as a validation metric. This comparison allows us to distinguish between nations that efficiently use GDP for prevention (reducing 30-70 mortality, thus raising At-birth expectancy) versus those that use it primarily for treatment (having high NCD mortality but long life expectancy for survivors at 60). Visually, we were inspired by the clean, interactive aesthetics of The Pudding (pudding.cool). By bringing GDP, NCD mortality, and gendered longevity into one animated interface, we transform complex public health statistics into an interactive journey.
 
 ## Milestone 2 (18th April, 5pm)
 
