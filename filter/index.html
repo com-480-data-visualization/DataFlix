@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Survival Filter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="hero">
+        <h1>The Survival Filter</h1>
+        <p>Deconstructing the Wealth-Health Correlation</p>
+        <p class="scroll-prompt">↓ Scroll to begin</p>
+    </header>
+
+    <section id="scrolly">
+        <article class="scroll-text">
+            <div class="step" data-image="assets/plot1.png">
+                <h2>1. The Wealth Baseline</h2>
+                <p>GDP and Life Expectancy maintain a strong positive correlation. But does money truly buy time?</p>
+            </div>
+            <div class="step" data-image="assets/plot2.png">
+                <h2>2. The Gender Gap</h2>
+                <p>Across all income brackets, women outlive men. Here is the distribution showing a 4.8-year survival advantage.</p>
+            </div>
+            <div class="step" data-image="assets/plot3.png">
+                <h2>3. The NCD Variance</h2>
+                <p>Higher GDP generally lowers NCD mortality, but the variance is huge. High-income nations still battle lifestyle diseases.</p>
+            </div>
+        </article>
+
+        <figure class="sticky-graphic">
+            <div class="chart-container">
+                <img id="chart-image" src="assets/plot1.png" alt="Data Visualization Placeholder">
+                <div class="timeline-placeholder">
+                    <label for="year-slider">Select Year: <span id="year-display">2010</span></label>
+                    <input type="range" id="year-slider" min="2000" max="2021" value="2010">
+                </div>
+            </div>
+        </figure>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
