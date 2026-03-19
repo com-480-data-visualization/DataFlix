@@ -54,10 +54,13 @@ The exploratory data analysis (EDA) is detailed in the accompanying notebook.
 
 During this step, we performed several preprocessing operations to make the data usable, including handling missing values and converting date and text fields into exploitable formats.  
 
-We got our initial insights into the dataset, focusing on the following aspects:  
+We got our initial insights into the dataset, focusing on the following aspects (they are explained in the notebook):  
 
+Average Rating
 ![Average Rating](milestone_1/images/average_movie_rating.png)
+Average Runtime
 ![Average Runtime](milestone_1/images/average_movie_rating.png)
+Movies released
 ![Movies released per year](milestone_1/images/movies_realeased_per_year.png)
 
 
