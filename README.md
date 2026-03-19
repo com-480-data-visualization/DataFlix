@@ -59,7 +59,7 @@ We got our initial insights into the dataset, focusing on the following aspects 
 Average Rating
 ![Average Rating](milestone_1/images/average_movie_rating.png)
 Average Runtime
-![Average Runtime](milestone_1/images/average_movie_rating.png)
+![Average Runtime](milestone_1/images/average_movie_runtime.png)
 Movies released
 ![Movies released per year](milestone_1/images/movies_realeased_per_year.png)
 
