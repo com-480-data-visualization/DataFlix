@@ -2,9 +2,9 @@
 
 | Student's name | SCIPER |
 | -------------- | ------ |
-| A | |
-| | |
-| | |
+| Belmekki Rihab | |
+| Mellouk Adam | 324233 |
+| Kenza Oudrhiri Benaddach | |
 
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
