@@ -50,7 +50,7 @@ Our main problematics are:
 
 ### Exploratory Data Analysis
 
-The exploratory data analysis (EDA) is detailed in the accompanying notebook.  
+The exploratory data analysis is detailed in the accompanying notebook.  
 
 During this step, we performed several preprocessing operations to make the data usable, including handling missing values and converting date and text fields into exploitable formats.  
 
