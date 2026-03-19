@@ -56,11 +56,9 @@ During this step, we performed several preprocessing operations to make the data
 
 We got our initial insights into the dataset, focusing on the following aspects:  
 
-- Movies per year  
-- Evolution of movie runtime  
-- Average movie rating over time  
-- Evolution of genres  
-- Runtime distribution and trends  
+![Average Rating](milestone_1/images/average_movie_rating.png)
+![Average Runtime](milestone_1/images/average_movie_rating.png)
+![Movies released per year](milestone_1/images/movies_realeased_per_year.png)
 
 
 ### Related work
