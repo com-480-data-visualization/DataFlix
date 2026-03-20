@@ -19,7 +19,7 @@ Please, fill the following sections about your project.
 
 ### Dataset
 
-We use the **TMDB Movies Daily Updates dataset**, which provides a comprehensive and up-to-date collection of metadata for over one million movies.  
+We use the [**TMDB Movies Daily Updates dataset**](https://www.kaggle.com/datasets/alanvourch/tmdb-movies-daily-updates/data), which provides a comprehensive and up-to-date collection of metadata for over one million movies.  
 
 The dataset is sourced from **The Movie Database (TMDB)**, a platform used for film-related information, and is regularly updated to reflect new releases and evolving metrics.  
 
@@ -27,8 +27,6 @@ The dataset is sourced from **The Movie Database (TMDB)**, a platform used for f
 - 28 variables that describe each movie, including identification details, popularity and ratings, financial performance, content, and cast and crew information  
 
 Note: The dataset required preprocessing due to the presence of missing values and outliers, which are addressed in detail in the notebook.  
-
-**Source:** The Ultimate 1Million Movies Dataset (TMDB + IMDb)
 
 ### Problematic
 
