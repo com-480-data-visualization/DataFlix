@@ -67,21 +67,21 @@ Movies released
 ### Related work
 
 
-Looking at existing projects built on the TMDB dataset, a clear pattern emerges in how the data is typically used. A large number of notebooks focus on recommendation systems. For example, the *Hybrid Movie Recommendation System | Kaggle* builds a model that suggests movies based on similarity between genres and metadata, while other projects take a more predictive approach, using models such as LightGBM or CatBoost to estimate ratings or identify which features contribute most to a movie’s success.  
+Looking at existing projects built on the TMDB dataset, a clear pattern emerges in how the data is typically used. A large number of notebooks focus on recommendation systems. For example, the [*Hybrid Movie Recommendation System | Kaggle*](https://www.kaggle.com/code/muhammadkashif724/hybrid-movie-recommendation-system) builds a model that suggests movies based on similarity between genres and metadata, while other projects take a more predictive approach, using models such as LightGBM or CatBoost to estimate ratings or identify which features contribute most to a movie’s success.  
 
-Another common direction is exploratory data analysis. Notebooks like *TMDB Movies Analysis* or *TMDB Complete EDA* look at distributions of ratings, revenues, or genres, usually through standard plots such as histograms or bar charts. These analyses are useful to get a general understanding of the dataset, but they are often static and focus on isolated aspects of the data rather than providing a broader narrative.  
+Another common direction is exploratory data analysis. Notebooks like [*TMDB Movies Analysis*](https://www.kaggle.com/code/eldermireku/tmdb-movies-analysis) or [*TMDB Complete EDA*](https://www.kaggle.com/code/arbash/tmdb-complete-eda) https://www.kaggle.com/code/arbash/tmdb-complete-eda look at distributions of ratings, revenues, or genres, usually through standard plots such as histograms or bar charts. These analyses are useful to get a general understanding of the dataset, but they are often static and focus on isolated aspects of the data rather than providing a broader narrative.  
 
-Some projects also explore ways to enrich or present the data differently. For instance, *TMDB Movies - Extract & Show Posters* focuses on retrieving movie posters and combining them with metadata, which improves the visual aspect but does not necessarily explore deeper trends.  
+Some projects also explore ways to enrich or present the data differently. For instance, [*TMDB Movies - Extract & Show Posters*](https://www.kaggle.com/code/alanvourch/tmdb-movies-extract-show-posters) focuses on retrieving movie posters and combining them with metadata, which improves the visual aspect but does not necessarily explore deeper trends.  
 
 Overall, most existing work either aims at prediction or provides static summaries of the data. But this is the direction we want to take: instead of predicting or summarizing, we aim to let users explore how cinema has changed across decades, and how trends in genres, popularity, and financial performance have emerged and shifted over time.  
 
-For the design of our visualization, we were inspired by several interactive websites and editorial-style layouts that emphasize storytelling through scrolling (see *inspos.pdf*).  
+For the design of our visualization, we were inspired by several interactive websites and editorial-style layouts that emphasize storytelling through scrolling (see inspirations in the PDF, or this [link](https://drive.google.com/file/d/1roxPEVKd9VHDbTiUr3gVyJIvhJNkZZ3m/view?usp=sharing)).  
 
 We chose to use a **continuous vertical flow** rather than separating content into distinct pages or frames, creating a sense of progression where the user is guided through a narrative.  
 
 We also aim to structure the visualization with a **timeline**, which will act as a *fil directeur* connecting all sections.  
 
-At the beginning, the interface will evoke early cinema through black-and-white visuals (see inspirations in the PDF, or this [link](https://drive.google.com/file/d/1roxPEVKd9VHDbTiUr3gVyJIvhJNkZZ3m/view?usp=sharing)), and will gradually transition into more colorful and dynamic representations as we move toward modern movies.  
+At the beginning, the interface will evoke early cinema through black-and-white visuals (see inspirations in the PDF), and will gradually transition into more colorful and dynamic representations as we move toward modern movies.  
 
 This progression is intended to make the evolution of the film industry not only visible in the data, but also perceptible through the visual experience itself.  
 
