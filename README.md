@@ -4,7 +4,7 @@
 | -------------- | ------ |
 | Belmekki Rihab | |
 | Mellouk Adam | 324233 |
-| Kenza Oudrhiri Benaddach | |
+| Oudrhiri Benaddach Kenza | 361396 |
 
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
