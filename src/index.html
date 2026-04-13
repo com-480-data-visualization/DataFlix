@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataFlix — The Evolution of Cinema</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="timeline-progress"></div>
+
+  <header class="hero section-dark">
+    <div class="hero-overlay"></div>
+
+    <nav class="navbar">
+      <div class="logo">DataFlix</div>
+      <div class="nav-links">
+        <a href="#production">Production</a>
+        <a href="#genres">Genres</a>
+        <a href="#ratings">Ratings</a>
+        <a href="#finance">Economy</a>
+        <a href="#movies">Movies</a>
+      </div>
+    </nav>
+
+    <div class="hero-inner">
+      <div class="hero-left">
+        <p class="eyebrow">A journey through film history</p>
+        <h1>The Evolution of Cinema</h1>
+        <p class="subtitle">
+          Follow the transformation of cinema across decades through production,
+          genres, audience reception, and financial performance.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#production" class="cta primary">Start exploring</a>
+          <a href="#overview" class="cta secondary">Project overview</a>
+        </div>
+      </div>
+
+    <div class="hero-scroll-hint">Scroll to enter the timeline</div>
+  </header>
+
+  <main>
+    <section id="overview" class="section intro-section section-dark reveal">
+      <div class="section-copy narrow">
+        <p class="section-label">Introduction</p>
+        <h2>A story guided by time</h2>
+        <p>
+          Our project invites you to explore the evolution of cinema over time. 
+          Instead of presenting isolated charts, the experience is designed as a continuous journey, where each section reveals a new aspect of how the film industry has changed. 
+          As you scroll, you move through decades of cinema, discovering how production, genres, audience reception, and financial dynamics have evolved together.
+        </p>
+      </div>
+
+      <div class="mini-timeline-card">
+        <div class="mini-timeline-line"></div>
+        <div class="mini-node">1988</div>
+        <div class="mini-node">2000</div>
+        <div class="mini-node">2010</div>
+        <div class="mini-node">2025</div>
+      </div>
+    </section>
+
+    <section id="production" class="section split-section reveal stage-muted">
+      <div class="section-copy">
+        <p class="section-label">1. Production through time</p>
+        <h2>How has movie production evolved over time?</h2>
+        <p>
+          This first section gives a broad overview of the industry. It introduces the
+          pace of movie releases over the years.
+        </p>
+
+        <div class="controls">
+          <button class="chip active">All genres</button>
+          <button class="chip">Drama</button>
+          <button class="chip">Comedy</button>
+          <button class="chip">Action</button>
+          <button class="chip">Animation</button>
+        </div>
+
+        <div class="control-row">
+          <label for="yearRange">Time window</label>
+          <input type="range" id="yearRange" min="1988" max="2025" value="2025" />
+          <span id="yearRangeValue">1988 — 2025</span>
+        </div>
+      </div>
+
+      <div class="viz-panel">
+        <div class="viz-header">
+          <h3>Movies released per year</h3>
+          <span class="badge">...</span>
+        </div>
+        <div class="chart-placeholder production-chart">
+        </div>
+      </div>
+    </section>
+
+    <section id="genres" class="section split-section reveal stage-accent">
+      <div class="viz-panel">
+        <div class="viz-header">
+          <h3>Genre evolution across decades</h3>
+          <span class="badge">....</span>
+        </div>
+        <div class="chart-placeholder genre-chart"></div>
+      </div>
+
+      <div class="section-copy">
+        <p class="section-label">2. Genre evolution</p>
+        <h2>Which genres dominated different periods of cinema history?</h2>
+        <p>
+          xxxxxx xxxx xxx 
+        </p>
+
+        <div class="legend">
+          <span><i class="dot genre-1"></i> Drama</span>
+          <span><i class="dot genre-2"></i> Comedy</span>
+          <span><i class="dot genre-3"></i> Action</span>
+          <span><i class="dot genre-4"></i> Thriller</span>
+        </div>
+
+
+      </div>
+    </section>
+
+    <section id="ratings" class="section split-section reveal stage-richer">
+      <div class="section-copy">
+        <p class="section-label">3. Popularity and ratings</p>
+        <h2>How did audience reception change over time?</h2>
+        <p>
+          We ....
+        </p>
+
+      </div>
+
+      <div class="viz-panel">
+        <div class="viz-header">
+          <h3>Audience reception through time</h3>
+          <span class="badge">...</span>
+        </div>
+        <div class="chart-placeholder ratings-chart">
+          <div class="floating-point one"></div>
+          <div class="floating-point two"></div>
+          <div class="floating-point three"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="finance" class="section split-section reveal stage-richest">
+      <div class="viz-panel">
+        <div class="viz-header">
+          <h3>Budget vs revenue</h3>
+          <span class="badge">...</span>
+        </div>
+        <div class="chart-placeholder finance-chart">
+          <div class="scatter-label">Blockbuster outlier</div>
+        </div>
+      </div>
+
+      <div class="section-copy">
+        <p class="section-label">4. Budget and revenue</p>
+        <h2>How did the financial dimensions of movies evolve?</h2>
+        <p>
+          Here we ....
+        </p>
+
+        <div class="controls">
+          <button class="chip active">All decades</button>
+          <button class="chip">1990s</button>
+          <button class="chip">2000s</button>
+          <button class="chip">2010s</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="movies" class="section reveal movies-section">
+      <div class="section-copy centered">
+        <p class="section-label">5. Representative movies</p>
+        <h2>What films represent each era?</h2>
+        <p>
+          xxxxxxxx
+        </p>
+      </div>
+
+      <div class="movie-strip">
+        <article class="movie-card featured">
+          <div class="poster-placeholder poster-a"></div>
+          <div class="movie-info">
+            <p class="movie-era">1990s</p>
+            <h3>Exemple Film</h3>
+            <p>Genre · Rating · Revenue</p>
+          </div>
+        </article>
+
+        <article class="movie-card">
+          <div class="poster-placeholder poster-b"></div>
+          <div class="movie-info">
+            <p class="movie-era">2000s</p>
+            <h3>Exemple Film</h3>
+            <p>Genre · Rating · Revenue</p>
+          </div>
+        </article>
+
+        <article class="movie-card">
+          <div class="poster-placeholder poster-c"></div>
+          <div class="movie-info">
+            <p class="movie-era">2010s</p>
+            <h3>Exemple Film</h3>
+            <p>Genre · Rating · Revenue</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="findings" class="section final-section reveal">
+      <div class="section-copy centered narrow">
+        <p class="section-label">6. Final synthesis</p>
+        <h2>Key findings from the journey</h2>
+        <p>
+          une conclusion
+        </p>
+      </div>
+
+      <div class="findings-grid">
+        <div class="finding-card">
+          <span class="finding-number">01</span>
+          <h3>Key point 1</h3>
+          <p>...</p>
+        </div>
+        <div class="finding-card">
+          <span class="finding-number">02</span>
+          <h3>key point 2</h3>
+          <p>....</p>
+        </div>
+        <div class="finding-card">
+          <span class="finding-number">03</span>
+          <h3>key point 3</h3>
+          <p>...</p>
+        </div>
+        <div class="finding-card">
+          <span class="finding-number">04</span>
+          <h3>keypoint 4</h3>
+          <p>...</p>
+        </div>
+      </div>
+
+      <div class="closing-timeline">
+        <span>1988</span>
+        <div class="closing-line"></div>
+        <span>2025</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
