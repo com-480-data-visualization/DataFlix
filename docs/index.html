@@ -28,17 +28,15 @@
         <p class="eyebrow">A journey through film history</p>
         <h1>The Evolution of Cinema</h1>
         <p class="subtitle">
-          Explore how cinema has transformed from 1988 to 2025 through production trends, 
-          genre shifts, audience reception, and financial dynamics.
+          Explore how cinema has transformed from 1988 to 2025 through production trends, genre shifts, audience reception, and financial dynamics.
         </p>
-
         <div class="hero-actions">
           <a href="#production" class="cta primary">Start exploring</a>
           <a href="#overview" class="cta secondary">Project overview</a>
         </div>
       </div>
-
-    <div class="hero-scroll-hint">Scroll to enter the timeline</div>
+      <div class="hero-scroll-hint">Scroll to enter the timeline</div>
+    </div>
   </header>
 
   <main>
@@ -47,14 +45,10 @@
         <p class="section-label">Introduction</p>
         <h2>A story guided by time</h2>
         <p>
-          Cinema reflects technological progress, societal changes, and evolving audience preferences. 
-          Over the past four decades, the film industry has undergone major transformations: from the rise of blockbuster franchises 
-          to the emergence of streaming platforms, from the dominance of traditional genres to the explosion of diverse content.
+          Cinema reflects technological progress, societal changes, and evolving audience preferences. Over the past four decades, the film industry has undergone major transformations: from the rise of blockbuster franchises to the emergence of streaming platforms, from the dominance of traditional genres to the explosion of diverse content.
         </p>
         <p>
-          Rather than presenting isolated charts, this project structures the data as a continuous journey. 
-          As you scroll through time, each section reveals a new dimension of cinema's evolution : how production volumes shifted, 
-          which genres captured audiences, how critical reception changed, and what the economics of filmmaking tell us about industry priorities.
+          Rather than presenting isolated charts, this project structures the data as a continuous journey. As you scroll through time, each section reveals a new dimension of cinema's evolution: how production volumes shifted, which genres captured audiences, how critical reception changed, and what the economics of filmmaking tell us about industry priorities.
         </p>
       </div>
 
@@ -72,18 +66,10 @@
         <p class="section-label">1. Production through time</p>
         <h2>How has movie production evolved over time?</h2>
         <p>
-          Starting our journey in the late 1980s, we see how the volume of cinema production has shifted across decades. 
-          This visualization tracks the number of movies released each year, revealing growth patterns and fluctuations in the industry. 
-          By filtering by genre, you can discover whether increased production was driven by blockbuster action franchises, 
-          intimate indie dramas, or experimental animations.
+          Starting our journey in the late 1980s, we see how the volume of cinema production has shifted across decades. This visualization tracks the number of movies released each year, revealing growth patterns and fluctuations in the industry. Click on a genre below to filter the data and discover which genres drove production growth.
         </p>
-
-        <div class="controls">
-          <button class="chip active">All genres</button>
-          <button class="chip">Drama</button>
-          <button class="chip">Comedy</button>
-          <button class="chip">Action</button>
-          <button class="chip">Animation</button>
+        <div class="controls" id="production-genres">
+          <button class="chip active" data-genre="all">All genres</button>
         </div>
       </div>
 
@@ -92,48 +78,35 @@
           <h3>Movies released per year</h3>
           <span class="badge">1988–2025</span>
         </div>
-        <div class="chart-placeholder production-chart">
-        </div>
+        <div class="chart-placeholder production-chart"></div>
       </div>
     </section>
 
     <section id="genres" class="section split-section reveal stage-accent">
       <div class="viz-panel">
         <div class="viz-header">
-          <h3>Genre composition across decades</h3>
-          <span class="badge">Stacked area chart</span>
+          <h3>Genre composition over time</h3>
+          <span class="badge">Movies by genre per decade</span>
         </div>
         <div class="chart-placeholder genre-chart"></div>
       </div>
 
       <div class="section-copy">
         <p class="section-label">2. Genre evolution</p>
-        <h2>Which genres dominated different periods of cinema history?</h2>
+        <h2>Which genres dominated different periods?</h2>
         <p>
-          Cinema doesn't evolve in isolation : the composition of what gets made reflects the era. 
-          This stacked area chart shows not just total production, but the balance between genres over time. 
-          Notice how action films have risen, how drama persists as a steady presence, and how comedy trends shift with cultural moments. 
-          Hover over a genre to isolate its trajectory and discover which types of stories dominated the 1990s, 2000s, 2010s, and beyond.
+          Cinema's evolution is shaped by the genres that dominate each era. This visualization shows how different genres have grown (or declined) over time from 1988 to 2025. Each color represents a distinct genre, revealing which storytelling traditions have endured and which have emerged.
         </p>
-
-        <div class="legend">
-          <span><i class="dot genre-1"></i> Drama</span>
-          <span><i class="dot genre-2"></i> Comedy</span>
-          <span><i class="dot genre-3"></i> Action</span>
-          <span><i class="dot genre-4"></i> Thriller</span>
-        </div>
+        <div class="legend" id="genre-legend"></div>
       </div>
     </section>
 
     <section id="ratings" class="section split-section reveal stage-richer">
       <div class="section-copy">
         <p class="section-label">3. Audience reception over time</p>
-        <h2>How did audience reception change over time?</h2>
+        <h2>How did audience reception change?</h2>
         <p>
-          More production doesn't necessarily mean better films. This section explores whether ratings and popularity 
-          have shifted as the industry has evolved. We compare critical reception (ratings) against audience reach and engagement 
-          to understand: Do newer films get higher ratings? Has the gap between quality and commercial success widened or narrowed? 
-          These insights reveal the tension between artistic merit and market appeal that defines modern cinema.
+          More production doesn't necessarily mean better films. This line chart tracks average movie ratings over time, revealing whether quality has remained stable, improved, or declined as the industry scaled. The trend shows the tension between volume and artistic merit that defines modern cinema.
         </p>
       </div>
 
@@ -142,39 +115,30 @@
           <h3>Average ratings by year</h3>
           <span class="badge">1988–2025</span>
         </div>
-        <div class="chart-placeholder ratings-chart">
-          <div class="floating-point one"></div>
-          <div class="floating-point two"></div>
-          <div class="floating-point three"></div>
-        </div>
+        <div class="chart-placeholder ratings-chart"></div>
       </div>
     </section>
 
     <section id="finance" class="section split-section reveal stage-richest">
       <div class="viz-panel">
         <div class="viz-header">
-          <h3>Budget vs revenue</h3>
-          <span class="badge">Scatter plot by genre</span>
+          <h3>Budget vs revenue by genre</h3>
+          <span class="badge">Scatter plot</span>
         </div>
-        <div class="chart-placeholder finance-chart">
-        </div>
+        <div class="chart-placeholder finance-chart"></div>
       </div>
 
       <div class="section-copy">
         <p class="section-label">4. The economics of cinema</p>
-        <h2>How did the financial dimensions of movies evolve?</h2>
+        <h2>How did financial dynamics evolve?</h2>
         <p>
-          The scale of filmmaking has changed dramatically. This scatter plot reveals the relationship between production budgets and revenue, 
-          colored by genre and sized by popularity. It shows which films became blockbuster successes, which were financial risks, 
-          and how the risk-reward profile of the industry has shifted across decades. 
-          Notice the clustering, outliers, and trends : they tell the story of how studios allocate resources and what returns they expect.
+          The scale and risk profile of filmmaking has changed dramatically. This scatter plot reveals the relationship between production budgets and revenue across genres. Watch how blockbuster franchises dominate the high-budget, high-revenue corner, while smaller productions cluster in the lower left—each dot tells a story of investment and return.
         </p>
-
-        <div class="controls">
-          <button class="chip active">All decades</button>
-          <button class="chip">1990s</button>
-          <button class="chip">2000s</button>
-          <button class="chip">2010s</button>
+        <div class="controls" id="finance-decades">
+          <button class="chip active" data-decade="all">All decades</button>
+          <button class="chip" data-decade="1990">1990s</button>
+          <button class="chip" data-decade="2000">2000s</button>
+          <button class="chip" data-decade="2010">2010s</button>
         </div>
       </div>
     </section>
@@ -184,40 +148,10 @@
         <p class="section-label">5. Representative films</p>
         <h2>What films represent each era?</h2>
         <p>
-          Data reveals patterns, but cinema is ultimately about stories. This section connects the abstract trends 
-          to concrete examples-landmark films that defined their decades and shaped audience expectations.
+          Data reveals patterns, but cinema is ultimately about stories. This section showcases landmark films that defined their decades and shaped audience expectations.
         </p>
       </div>
-
-      <div class="movie-strip">
-        <article class="movie-card featured">
-          <div class="poster-placeholder poster-a"></div>
-          <div class="movie-info">
-            <p class="movie-era">1990s</p>
-            <h3>Exemple Film</h3>
-            <p>Genre · Rating · Revenue</p>
-          </div>
-        </article>
-
-        <article class="movie-card">
-          <div class="poster-placeholder poster-b"></div>
-          <div class="movie-info">
-            <p class="movie-era">2000s</p>
-            <h3>Exemple Film</h3>
-            <p>Genre · Rating · Revenue</p>
-          </div>
-        </article>
-
-        <article class="movie-card">
-          <div class="poster-placeholder poster-c"></div>
-          <div class="movie-info">
-            <p class="movie-era">2010s</p>
-            <h3>Exemple Film</h3>
-            <p>Genre · Rating · Revenue</p>
-          </div>
-        </article>
-
-      </div>
+      <div class="movie-strip" id="movie-strip"></div>
     </section>
 
     <section id="findings" class="section final-section reveal">
@@ -225,9 +159,7 @@
         <p class="section-label">6. Key insights</p>
         <h2>Patterns that shaped cinema</h2>
         <p>
-          As we reach the end of this journey through cinema's evolution, several patterns emerge. 
-          These findings connect the dots between production, audience preference, and industry economics,
-          and suggest where cinema might be heading next.
+          As we reach the end of this journey through cinema's evolution, several patterns emerge. These findings connect the dots between production, audience preference, and industry economics.
         </p>
       </div>
 
@@ -245,12 +177,12 @@
         <div class="finding-card">
           <span class="finding-number">03</span>
           <h3>Quality vs. quantity</h3>
-          <p>As production volume increases, audience ratings and critical reception reveal whether the industry prioritizes volume or artistic merit.</p>
+          <p>As production volume increases, audience ratings reveal whether the industry prioritizes volume or artistic merit.</p>
         </div>
         <div class="finding-card">
           <span class="finding-number">04</span>
           <h3>Financial concentration</h3>
-          <p>Budgets and revenues show increasing concentration in blockbuster franchises, with most films occupying a different risk profile than in earlier decades.</p>
+          <p>Budgets and revenues show increasing concentration in blockbuster franchises, with most films in different risk profiles than earlier decades.</p>
         </div>
       </div>
 
