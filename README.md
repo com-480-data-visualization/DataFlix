@@ -90,6 +90,7 @@ This progression is intended to make the evolution of the film industry not only
 
 **10% of the final grade**
 
+The documentation for Milestone 2 can be found [here](./milestone_2/Milestone_2.pdf).
 
 ## Milestone 3 (29th May, 5pm)
 
