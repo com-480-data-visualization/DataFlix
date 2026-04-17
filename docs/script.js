@@ -221,7 +221,7 @@ function drawRatings() {
   const range = maxRating - minRating || 1;
   
   for (let i = 0; i <= 4; i++) {
-    const val = (minRating + (i/4) * range).toFixed(1);
+    const val = (maxRating - (i/4) * range).toFixed(1);
     const y = pad.top + (i * plotHeight / 4);
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', pad.left - 10);
@@ -318,7 +318,7 @@ function drawFinance(decade = 'all') {
   ctx.font = '11px Arial';
   ctx.textAlign = 'right';
   for (let i = 0; i <= 4; i++) {
-    const val = Math.round((i / 4) * maxRevenue / 1000000);
+    const val = Math.round(((4-i) / 4) * maxRevenue / 1000000);
     const y = padding.top + (i * plotHeight / 4);
     ctx.fillText(val + 'M', padding.left - 10, y + 4);
   }
