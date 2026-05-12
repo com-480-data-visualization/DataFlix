@@ -54,6 +54,7 @@ Promise.all([
   showMovies();
   setupMovieDecadeButtons();
   setupDecadeButtons();
+  initEraPersonalizer();
 }).catch(err => console.error('Data load error:', err));
 
 function drawProduction(genre = 'all') {
@@ -578,3 +579,274 @@ window.addEventListener('scroll', () => {
     progressBar.style.width = progress + '%';
   }
 });
+
+/* ════════════════════════════════════════════════════════
+   YOUR CINEMA ERA — personalizer
+   ════════════════════════════════════════════════════════
+   ─────────────────────────────────────────────────────── */
+
+// ── Top non-documentary genre per decade (pre-computed from data) ──────────
+// Built from genres.json, excluding Documentary & TV Movie
+const ERA_GENRE_BY_DECADE = {
+  1990: 'Drama',
+  2000: 'Drama',
+  2010: 'Drama',
+  2020: 'Drama',
+};
+
+// ── Biggest blockbuster per decade (pre-computed from finance.json) ─────────
+const ERA_BLOCKBUSTER_BY_DECADE = {
+  1990: { title: 'Titanic',                   revenue: 2.26 },
+  2000: { title: 'Avatar',                    revenue: 2.92 },
+  2010: { title: 'Avengers: Endgame',         revenue: 2.80 },
+  2020: { title: 'Avatar: The Way of Water',  revenue: 2.35 },
+};
+
+// ── Main init ───────────────────────────────────────────────────────────────
+function initEraPersonalizer() {
+  const slider     = document.getElementById('birth-year-slider');
+  const yearLabel  = document.getElementById('era-selected-year');
+  if (!slider) return;
+
+  // Build fast lookup maps from already-loaded data
+  const prodByYear   = {};
+  const ratingByYear = {};
+
+  data.production.forEach(d => { prodByYear[d.year]   = d.count; });
+  data.ratings.forEach(d    => { ratingByYear[d.year]  = d.rating; });
+
+  // Compute blockbuster per decade live from finance data (more accurate)
+  const blockbusterByDecade = {};
+  data.finance.forEach(m => {
+    if (!m.revenue || m.revenue <= 0) return;
+    const d = m.decade;
+    if (!blockbusterByDecade[d] || m.revenue > blockbusterByDecade[d].revenue) {
+      blockbusterByDecade[d] = { title: m.title, revenue: m.revenue };
+    }
+  });
+
+  // Compute top non-doc genre per decade live from genres data
+  const EXCLUDE_GENRES = new Set(['Documentary', 'TV Movie']);
+  const genreByDecade = {};
+  data.genres.forEach(d => {
+    const filtered = d.genres.filter(g => !EXCLUDE_GENRES.has(g.name));
+    if (filtered.length) {
+      const top = filtered.reduce((a, b) => a.count > b.count ? a : b);
+      genreByDecade[d.decade] = top.name;
+    }
+  });
+
+  // Draw sparkline once; update marker on slider move
+  drawEraSparkline(prodByYear);
+
+  // Initial render
+  updateEra(parseInt(slider.value));
+
+  // Debounced slider handler
+  let rafId;
+  slider.addEventListener('input', () => {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => updateEra(parseInt(slider.value)));
+  });
+
+  // ── Core update ────────────────────────────────────────────────────────────
+  function updateEra(year) {
+    yearLabel.textContent = year;
+
+    const decade = Math.floor(year / 10) * 10;
+    const films   = prodByYear[year]   ?? null;
+    const rating  = ratingByYear[year] ?? null;
+    const genre   = genreByDecade[decade] ?? '—';
+    const block   = blockbusterByDecade[decade];
+
+    // Films count
+    animateCount('estat-films', '.era-count:not(.era-decimal)', films, false);
+
+    // Genre
+    const genreEl = document.getElementById('era-genre-val');
+    if (genreEl) fadeTextUpdate(genreEl, genre);
+
+    // Rating
+    animateCount('estat-rating', '.era-decimal', rating, true);
+
+    // Blockbuster
+    const blockEl = document.getElementById('era-blockbuster-val');
+    if (blockEl && block) {
+      fadeTextUpdate(blockEl,
+        `${block.title} <span style="color:var(--gold);font-size:0.75em">$${(block.revenue/1e9).toFixed(2)}B</span>`
+      );
+    }
+
+    // Sparkline marker
+    updateEraMarker(year);
+
+    // Pop animation on cards
+    document.querySelectorAll('.era-stat-card').forEach(c => {
+      c.classList.remove('era-pop');
+      void c.offsetWidth; // reflow
+      c.classList.add('era-pop');
+    });
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  function animateCount(cardId, selector, target, isDecimal) {
+    if (target === null) return;
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const el = card.querySelector(selector);
+    if (!el) return;
+
+    const start  = parseFloat(el.textContent.replace(/,/g, '')) || 0;
+    const end    = target;
+    const dur    = 500; // ms
+    const t0     = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      const val  = start + (end - start) * ease;
+      el.textContent = isDecimal
+        ? val.toFixed(2)
+        : Math.round(val).toLocaleString();
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function fadeTextUpdate(el, html) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(4px)';
+    el.style.transition = 'opacity 0.2s, transform 0.2s';
+    setTimeout(() => {
+      el.innerHTML = html;
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 150);
+  }
+}
+
+// ── Sparkline (drawn once, marker updated on slide) ─────────────────────────
+function drawEraSparkline(prodByYear) {
+  const svg = document.getElementById('era-sparkline');
+  if (!svg) return;
+
+  const W = svg.parentElement.clientWidth || 700;
+  const H = 90;
+  const PAD = { top: 8, right: 16, bottom: 22, left: 40 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  const years  = Object.keys(prodByYear).map(Number).sort((a,b) => a-b);
+  const counts = years.map(y => prodByYear[y]);
+  const minY   = 0;
+  const maxY   = Math.max(...counts);
+
+  const xScale = y => PAD.left + ((y - years[0]) / (years[years.length-1] - years[0])) * plotW;
+  const yScale = v => PAD.top + plotH - (v / maxY) * plotH;
+
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  // Grid lines (subtle)
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    const y = PAD.top + plotH * (1 - f);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', PAD.left); line.setAttribute('x2', W - PAD.right);
+    line.setAttribute('y1', y);        line.setAttribute('y2', y);
+    line.setAttribute('stroke', 'rgba(255,255,255,0.06)');
+    line.setAttribute('stroke-width', '1');
+    svg.appendChild(line);
+    // Y label
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x', PAD.left - 6); txt.setAttribute('y', y + 4);
+    txt.setAttribute('text-anchor','end');
+    txt.setAttribute('fill','rgba(255,255,255,0.3)');
+    txt.setAttribute('font-size','9');
+    txt.textContent = Math.round(maxY * f / 1000) + 'k';
+    svg.appendChild(txt);
+  });
+
+  // Area fill
+  const areaPoints = [
+    `${xScale(years[0])},${PAD.top + plotH}`,
+    ...years.map(y => `${xScale(y)},${yScale(prodByYear[y])}`),
+    `${xScale(years[years.length-1])},${PAD.top + plotH}`
+  ].join(' ');
+  const area = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  area.setAttribute('points', areaPoints);
+  area.setAttribute('fill', 'url(#eraAreaGrad)');
+  area.setAttribute('opacity', '0.4');
+
+  // Gradient def
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `
+    <linearGradient id="eraAreaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d7b46a" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#d7b46a" stop-opacity="0.02"/>
+    </linearGradient>`;
+  svg.appendChild(defs);
+  svg.appendChild(area);
+
+  // Line
+  const pathD = years.map((y, i) =>
+    `${i === 0 ? 'M' : 'L'}${xScale(y)},${yScale(prodByYear[y])}`
+  ).join(' ');
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d', pathD);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke','#d7b46a');
+  path.setAttribute('stroke-width','2');
+  path.setAttribute('stroke-linejoin','round');
+  svg.appendChild(path);
+
+  // X-axis year labels
+  const labelYears = years.filter(y => y % 5 === 0);
+  labelYears.forEach(y => {
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x', xScale(y)); txt.setAttribute('y', H - 4);
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('fill','rgba(255,255,255,0.3)');
+    txt.setAttribute('font-size','9');
+    txt.textContent = y;
+    svg.appendChild(txt);
+  });
+
+  // Marker group (updated on slide)
+  const markerG = document.createElementNS('http://www.w3.org/2000/svg','g');
+  markerG.setAttribute('id','era-marker');
+
+  const markerLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+  markerLine.setAttribute('id','era-marker-line');
+  markerLine.setAttribute('stroke','#fff');
+  markerLine.setAttribute('stroke-width','1.5');
+  markerLine.setAttribute('stroke-dasharray','3 3');
+  markerLine.setAttribute('y1', PAD.top); markerLine.setAttribute('y2', PAD.top + plotH);
+
+  const markerDot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  markerDot.setAttribute('id','era-marker-dot');
+  markerDot.setAttribute('r','5');
+  markerDot.setAttribute('fill','#fff');
+  markerDot.setAttribute('stroke','#d7b46a');
+  markerDot.setAttribute('stroke-width','2');
+
+  markerG.appendChild(markerLine);
+  markerG.appendChild(markerDot);
+  svg.appendChild(markerG);
+
+  // Store scales for later use by updateEraMarker
+  svg._xScale = xScale;
+  svg._yScale = yScale;
+  svg._prodByYear = prodByYear;
+}
+
+function updateEraMarker(year) {
+  const svg = document.getElementById('era-sparkline');
+  if (!svg || !svg._xScale) return;
+  const x = svg._xScale(year);
+  const y = svg._yScale(svg._prodByYear[year] ?? 0);
+
+  const line = document.getElementById('era-marker-line');
+  const dot  = document.getElementById('era-marker-dot');
+  if (line) { line.setAttribute('x1', x); line.setAttribute('x2', x); }
+  if (dot)  { dot.setAttribute('cx', x);  dot.setAttribute('cy', y); }
+}

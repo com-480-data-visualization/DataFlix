@@ -703,3 +703,145 @@ a {
   line-height: 1.35;
   color: var(--text);
 }
+
+/* ════════════════════════════════════════════════════════
+   YOUR CINEMA ERA
+   ════════════════════════════════════════════════════════ */
+
+/* ── Findings card polish (from earlier) ── */
+.finding-card strong { color: var(--gold); font-weight: 700; }
+.finding-card p { color: var(--muted); font-size: 0.92rem; line-height: 1.65; margin-top: 8px; }
+.finding-card h3 { font-size: 1rem; line-height: 1.35; }
+
+/* ── Personalizer wrapper ── */
+.era-personalizer {
+  margin-top: 56px;
+  padding: 40px 36px 44px;
+  background: linear-gradient(135deg, rgba(215,180,106,0.06), rgba(103,107,178,0.06));
+  border: 1px solid rgba(215,180,106,0.18);
+  border-radius: 28px;
+  text-align: center;
+}
+
+.era-header { margin-bottom: 28px; }
+.era-header h3 {
+  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+  margin: 8px 0 6px;
+}
+.era-sub { color: var(--muted); font-size: 0.9rem; }
+
+/* ── Slider ── */
+.era-slider-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.era-slider-label { color: var(--muted); font-size: 0.85rem; min-width: 32px; }
+
+.era-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: min(480px, 80%);
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--gold), var(--blue));
+  outline: none;
+  cursor: pointer;
+}
+.era-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--gold);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  cursor: grab;
+  transition: transform 0.15s;
+}
+.era-slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.2); }
+.era-slider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--gold);
+  cursor: grab;
+}
+
+/* ── Selected year display ── */
+.era-year-display {
+  margin-bottom: 32px;
+}
+#era-selected-year {
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -2px;
+  transition: opacity 0.15s;
+}
+
+/* ── Stat cards ── */
+.era-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+@media (max-width: 900px) {
+  .era-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .era-stats { grid-template-columns: 1fr; }
+}
+
+.era-stat-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px 16px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.era-stat-card.era-pop {
+  border-color: rgba(215,180,106,0.4);
+  transform: translateY(-3px);
+}
+
+.era-stat-icon { font-size: 1.5rem; margin-bottom: 10px; }
+
+.era-stat-value {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 6px;
+  min-height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.era-stat-text {
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  line-height: 1.2;
+}
+.era-stat-unit { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
+
+.era-stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+/* ── Sparkline ── */
+.era-chart-wrap { margin-top: 8px; }
+.era-chart-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+#era-sparkline { display: block; overflow: visible; }

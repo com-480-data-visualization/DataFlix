@@ -223,6 +223,58 @@
     
       </div>
 
+      <!--
+  ════════════════════════════════════════════════════════
+  YOUR CINEMA ERA — personalizer component
+  ════════════════════════════════════════════════════════
+-->
+
+    <div class="era-personalizer reveal">
+      <div class="era-header">
+        <p class="section-label">Your Cinema Era</p>
+        <h3>What did cinema look like when you were born?</h3>
+        <p class="era-sub">Move the slider to explore any year in the dataset.</p>
+      </div>
+
+      <div class="era-slider-wrap">
+        <span class="era-slider-label">1988</span>
+        <input type="range" id="birth-year-slider" class="era-slider"
+              min="1988" max="2024" value="1994" step="1" />
+        <span class="era-slider-label">2024</span>
+      </div>
+      <div class="era-year-display">
+        <span id="era-selected-year">1994</span>
+      </div>
+
+      <div class="era-stats" id="era-stats">
+        <div class="era-stat-card" id="estat-films">
+          <div class="era-stat-icon">🎬</div>
+          <div class="era-stat-value"><span class="era-count" data-target="0">0</span></div>
+          <div class="era-stat-label">films released</div>
+        </div>
+        <div class="era-stat-card" id="estat-genre">
+          <div class="era-stat-icon">🎭</div>
+          <div class="era-stat-value era-stat-text" id="era-genre-val">—</div>
+          <div class="era-stat-label">dominant genre of your decade</div>
+        </div>
+        <div class="era-stat-card" id="estat-rating">
+          <div class="era-stat-icon">⭐</div>
+          <div class="era-stat-value"><span class="era-count era-decimal" data-target="0">0</span><span class="era-stat-unit">/10</span></div>
+          <div class="era-stat-label">average film rating</div>
+        </div>
+        <div class="era-stat-card" id="estat-blockbuster">
+          <div class="era-stat-icon">🏆</div>
+          <div class="era-stat-value era-stat-text" id="era-blockbuster-val">—</div>
+          <div class="era-stat-label">decade's biggest blockbuster</div>
+        </div>
+      </div>
+
+      <div class="era-chart-wrap">
+        <p class="era-chart-label">Film production 1988–2024 — your year highlighted</p>
+        <svg id="era-sparkline" width="100%" height="90" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+
       <div class="closing-timeline">
         <span>1988</span>
         <div class="closing-line"></div>
