@@ -1,14 +1,6 @@
 [
   {
     "era": "1990s", "decade": 1990,
-    "title": "The Shawshank Redemption", "year": 1994,
-    "genre": "Drama", "rating": 8.7, "revenue": 16000000, "budget": 25000000,
-    "overview": "Two imprisoned men bond over years, finding solace and eventual redemption through acts of common decency.",
-    "poster_path": "/9cqNxx0GxF0bAY7Nsr1xyczSnez.jpg",
-    "imdb_id": "tt0111161"
-  },
-  {
-    "era": "1990s", "decade": 1990,
     "title": "Pulp Fiction", "year": 1994,
     "genre": "Crime", "rating": 8.5, "revenue": 213900000, "budget": 8000000,
     "overview": "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
@@ -22,14 +14,6 @@
     "overview": "In German-occupied Poland, industrialist Oskar Schindler saves more than a thousand Jewish refugees during the Holocaust.",
     "poster_path": "/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
     "imdb_id": "tt0108052"
-  },
-  {
-    "era": "1990s", "decade": 1990,
-    "title": "The Lion King", "year": 1994,
-    "genre": "Animation", "rating": 8.5, "revenue": 968500000, "budget": 45000000,
-    "overview": "Lion cub Simba idolizes his father King Mufasa, but must find his courage after a tragic betrayal.",
-    "poster_path": "/sKCr78MXSuHeGwDAwxb7EWlTLFG.jpg",
-    "imdb_id": "tt0110357"
   },
   {
     "era": "1990s", "decade": 1990,
@@ -48,6 +32,22 @@
     "imdb_id": "tt0133093"
   },
   {
+    "era": "1990s", "decade": 1990,
+    "title": "Forrest Gump", "year": 1994,
+    "genre": "Drama", "rating": 8.5, "revenue": 678200000, "budget": 55000000,
+    "overview": "The presidencies of Kennedy and Johnson, Vietnam, Watergate, and other history unfold through the perspective of an Alabama man with an IQ of 75.",
+    "poster_path": "/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
+    "imdb_id": "tt0109830"
+  },
+  {
+    "era": "1990s", "decade": 1990,
+    "title": "Fight Club", "year": 1999,
+    "genre": "Drama", "rating": 8.4, "revenue": 101200000, "budget": 63000000,
+    "overview": "An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into something much more sinister.",
+    "poster_path": "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    "imdb_id": "tt0137523"
+  },
+  {
     "era": "2000s", "decade": 2000,
     "title": "Gladiator", "year": 2000,
     "genre": "Action", "rating": 8.2, "revenue": 457600000, "budget": 103000000,
@@ -59,7 +59,7 @@
     "era": "2000s", "decade": 2000,
     "title": "The Lord of the Rings: The Return of the King", "year": 2003,
     "genre": "Fantasy", "rating": 8.9, "revenue": 1120000000, "budget": 94000000,
-    "overview": "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam.",
+    "overview": "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom.",
     "poster_path": "/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg",
     "imdb_id": "tt0167260"
   },
@@ -75,31 +75,31 @@
     "era": "2000s", "decade": 2000,
     "title": "The Dark Knight", "year": 2008,
     "genre": "Action", "rating": 9.0, "revenue": 1004600000, "budget": 185000000,
-    "overview": "Batman raises the stakes in his war on crime by facing the Joker, a criminal mastermind who plunges Gotham into anarchy.",
+    "overview": "Batman raises the stakes in his war on crime by facing the Joker, a criminal mastermind who plunges Gotham City into anarchy.",
     "poster_path": "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
     "imdb_id": "tt0468569"
   },
   {
     "era": "2000s", "decade": 2000,
-    "title": "Brokeback Mountain", "year": 2005,
-    "genre": "Drama", "rating": 7.7, "revenue": 178100000, "budget": 14000000,
-    "overview": "An epic tale of forbidden love between two young men who meet while herding sheep in Wyoming in the summer of 1963.",
-    "poster_path": "/9Y9WaKAEfUKfEhp6oiohHVMVAqg.jpg",
-    "imdb_id": "tt0388795"
+    "title": "Eternal Sunshine of the Spotless Mind", "year": 2004,
+    "genre": "Romance", "rating": 8.1, "revenue": 72258126, "budget": 20000000,
+    "overview": "When their relationship turns sour, a couple undergoes a medical procedure to have each other erased from their memories.",
+    "poster_path": "/5MwkWH9tYHv3mV9OdYTMR5qreIz.jpg",
+    "imdb_id": "tt0338013"
   },
   {
     "era": "2000s", "decade": 2000,
-    "title": "No Country for Old Men", "year": 2007,
-    "genre": "Thriller", "rating": 8.2, "revenue": 171600000, "budget": 25000000,
-    "overview": "Violence and mayhem ensue after a hunter stumbles upon a drug deal gone wrong and a cache of cash near the Rio Grande.",
-    "poster_path": "/or2TFr2TL4IgPKSIGTAlHQGNFBR.jpg",
-    "imdb_id": "tt0477348"
+    "title": "There Will Be Blood", "year": 2007,
+    "genre": "Drama", "rating": 8.2, "revenue": 76166520, "budget": 25000000,
+    "overview": "A story of family, religion, hatred, oil and madness, focusing on a turn-of-the-century prospector in the early days of the California oil business.",
+    "poster_path": "/fa0RDkAlCec0STeMNAhPaF89q6U.jpg",
+    "imdb_id": "tt0469494"
   },
   {
     "era": "2010s", "decade": 2010,
     "title": "Inception", "year": 2010,
     "genre": "Science Fiction", "rating": 8.8, "revenue": 836800000, "budget": 160000000,
-    "overview": "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea.",
+    "overview": "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
     "poster_path": "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
     "imdb_id": "tt1375666"
   },
@@ -110,14 +110,6 @@
     "overview": "In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler in search for her homeland with the help of a group of female prisoners.",
     "poster_path": "/hA2ple9q4qnwxp3hKVNhroipsir.jpg",
     "imdb_id": "tt1392190"
-  },
-  {
-    "era": "2010s", "decade": 2010,
-    "title": "12 Years a Slave", "year": 2013,
-    "genre": "History", "rating": 8.1, "revenue": 187700000, "budget": 20000000,
-    "overview": "In the antebellum United States, Solomon Northup, a free black man from upstate New York, is abducted and sold into slavery.",
-    "poster_path": "/xdHqFDUGABcVmRx1C5hqjkGcAcU.jpg",
-    "imdb_id": "tt2024544"
   },
   {
     "era": "2010s", "decade": 2010,
@@ -139,15 +131,23 @@
     "era": "2010s", "decade": 2010,
     "title": "Avengers: Endgame", "year": 2019,
     "genre": "Action", "rating": 8.4, "revenue": 2797800000, "budget": 356000000,
-    "overview": "After the devastating events of Infinity War, the Avengers assemble once more to reverse Thanos's actions.",
+    "overview": "After the devastating events of Infinity War, the Avengers assemble once more to reverse Thanos's actions and restore balance to the universe.",
     "poster_path": "/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
     "imdb_id": "tt4154796"
+  },
+  {
+    "era": "2010s", "decade": 2010,
+    "title": "Moonlight", "year": 2016,
+    "genre": "Drama", "rating": 7.4, "revenue": 65000000, "budget": 1500000,
+    "overview": "A young man's journey through childhood, adolescence and burgeoning adulthood as he struggles to find his place in the world.",
+    "poster_path": "/4911T5FbJ9eAlzmghcgLFL0MrwS.jpg",
+    "imdb_id": "tt4975722"
   },
   {
     "era": "2020s", "decade": 2020,
     "title": "Everything Everywhere All at Once", "year": 2022,
     "genre": "Science Fiction", "rating": 8.0, "revenue": 69700000, "budget": 14300000,
-    "overview": "A middle-aged Chinese immigrant is swept up into an insane adventure where she alone can save the multiverse.",
+    "overview": "A middle-aged Chinese immigrant is swept up into an insane adventure where she alone can save the multiverse by exploring other universes.",
     "poster_path": "/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",
     "imdb_id": "tt6710474"
   },
@@ -155,7 +155,7 @@
     "era": "2020s", "decade": 2020,
     "title": "Dune", "year": 2021,
     "genre": "Science Fiction", "rating": 8.0, "revenue": 401800000, "budget": 165000000,
-    "overview": "Paul Atreides journeys to the most dangerous planet in the universe to ensure the future of his family and his people.",
+    "overview": "Paul Atreides, a brilliant and gifted young man, journeys to the most dangerous planet in the universe to ensure the future of his family and his people.",
     "poster_path": "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
     "imdb_id": "tt1160419"
   },
@@ -163,7 +163,7 @@
     "era": "2020s", "decade": 2020,
     "title": "The Batman", "year": 2022,
     "genre": "Action", "rating": 7.8, "revenue": 770800000, "budget": 185000000,
-    "overview": "Batman ventures into Gotham City's underworld when a sadistic killer leaves behind a trail of cryptic clues.",
+    "overview": "Batman ventures into Gotham City's underworld when a sadistic killer leaves behind a trail of cryptic clues targeting Gotham's elite.",
     "poster_path": "/74xTEgt7R36Fpooo50r9T25onhq.jpg",
     "imdb_id": "tt1877830"
   },
@@ -171,24 +171,24 @@
     "era": "2020s", "decade": 2020,
     "title": "Oppenheimer", "year": 2023,
     "genre": "History", "rating": 8.3, "revenue": 952000000, "budget": 100000000,
-    "overview": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+    "overview": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II.",
     "poster_path": "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
     "imdb_id": "tt15398776"
   },
   {
     "era": "2020s", "decade": 2020,
-    "title": "Poor Things", "year": 2023,
-    "genre": "Drama", "rating": 8.0, "revenue": 35600000, "budget": 35000000,
-    "overview": "The incredible tale of Bella Baxter, a young woman brought back to life by the brilliant and unorthodox scientist Dr. Godwin Baxter.",
-    "poster_path": "/kCGlIMHnOm8JPXNbM7aqFGBD3Ze.jpg",
-    "imdb_id": "tt14230458"
+    "title": "Barbie", "year": 2023,
+    "genre": "Comedy", "rating": 7.1, "revenue": 1441800000, "budget": 145000000,
+    "overview": "Barbie and Ken are having the time of their lives in the colorful and seemingly perfect world of Barbieland — until they discover the real world.",
+    "poster_path": "/iuFNMS8vlodTnuofvly0bsnkQkb.jpg",
+    "imdb_id": "tt1517268"
   },
   {
     "era": "2020s", "decade": 2020,
-    "title": "Killers of the Flower Moon", "year": 2023,
-    "genre": "Crime", "rating": 7.7, "revenue": 156700000, "budget": 200000000,
-    "overview": "Members of the Osage tribe in the United States are murdered under mysterious circumstances in the 1920s.",
-    "poster_path": "/dB6jkQAj2BS5YDwEuB0R59HvTzy.jpg",
-    "imdb_id": "tt5537002"
+    "title": "Past Lives", "year": 2023,
+    "genre": "Romance", "rating": 7.9, "revenue": 8600000, "budget": 10000000,
+    "overview": "Two childhood friends who are separated after one emigrates from South Korea reunite in New York City two decades later, only to reflect on the life they could have shared.",
+    "poster_path": "/k3waqVXSnvCZSBotKTSMoSHkMXP.jpg",
+    "imdb_id": "tt13238346"
   }
 ]
