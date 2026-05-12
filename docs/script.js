@@ -9,7 +9,6 @@ const GENRE_COLORS = {
 };
 
 let data = {};
-let activeMovieDecade = 'all';
 
 Promise.all([
   fetch('data/production.json').then(r => r.json()),
