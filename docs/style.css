@@ -682,3 +682,24 @@ a {
 .movie-strip {
   display: flex !important;
 }
+
+
+/* Make the stat highlights gold */
+.finding-card strong {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* Give cards slightly more breathing room */
+.finding-card p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin-top: 8px;
+}
+
+.finding-card h3 {
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--text);
+}
