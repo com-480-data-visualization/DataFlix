@@ -9,6 +9,7 @@ const GENRE_COLORS = {
 };
 
 let data = {};
+let activeMovieDecade = 'all';
 
 Promise.all([
   fetch('data/production.json').then(r => r.json()),
@@ -52,6 +53,7 @@ Promise.all([
   drawRatings();
   drawFinance('all');
   showMovies();
+  setupMovieDecadeButtons();
   setupDecadeButtons();
 }).catch(err => console.error('Data load error:', err));
 
@@ -358,26 +360,116 @@ function drawFinance(decade = 'all') {
   createLegend('.finance-chart', Array.from(new Set(filtered.map(m => m.primary_genre))).slice(0, 10));
 }
 
-function showMovies() {
+/* ─────────────────────────────────────────────
+   REPRESENTATIVE MOVIES PANEL
+   ───────────────────────────────────────────── */
+
+// ── State ────────────────────────────────────
+let activeMovieDecade = 'all';
+
+// ── Called once on data load ─────────────────
+function showMovies(decade = 'all') {
+  activeMovieDecade = decade;
   const container = document.getElementById('movie-strip');
   container.innerHTML = '';
-  
-  data.movies.forEach((m, i) => {
-    const card = document.createElement('article');
-    card.className = 'movie-card' + (i === 0 ? ' featured' : '');
-    const color = GENRE_COLORS[m.genre] || '#668bff';
-    
-    card.innerHTML = `
-      <div class="poster-placeholder" style="background:linear-gradient(135deg,${color},${color}88)"></div>
-      <div class="movie-info">
-        <p class="movie-era">${m.era}</p>
-        <h3>To Be Determined</h3>
-        <p>N/A - TBD - N/A</p>
-      </div>
-    `;
+
+  const filtered = decade === 'all'
+    ? data.movies
+    : data.movies.filter(m => m.decade === parseInt(decade));
+
+  if (!filtered.length) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px">No films for this period.</p>';
+    return;
+  }
+
+  filtered.forEach((m, i) => {
+    const card = createMovieCard(m, i === 0 && decade === 'all');
     container.appendChild(card);
   });
 }
+
+// ── Build one card ────────────────────────────
+function createMovieCard(m, featured = false) {
+  const card = document.createElement('article');
+  card.className = 'movie-card' + (featured ? ' featured' : '');
+  card.title = `Open ${m.title} on IMDb`;
+  card.style.cursor = 'pointer';
+
+  const posterUrl = `https://image.tmdb.org/t/p/w500${m.poster_path}`;
+  const color = GENRE_COLORS[m.genre] || '#668bff';
+  const revenue = m.revenue > 0
+    ? '$' + (m.revenue / 1e6).toFixed(0) + 'M'
+    : 'N/A';
+  const stars = '★'.repeat(Math.round(m.rating / 2)) + '☆'.repeat(5 - Math.round(m.rating / 2));
+
+  card.innerHTML = `
+    <div class="poster-wrap">
+      <img
+        class="poster-img"
+        src="${posterUrl}"
+        alt="${m.title} poster"
+        loading="lazy"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+      />
+      <div class="poster-fallback" style="background:linear-gradient(135deg,${color},${color}44);display:none">
+        <span>${m.title}</span>
+      </div>
+      <div class="poster-overlay">
+        <span class="genre-badge" style="background:${color}33;border-color:${color}66">${m.genre}</span>
+      </div>
+    </div>
+    <div class="movie-info">
+      <p class="movie-era">${m.era}</p>
+      <h3 class="movie-title">${m.title}</h3>
+      <div class="movie-meta">
+        <span class="movie-year">${m.year}</span>
+        <span class="movie-rating" title="${m.rating}/10">${stars} ${m.rating}</span>
+      </div>
+      <p class="movie-revenue">Box office: ${revenue}</p>
+      <p class="movie-overview">${m.overview}</p>
+    </div>
+  `;
+
+  card.addEventListener('click', () => {
+    window.open(`https://www.imdb.com/title/${m.imdb_id}/`, '_blank', 'noopener');
+  });
+
+  // Hover lift
+  card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-6px)');
+  card.addEventListener('mouseleave', () => card.style.transform = '');
+
+  return card;
+}
+
+// ── Decade filter tabs ────────────────────────
+function setupMovieDecadeButtons() {
+  const section = document.getElementById('movies');
+  if (!section) return;
+
+  // Insert tab bar above the strip
+  const tabBar = document.createElement('div');
+  tabBar.className = 'movie-decade-tabs';
+  tabBar.innerHTML = `
+    <button class="chip active" data-mdecade="all">All eras</button>
+    <button class="chip" data-mdecade="1990">1990s</button>
+    <button class="chip" data-mdecade="2000">2000s</button>
+    <button class="chip" data-mdecade="2010">2010s</button>
+    <button class="chip" data-mdecade="2020">2020s</button>
+  `;
+
+  const strip = document.getElementById('movie-strip');
+  section.insertBefore(tabBar, strip);
+
+  tabBar.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBar.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showMovies(btn.getAttribute('data-mdecade'));
+    });
+  });
+}
+
+// ──────────────────────────────────────
 
 function setupCanvas(selector, title) {
   const container = document.querySelector(selector);
