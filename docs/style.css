@@ -26,7 +26,7 @@ html {
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(to bottom, #050505 0%, #0d0d10 18%, #15171d 40%, #20232c 70%, #2b3140 100%);
+  background: #050505;
   color: var(--text);
   line-height: 1.6;
 }
@@ -901,33 +901,53 @@ a {
 
 /* ── 2. BODY BACKGROUND — real color arc ─────────────────────── */
 
-/*
-  The old gradient went from black → blue-gray (#2b3140).
-  That's where the "grayish blue" was coming from — it had
-  nothing to do with saturation filters.
-
-  New approach: body background transitions from pure black
-  at the top to warm deep burgundy-red by the middle, then
-  to a rich deep teal-indigo at the bottom.
-  This gives genuine COLOR that the later sections sit on top of.
-  Each section's background is slightly transparent so the
-  body gradient bleeds through.
-*/
-body {
-  background:
-    linear-gradient(
-      to bottom,
-      #050505   0%,    /* pure black — hero, production */
-      #0d0a0a  15%,    /* almost black, hint of warmth */
-      #180d0d  28%,    /* very dark red — genres section */
-      #1a0e18  42%,    /* dark purple — ratings section */
-      #0e1520  58%,    /* deep navy — finance section */
-      #0c1a18  72%,    /* deep teal — movies section */
-      #111820  85%,    /* dark blue — findings section */
-      #16141e 100%     /* deep indigo — closing */
-    );
-  background-attachment: fixed; /* gradient stays fixed as you scroll — key! */
+/* Hero: pure black — the B&W starting point */
+.hero {
+  background: #050505;
 }
+ 
+/* Overview: near-black, imperceptibly warm */
+#overview {
+  background: #080608;
+}
+ 
+/* Production: very dark, almost no saturation — matches stage-muted */
+#production {
+  background: #0a0808;
+}
+ 
+/* Genres: dark maroon starts bleeding in */
+#genres {
+  background: #241b15;
+}
+ 
+/* Ratings: deeper red-brown, color clearly present */
+#ratings {
+  background: #320511;
+}
+ 
+/* Finance: shifts from warm red to cool blue-purple */
+#finance {
+  background: #05055a;
+}
+ 
+/* Movies: deep teal-navy — rich, full color era */
+#movies {
+  background: #2468b1;
+}
+ 
+/* Findings: deep indigo — the cinematic close */
+#findings {
+  background: #0e1127;
+}
+ 
+/* 4. stage filter brightness adjustments
+      pure section colors handle the arc */
+.stage-muted   { filter: saturate(0.12); }
+.stage-accent  { filter: saturate(0.42); }
+.stage-richer  { filter: saturate(0.80); }
+.stage-richest { filter: saturate(1.1);  }
+ 
 
 
 /* ── 3. HERO — FIXES ──────────────────────────────────────────── */
@@ -982,21 +1002,6 @@ body {
   z-index: 2;
 }
 
-
-/* ── 4. B&W → COLOR ARC via section filters ──────────────────── */
-
-/*
-  Now that body background has real color, the saturate() filters
-  on sections reveal or suppress that color.
-  Production: near-grayscale — the dark red body bg barely shows
-  Genres: desaturated — a hint of warmth starts bleeding through
-  Ratings: mostly saturated — color is clearly present
-  Finance: full saturation — richest color
-*/
-.stage-muted   { filter: saturate(0.1)  brightness(0.92); }
-.stage-accent  { filter: saturate(0.4)  brightness(0.95); }
-.stage-richer  { filter: saturate(0.82); }
-.stage-richest { filter: saturate(1.15); }
 
 
 /* ── 5. KODAK STRIP DIVIDER ───────────────────────────────────── */
