@@ -7,10 +7,33 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- ── COUNTDOWN LOADER ─────────────────────────────────────── -->
+  <div class="countdown-loader" id="countdown-loader">
+    <img src="assets/countdown.jpg" alt="" class="countdown-img" />
+    <div class="countdown-flicker"></div>
+  </div>
+
+  <!-- ── SCROLL PROGRESS BAR ──────────────────────────────────── -->
   <div class="timeline-progress"></div>
 
+  <!-- ── HERO ─────────────────────────────────────────────────── -->
   <header class="hero section-dark">
+
+    <!-- Darkening overlay (gradient only, no image) -->
     <div class="hero-overlay"></div>
+
+    <!-- Background: colorized audience photo -->
+    <img src="assets/audience-colorized.jpg"
+         alt=""
+         class="hero-bg-img"
+         aria-hidden="true" />
+
+    <!-- Decorative vertical film strip (right side) -->
+    <img src="assets/filmstrip-vertical.jpg"
+         alt=""
+         class="hero-filmstrip"
+         aria-hidden="true" />
 
     <nav class="navbar">
       <div class="logo">DataFlix</div>
@@ -28,27 +51,49 @@
         <p class="eyebrow">A journey through film history</p>
         <h1>The Evolution of Cinema</h1>
         <p class="subtitle">
-          Explore how cinema has transformed from 1988 to 2025 through production trends, genre shifts, audience reception, and financial dynamics.
+          Explore how cinema has transformed from 1988 to 2025 through
+          production trends, genre shifts, audience reception, and financial dynamics.
         </p>
         <div class="hero-actions">
           <a href="#production" class="cta primary">Start exploring</a>
           <a href="#overview" class="cta secondary">Project overview</a>
         </div>
       </div>
-      <div class="hero-scroll-hint">Scroll to enter the timeline</div>
     </div>
+
+    <div class="hero-scroll-hint">Scroll to enter the timeline</div>
   </header>
 
+  <!-- ── KODAK STRIP DIVIDER ───────────────────────────────────── -->
+  <div class="strip-divider">
+    <img src="assets/kodak-strip.jpg" alt="" aria-hidden="true" />
+  </div>
+
   <main>
+
+    <!-- ── OVERVIEW ──────────────────────────────────────────────── -->
     <section id="overview" class="section intro-section section-dark reveal">
+      <!-- Faint audience texture -->
+      <img src="assets/audience-bw.jpg"
+           alt="" aria-hidden="true"
+           class="section-bg-img" />
+
       <div class="section-copy narrow">
         <p class="section-label">Introduction</p>
         <h2>A story guided by time</h2>
         <p>
-          Cinema reflects technological progress, societal changes, and evolving audience preferences. Over the past four decades, the film industry has undergone major transformations: from the rise of blockbuster franchises to the emergence of streaming platforms, from the dominance of traditional genres to the explosion of diverse content.
+          Cinema reflects technological progress, societal changes, and evolving
+          audience preferences. Over the past four decades, the film industry has
+          undergone major transformations: from the rise of blockbuster franchises
+          to the emergence of streaming platforms, from the dominance of traditional
+          genres to the explosion of diverse content.
         </p>
         <p>
-          Rather than presenting isolated charts, this project structures the data as a continuous journey. As you scroll through time, each section reveals a new dimension of cinema's evolution: how production volumes shifted, which genres captured audiences, how critical reception changed, and what the economics of filmmaking tell us about industry priorities.
+          Rather than presenting isolated charts, this project structures the data
+          as a continuous journey. As you scroll through time, each section reveals
+          a new dimension of cinema's evolution: how production volumes shifted,
+          which genres captured audiences, how critical reception changed, and what
+          the economics of filmmaking tell us about industry priorities.
         </p>
       </div>
 
@@ -61,13 +106,17 @@
       </div>
     </section>
 
+    <!-- ── PRODUCTION ─────────────────────────────────────────────── -->
     <section id="production" class="section split-section reveal stage-muted">
       <div class="section-copy">
         <p class="section-label">1. Movie Production Over Time</p>
         <h2>How has production volume changed?</h2>
         <p>
-          Starting our journey in the late 1980s, we see how the volume of cinema production has shifted across decades. We track the number of movies released each year, revealing growth patterns and fluctuations in the industry. Click on a genre below to filter the data and discover which genres drove production growth.
-          NB: Check the report for the full genre evolution specifications (currently implemented as a stacked bar chart to test data connectivity).
+          Starting our journey in the late 1980s, we see how the volume of cinema
+          production has shifted across decades. We track the number of movies
+          released each year, revealing growth patterns and fluctuations in the
+          industry. Click on a genre below to filter the data and discover which
+          genres drove production growth.
         </p>
         <div class="controls" id="production-genres">
           <button class="chip active" data-genre="all">All genres</button>
@@ -83,6 +132,7 @@
       </div>
     </section>
 
+    <!-- ── GENRES ─────────────────────────────────────────────────── -->
     <section id="genres" class="section split-section reveal stage-accent">
       <div class="viz-panel">
         <div class="viz-header">
@@ -96,20 +146,24 @@
         <p class="section-label">2. Genre Evolution</p>
         <h2>Which genres dominated different periods?</h2>
         <p>
-          Cinema's evolution is shaped by the genres that dominate each era. This visualization shows how different genres have grown (or declined) over time from 1988 to 2025. Each color represents a distinct genre, revealing which storytelling traditions have endured and which have emerged.
-        NB: Check the report for the complete production visualization specifications (currently implemented with genre filtering to demonstrate data integration methods).
+          Cinema's evolution is shaped by the genres that dominate each era.
+          This visualization shows how different genres have grown (or declined)
+          over time from 1988 to 2025. Each color represents a distinct genre,
+          revealing which storytelling traditions have endured and which have emerged.
         </p>
         <div class="legend" id="genre-legend"></div>
       </div>
     </section>
 
+    <!-- ── RATINGS ────────────────────────────────────────────────── -->
     <section id="ratings" class="section split-section reveal stage-richer">
       <div class="section-copy">
         <p class="section-label">3. Quality Distribution Over Time</p>
         <h2>How is movie quality distributed?</h2>
         <p>
-          More production doesn't necessarily mean better films. This line chart tracks average movie ratings over time, revealing whether quality has remained stable, improved, or declined as the industry scaled. 
-          NB: Check the report to see the detailed specifications for quality distribution visualization (currently implemented as a line chart to check connectivity of the data). 
+          More production doesn't necessarily mean better films. This line chart
+          tracks average movie ratings over time, revealing whether quality has
+          remained stable, improved, or declined as the industry scaled.
         </p>
       </div>
 
@@ -122,7 +176,13 @@
       </div>
     </section>
 
+    <!-- ── FINANCE ────────────────────────────────────────────────── -->
     <section id="finance" class="section split-section reveal stage-richest">
+      <!-- Vintage TVs texture (home video / distribution era) -->
+      <img src="assets/vintage-tvs.jpg"
+           alt="" aria-hidden="true"
+           class="section-bg-img section-bg-img--right" />
+
       <div class="viz-panel">
         <div class="viz-header">
           <h3>Budget vs revenue dynamics</h3>
@@ -135,8 +195,11 @@
         <p class="section-label">4. The Economics of Cinema</p>
         <h2>How do budgets relate to revenue?</h2>
         <p>
-          This visualization reveals the relationship between production budgets and revenue across genres and time periods. Use the decade filters to compare different eras. Observe how financial investment relates to returns, identify profitability patterns across genres, and see where blockbusters dominate versus where smaller productions thrive.
-          NB: Check the report for the complete budget vs. revenue specifications (currently implemented as a scatter plot to test data integration methods).
+          This visualization reveals the relationship between production budgets
+          and revenue across genres and time periods. Use the decade filters to
+          compare different eras. Observe how financial investment relates to
+          returns, identify profitability patterns across genres, and see where
+          blockbusters dominate versus where smaller productions thrive.
         </p>
         <div class="controls" id="finance-decades">
           <button class="chip active" data-decade="all">All decades</button>
@@ -147,140 +210,96 @@
       </div>
     </section>
 
+    <!-- ── MOVIES ─────────────────────────────────────────────────── -->
     <section id="movies" class="section reveal movies-section">
+      <!-- Scattered film strips texture -->
+      <img src="assets/filmstrips-scattered.jpg"
+           alt="" aria-hidden="true"
+           class="section-bg-img" />
+
       <div class="section-copy centered">
         <p class="section-label">5. Representative Films</p>
         <h2>What films represent each era?</h2>
         <p>
-          Data reveals patterns, but cinema is ultimately about stories. We connected abstract trends with concrete examples by showcasing landmark films from different decades. Seeing actual movies helps interpret the data and relate insights to the films that shaped audience expectations.
+          Data reveals patterns, but cinema is ultimately about stories. We
+          connected abstract trends with concrete examples by showcasing landmark
+          films from different decades. Seeing actual movies helps interpret the
+          data and relate insights to the films that shaped audience expectations.
         </p>
       </div>
       <div class="movie-strip" id="movie-strip"></div>
     </section>
 
+    <!-- ── FINDINGS ───────────────────────────────────────────────── -->
     <section id="findings" class="section final-section reveal">
+      <!-- Red negatives texture (warmth) -->
+      <img src="assets/film-negatives.jpg"
+           alt="" aria-hidden="true"
+           class="section-bg-img" />
+
       <div class="section-copy centered narrow">
         <p class="section-label">6. Key Insights</p>
         <h2>Patterns that shaped cinema</h2>
         <p>
-        Four decades of data reveal how cinema has transformed at every level:
-        from the sheer volume of films made, to the genres audiences gravitate toward,
-        to the economics that now define what gets made and what gets seen.
-      </p>
+          Four decades of data reveal how cinema has transformed at every level —
+          from the sheer volume of films made, to the genres audiences gravitate
+          toward, to the economics that now define what gets made and what gets seen.
+        </p>
       </div>
 
       <div class="findings-grid">
- 
         <div class="finding-card">
           <span class="finding-number">01</span>
           <h3>An industry that never stopped growing</h3>
-          <p>
-            Annual film production grew <strong>7.4×</strong> between 1988 and 2024:
-            from 7,100 to nearly 55,000 releases per year. Even the COVID-19 pandemic
-            barely registered: production dipped just 1% in 2020 before rebounding to
-            record highs within two years, driven by the rise of streaming platforms
-            and lower digital production costs.
-          </p>
+          <p>Annual film production grew <strong>7.4×</strong> between 1988 and
+          2024 — from 7,100 to nearly 55,000 releases per year. Even the COVID-19
+          pandemic barely registered: production dipped just 1% in 2020 before
+          rebounding to record highs, driven by streaming and lower digital
+          production costs.</p>
         </div>
-      
         <div class="finding-card">
           <span class="finding-number">02</span>
           <h3>Horror surged — Documentary exploded</h3>
-          <p>
-            Horror production grew <strong>7.6×</strong> from the 1990s to the 2020s,
-            outpacing every other major genre. Documentary grew even faster in raw
-            numbers (from 11,885 to 62,811 titles) reflecting streaming platforms'
-            insatiable appetite for non-fiction content. Meanwhile Drama and Comedy
-            held their dominant positions, together accounting for nearly half of all
-            films produced in every decade.
-          </p>
+          <p>Horror production grew <strong>7.6×</strong> from the 1990s to the
+          2020s, outpacing every other major genre. Documentary grew even faster
+          in raw numbers — from 11,885 to 62,811 titles — reflecting streaming
+          platforms' insatiable appetite for non-fiction content.</p>
         </div>
-      
         <div class="finding-card">
           <span class="finding-number">03</span>
           <h3>Ratings have quietly risen</h3>
-          <p>
-            Average audience ratings climbed steadily from <strong>5.53 in 1988</strong>
-            to <strong>7.34 in 2025</strong> : a gain of nearly two full points. This
-            likely reflects a selection effect: as the total volume of films grows,
-            only the most-rated titles accumulate enough votes to register, skewing
-            averages upward. Quality didn't simply improve : it visibility did.
-          </p>
+          <p>Average ratings climbed from <strong>5.53 in 1988</strong> to
+          <strong>7.34 in 2025</strong>. This likely reflects a selection effect:
+          as total volume grows, only the most-rated titles accumulate enough
+          votes to register — quality didn't simply improve, visibility did.</p>
         </div>
-      
         <div class="finding-card">
           <span class="finding-number">04</span>
           <h3>Blockbusters concentrate wealth</h3>
-          <p>
-            In the 2010s, the top 1% of films by revenue captured <strong>19% of all
-            box office earnings</strong>. The decade's highest earner, Avengers: Endgame,
-            grossed $2.8 billion : more than the combined revenue of thousands of
-            mid-budget films. Average production budgets peaked in the 2000s and have
-            since declined, as studios bet bigger on fewer tentpoles while the long tail
-            of low-budget films grows ever longer.
-          </p>
-        </div>
-    
-      </div>
-
-      <!--
-  ════════════════════════════════════════════════════════
-  YOUR CINEMA ERA — personalizer component
-  ════════════════════════════════════════════════════════
--->
-
-    <div class="era-personalizer reveal">
-      <div class="era-header">
-        <p class="section-label">Your Cinema Era</p>
-        <h3>What did cinema look like when you were born?</h3>
-        <p class="era-sub">Move the slider to explore any year in the dataset.</p>
-      </div>
-
-      <div class="era-slider-wrap">
-        <span class="era-slider-label">1988</span>
-        <input type="range" id="birth-year-slider" class="era-slider"
-              min="1988" max="2024" value="1994" step="1" />
-        <span class="era-slider-label">2024</span>
-      </div>
-      <div class="era-year-display">
-        <span id="era-selected-year">1994</span>
-      </div>
-
-      <div class="era-stats" id="era-stats">
-        <div class="era-stat-card" id="estat-films">
-          <div class="era-stat-icon">🎬</div>
-          <div class="era-stat-value"><span class="era-count" data-target="0">0</span></div>
-          <div class="era-stat-label">films released</div>
-        </div>
-        <div class="era-stat-card" id="estat-genre">
-          <div class="era-stat-icon">🎭</div>
-          <div class="era-stat-value era-stat-text" id="era-genre-val">—</div>
-          <div class="era-stat-label">dominant genre of your decade</div>
-        </div>
-        <div class="era-stat-card" id="estat-rating">
-          <div class="era-stat-icon">⭐</div>
-          <div class="era-stat-value"><span class="era-count era-decimal" data-target="0">0</span><span class="era-stat-unit">/10</span></div>
-          <div class="era-stat-label">average film rating</div>
-        </div>
-        <div class="era-stat-card" id="estat-blockbuster">
-          <div class="era-stat-icon">🏆</div>
-          <div class="era-stat-value era-stat-text" id="era-blockbuster-val">—</div>
-          <div class="era-stat-label">decade's biggest blockbuster</div>
+          <p>In the 2010s, the top 1% of films by revenue captured
+          <strong>19%</strong> of all box office earnings. Avengers: Endgame
+          alone grossed $2.8B — more than the combined revenue of thousands of
+          mid-budget films released the same decade.</p>
         </div>
       </div>
 
-      <div class="era-chart-wrap">
-        <p class="era-chart-label">Film production 1988–2024 — your year highlighted</p>
-        <svg id="era-sparkline" width="100%" height="90" preserveAspectRatio="none"></svg>
-      </div>
-    </div>
+      <!-- Era personalizer goes here (injected by JS) -->
 
       <div class="closing-timeline">
         <span>1988</span>
         <div class="closing-line"></div>
         <span>2025</span>
       </div>
+
+      <!-- THE END -->
+      <div class="the-end-wrap reveal">
+        <img src="assets/the-end.jpg"
+             alt="The End"
+             class="the-end-img" />
+        <div class="the-end-overlay"></div>
+      </div>
     </section>
+
   </main>
 
   <script src="script.js"></script>

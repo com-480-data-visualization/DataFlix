@@ -10,6 +10,7 @@ const GENRE_COLORS = {
 
 let data = {};
 
+initCountdownLoader()
 Promise.all([
   fetch('data/production.json').then(r => r.json()),
   fetch('data/genres.json').then(r => r.json()),
@@ -849,4 +850,21 @@ function updateEraMarker(year) {
   const dot  = document.getElementById('era-marker-dot');
   if (line) { line.setAttribute('x1', x); line.setAttribute('x2', x); }
   if (dot)  { dot.setAttribute('cx', x);  dot.setAttribute('cy', y); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CINEMATIC ADDITIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+
+function initCountdownLoader() {
+  const loader = document.getElementById('countdown-loader');
+  if (!loader) return;
+
+  // The CSS animation fades it out over 1.8s
+  // After 1.9s, remove it from the DOM entirely so it
+  // doesn't block clicks or affect layout
+  setTimeout(() => {
+    loader.style.display = 'none';
+  }, 1950);
 }

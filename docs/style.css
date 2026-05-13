@@ -845,3 +845,263 @@ a {
   margin-bottom: 10px;
 }
 #era-sparkline { display: block; overflow: visible; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CINEMATIC IMAGE ADDITIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── 1. COUNTDOWN LOADER ──────────────────────────────────────── */
+
+.countdown-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: countdown-fade 1.8s ease-in-out forwards;
+  pointer-events: none;
+}
+
+.countdown-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+  filter: grayscale(1) contrast(1.2);
+  animation: countdown-flicker 0.12s infinite;
+}
+
+/* Scanline overlay on loader */
+.countdown-flicker {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.18) 3px,
+    rgba(0,0,0,0.18) 4px
+  );
+  pointer-events: none;
+}
+
+@keyframes countdown-fade {
+  0%   { opacity: 1; }
+  65%  { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}
+
+@keyframes countdown-flicker {
+  0%   { opacity: 1; }
+  45%  { opacity: 0.94; }
+  55%  { opacity: 1; }
+  75%  { opacity: 0.97; }
+  100% { opacity: 1; }
+}
+
+
+/* ── 2. HERO — BACKGROUND IMAGE ───────────────────────────────── */
+
+/* Remove old mix-blend-mode hack, use real photo */
+.hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0.55) 60%,
+    rgba(0,0,0,0.82) 100%
+  );
+  mix-blend-mode: normal; /* override old "screen" */
+  z-index: 1;
+}
+
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  opacity: 0.52;
+  z-index: 0;
+  /* Keep grayscale since .hero has filter:grayscale(100%) */
+}
+
+/* Remove old hero grayscale filter — the image carries the aesthetic now */
+/* The CSS already has filter: grayscale(100%) on .hero — keep it,
+   it will desaturate the colorized audience correctly for the B&W opening */
+
+
+/* ── 3. HERO — VERTICAL FILM STRIP (right decoration) ────────── */
+
+.hero-filmstrip {
+  position: absolute;
+  right: -24px;
+  top: -40px;
+  height: 115%;
+  width: auto;
+  max-width: 220px;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.22;
+  z-index: 1;
+  transform: rotate(2deg);
+  pointer-events: none;
+  /* Inherit grayscale from parent .hero */
+}
+
+@media (max-width: 1100px) {
+  .hero-filmstrip { display: none; }
+}
+
+
+/* ── 4. KODAK STRIP DIVIDER ───────────────────────────────────── */
+
+.strip-divider {
+  width: 100%;
+  height: 64px;
+  overflow: hidden;
+  line-height: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.strip-divider img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  opacity: 0.45;
+  filter: grayscale(1) contrast(1.1);
+  display: block;
+}
+
+
+/* ── 5. SECTION BACKGROUND IMAGES (generic) ──────────────────── */
+
+/* All sections that use a bg image need position: relative */
+#overview,
+#finance,
+#movies,
+#findings {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+
+  /* Default: faint full-section texture */
+  opacity: 0.05;
+  filter: grayscale(1);
+}
+
+/* Finance section: TVs anchored to right/bottom, slightly more visible */
+.section-bg-img--right {
+  object-position: right bottom;
+  opacity: 0.07;
+  filter: grayscale(0.4);
+  width: 50%;
+  left: auto;
+  right: 0;
+}
+
+/* Ensure section content sits above bg images */
+#overview  > *:not(.section-bg-img),
+#finance   > *:not(.section-bg-img),
+#movies    > *:not(.section-bg-img),
+#findings  > *:not(.section-bg-img) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Overview: B&W audience — very subtle, even more faint */
+#overview .section-bg-img {
+  opacity: 0.05;
+  object-position: center 20%;
+}
+
+/* Movies: scattered strips — tile horizontally */
+#movies .section-bg-img {
+  opacity: 0.04;
+  object-fit: cover;
+  filter: grayscale(0);
+}
+
+/* Findings: red negatives — warm tone at very low opacity */
+#findings .section-bg-img {
+  opacity: 0.06;
+  filter: grayscale(0); /* keep the red warmth */
+}
+
+
+/* ── 6. "THE END" CLOSING CARD ────────────────────────────────── */
+
+.the-end-wrap {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  margin-top: 56px;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.the-end-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.75;
+  filter: grayscale(0.15);
+  display: block;
+}
+
+.the-end-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%),
+    linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%);
+}
+
+
+/* ── 7. HERO TEXT FADE-IN ANIMATION ──────────────────────────── */
+
+.hero-left > * {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hero-word-in 0.7s ease forwards;
+}
+
+.hero-left .eyebrow    { animation-delay: 1.9s; }
+.hero-left h1          { animation-delay: 2.1s; }
+.hero-left .subtitle   { animation-delay: 2.35s; }
+.hero-left .hero-actions { animation-delay: 2.6s; }
+.hero-scroll-hint      {
+  opacity: 0;
+  animation: hero-word-in 0.7s ease 2.8s forwards, floaty 1.8s 3.5s infinite;
+}
+
+@keyframes hero-word-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ── 8. FINDING CARD POLISH ───────────────────────────────────── */
+
+.finding-card strong { color: var(--gold); font-weight: 700; }
+.finding-card p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin-top: 8px;
+}
+.finding-card h3 { font-size: 1rem; line-height: 1.35; }
