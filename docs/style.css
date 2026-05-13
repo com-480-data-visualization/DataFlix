@@ -847,7 +847,7 @@ a {
 #era-sparkline { display: block; overflow: visible; }
 
 /* ═══════════════════════════════════════════════════════════════
-   DATAFLIX — CINEMATIC V2
+   DATAFLIX — CINEMATIC V3
    ═══════════════════════════════════════════════════════════════ */
 
 
@@ -878,7 +878,7 @@ a {
   inset: 0;
   background: repeating-linear-gradient(
     to bottom,
-    transparent,
+    transparent 0px,
     transparent 3px,
     rgba(0,0,0,0.15) 3px,
     rgba(0,0,0,0.15) 4px
@@ -899,32 +899,54 @@ a {
 }
 
 
-/* ── 2. HERO — FIXES ──────────────────────────────────────────── */
+/* ── 2. BODY BACKGROUND — real color arc ─────────────────────── */
 
 /*
-  THE KEY FIX:
-  Remove grayscale from .hero entirely.
-  Instead, the hero background image (colorized audience) will be
-  naturally desaturated by using the B&W version of the image.
-  The color arc is handled by the section saturate() filters below.
+  The old gradient went from black → blue-gray (#2b3140).
+  That's where the "grayish blue" was coming from — it had
+  nothing to do with saturation filters.
+
+  New approach: body background transitions from pure black
+  at the top to warm deep burgundy-red by the middle, then
+  to a rich deep teal-indigo at the bottom.
+  This gives genuine COLOR that the later sections sit on top of.
+  Each section's background is slightly transparent so the
+  body gradient bleeds through.
 */
-.hero {
-  filter: none; /* was grayscale(100%) — removed */
+body {
+  background:
+    linear-gradient(
+      to bottom,
+      #050505   0%,    /* pure black — hero, production */
+      #0d0a0a  15%,    /* almost black, hint of warmth */
+      #180d0d  28%,    /* very dark red — genres section */
+      #1a0e18  42%,    /* dark purple — ratings section */
+      #0e1520  58%,    /* deep navy — finance section */
+      #0c1a18  72%,    /* deep teal — movies section */
+      #111820  85%,    /* dark blue — findings section */
+      #16141e 100%     /* deep indigo — closing */
+    );
+  background-attachment: fixed; /* gradient stays fixed as you scroll — key! */
 }
 
-/* Fix the hero-overlay: was using mix-blend-mode:screen which washed out the image */
+
+/* ── 3. HERO — FIXES ──────────────────────────────────────────── */
+
+.hero {
+  filter: none; /* remove old grayscale(100%) */
+}
+
 .hero-overlay {
   background: linear-gradient(
     160deg,
-    rgba(0,0,0,0.72) 0%,
-    rgba(0,0,0,0.45) 45%,
-    rgba(0,0,0,0.65) 100%
+    rgba(0,0,0,0.75) 0%,
+    rgba(0,0,0,0.42) 45%,
+    rgba(0,0,0,0.68) 100%
   );
   mix-blend-mode: normal;
   opacity: 1;
 }
 
-/* Hero background photo — the colorized audience (audience-colorized.jpg) */
 .hero-bg-img {
   position: absolute;
   inset: 0;
@@ -932,13 +954,11 @@ a {
   height: 100%;
   object-fit: cover;
   object-position: center 25%;
-  /* Apply grayscale ONLY to this image, not the whole hero */
-  filter: grayscale(1) brightness(0.7);
+  filter: grayscale(1) brightness(0.65);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Decorative vertical film strip on the right */
 .hero-filmstrip {
   position: absolute;
   right: 0;
@@ -947,7 +967,7 @@ a {
   width: auto;
   max-width: 180px;
   object-fit: cover;
-  opacity: 0.18;
+  opacity: 0.16;
   filter: grayscale(1) contrast(1.1);
   z-index: 1;
   pointer-events: none;
@@ -957,36 +977,29 @@ a {
   .hero-filmstrip { display: none; }
 }
 
-/* Make sure hero content stays above bg images */
 .navbar, .hero-inner, .hero-scroll-hint, .hero-overlay {
   position: relative;
   z-index: 2;
 }
 
 
-/* ── 3. B&W → COLOR ARC (the real one) ───────────────────────── */
+/* ── 4. B&W → COLOR ARC via section filters ──────────────────── */
 
 /*
-  The arc works like this:
-  - Hero: grayscale on the bg image only. Page feels B&W.
-  - Production: desaturated (stage-muted already does this)
-  - Genres: slightly more saturated (stage-accent)
-  - Ratings: nearly full color (stage-richer)
-  - Finance: full color (stage-richest)
-  - Movies + Findings: full natural color, no filter
-
-  The stage filters apply to the WHOLE section including charts,
-  which is what makes it feel like color is "returning".
-  We just need to make the transitions more dramatic.
+  Now that body background has real color, the saturate() filters
+  on sections reveal or suppress that color.
+  Production: near-grayscale — the dark red body bg barely shows
+  Genres: desaturated — a hint of warmth starts bleeding through
+  Ratings: mostly saturated — color is clearly present
+  Finance: full saturation — richest color
 */
+.stage-muted   { filter: saturate(0.1)  brightness(0.92); }
+.stage-accent  { filter: saturate(0.4)  brightness(0.95); }
+.stage-richer  { filter: saturate(0.82); }
+.stage-richest { filter: saturate(1.15); }
 
-.stage-muted   { filter: saturate(0.15) brightness(0.95); }
-.stage-accent  { filter: saturate(0.45) brightness(0.97); }
-.stage-richer  { filter: saturate(0.78); }
-.stage-richest { filter: saturate(1.0); }
 
-
-/* ── 4. KODAK STRIP DIVIDER ───────────────────────────────────── */
+/* ── 5. KODAK STRIP DIVIDER ───────────────────────────────────── */
 
 .strip-divider {
   width: 100%;
@@ -1008,9 +1021,9 @@ a {
 }
 
 
-/* ── 5. SECTION BACKGROUND IMAGES ────────────────────────────── */
+/* ── 6. SECTION BACKGROUND IMAGES ────────────────────────────── */
 
-#overview, #finance, #movies, #findings {
+#findings {
   position: relative;
   overflow: hidden;
 }
@@ -1024,51 +1037,38 @@ a {
   pointer-events: none;
   z-index: 0;
   opacity: 0.05;
-  filter: grayscale(1);
-}
-
-/* Finance TVs: right-anchored, barely visible, no grayscale filter */
-#finance .section-bg-img {
-  left: auto;
-  right: 0;
-  width: 35%;
-  height: 85%;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.06;
-  filter: none;
-  object-position: right center;
-}
-
-/* Movies: scattered strips, very faint */
-#movies .section-bg-img {
-  opacity: 0.04;
   filter: none;
 }
 
-/* Findings: red negatives warmth */
+/* Finance: NO background image (removed TVs) */
+
+/* Movies: NO background image (removed scattered strips) */
+
+/* Findings: red negatives — very subtle warmth */
 #findings .section-bg-img {
   opacity: 0.05;
   filter: none;
 }
 
-/* All section content above bg */
-#overview  > *:not(.section-bg-img),
-#finance   > *:not(.section-bg-img),
-#movies    > *:not(.section-bg-img),
-#findings  > *:not(.section-bg-img) {
+/* Ensure section content sits above bg */
+#findings > *:not(.section-bg-img) {
   position: relative;
   z-index: 1;
 }
 
 
-/* ── 6. "THE END" CLOSING CARD ────────────────────────────────── */
+/* ── 7. "THE END" — FIXED ─────────────────────────────────────── */
 
+/*
+  Problem: image was cropped showing only the top.
+  Fix: use object-position: center center so the text
+  is fully visible. Also increase height so more shows.
+*/
 .the-end-wrap {
   position: relative;
   width: 100%;
-  height: 300px;
-  margin-top: 48px;
+  height: 420px;          /* taller so full text is visible */
+  margin-top: 56px;
   border-radius: 20px;
   overflow: hidden;
 }
@@ -1077,8 +1077,8 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  opacity: 0.8;
+  object-position: center center;  /* was showing top only — fixed */
+  opacity: 0.82;
   display: block;
 }
 
@@ -1086,12 +1086,14 @@ a {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top,  rgba(0,0,0,0.55) 0%, transparent 45%),
-    linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 30%);
+    linear-gradient(to top,    rgba(0,0,0,0.5) 0%,  transparent 40%),
+    linear-gradient(to bottom, rgba(0,0,0,0.2) 0%,  transparent 25%),
+    linear-gradient(to right,  rgba(0,0,0,0.15) 0%, transparent 20%),
+    linear-gradient(to left,   rgba(0,0,0,0.15) 0%, transparent 20%);
 }
 
 
-/* ── 7. HERO TEXT FADE-IN ─────────────────────────────────────── */
+/* ── 8. HERO TEXT FADE-IN ─────────────────────────────────────── */
 
 .hero-left > * {
   opacity: 0;
@@ -1099,7 +1101,6 @@ a {
   animation: hero-in 0.65s ease forwards;
 }
 
-/* Delays account for 1.8s countdown + stagger */
 .hero-left .eyebrow      { animation-delay: 2.0s; }
 .hero-left h1            { animation-delay: 2.2s; }
 .hero-left .subtitle     { animation-delay: 2.4s; }
@@ -1116,7 +1117,7 @@ a {
 }
 
 
-/* ── 8. FINDING CARD POLISH ───────────────────────────────────── */
+/* ── 9. FINDING CARD POLISH ───────────────────────────────────── */
 
 .finding-card strong { color: var(--gold); font-weight: 700; }
 .finding-card p {
