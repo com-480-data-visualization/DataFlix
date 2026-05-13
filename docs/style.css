@@ -847,7 +847,7 @@ a {
 #era-sparkline { display: block; overflow: visible; }
 
 /* ═══════════════════════════════════════════════════════════════
-   CINEMATIC IMAGE ADDITIONS
+   DATAFLIX — CINEMATIC V2
    ═══════════════════════════════════════════════════════════════ */
 
 
@@ -869,99 +869,128 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.9;
   filter: grayscale(1) contrast(1.2);
-  animation: countdown-flicker 0.12s infinite;
+  animation: countdown-flicker 0.1s infinite;
 }
 
-/* Scanline overlay on loader */
-.countdown-flicker {
+.countdown-scanlines {
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
     to bottom,
     transparent,
     transparent 3px,
-    rgba(0,0,0,0.18) 3px,
-    rgba(0,0,0,0.18) 4px
+    rgba(0,0,0,0.15) 3px,
+    rgba(0,0,0,0.15) 4px
   );
   pointer-events: none;
 }
 
 @keyframes countdown-fade {
   0%   { opacity: 1; }
-  65%  { opacity: 1; }
-  100% { opacity: 0; pointer-events: none; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes countdown-flicker {
-  0%   { opacity: 1; }
-  45%  { opacity: 0.94; }
-  55%  { opacity: 1; }
-  75%  { opacity: 0.97; }
-  100% { opacity: 1; }
+  0%, 100% { opacity: 1; }
+  48%       { opacity: 0.92; }
+  52%       { opacity: 1; }
 }
 
 
-/* ── 2. HERO — BACKGROUND IMAGE ───────────────────────────────── */
+/* ── 2. HERO — FIXES ──────────────────────────────────────────── */
 
-/* Remove old mix-blend-mode hack, use real photo */
+/*
+  THE KEY FIX:
+  Remove grayscale from .hero entirely.
+  Instead, the hero background image (colorized audience) will be
+  naturally desaturated by using the B&W version of the image.
+  The color arc is handled by the section saturate() filters below.
+*/
+.hero {
+  filter: none; /* was grayscale(100%) — removed */
+}
+
+/* Fix the hero-overlay: was using mix-blend-mode:screen which washed out the image */
 .hero-overlay {
   background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.45) 0%,
-    rgba(0,0,0,0.55) 60%,
-    rgba(0,0,0,0.82) 100%
+    160deg,
+    rgba(0,0,0,0.72) 0%,
+    rgba(0,0,0,0.45) 45%,
+    rgba(0,0,0,0.65) 100%
   );
-  mix-blend-mode: normal; /* override old "screen" */
-  z-index: 1;
+  mix-blend-mode: normal;
+  opacity: 1;
 }
 
+/* Hero background photo — the colorized audience (audience-colorized.jpg) */
 .hero-bg-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
-  opacity: 0.52;
+  object-position: center 25%;
+  /* Apply grayscale ONLY to this image, not the whole hero */
+  filter: grayscale(1) brightness(0.7);
   z-index: 0;
-  /* Keep grayscale since .hero has filter:grayscale(100%) */
+  pointer-events: none;
 }
 
-/* Remove old hero grayscale filter — the image carries the aesthetic now */
-/* The CSS already has filter: grayscale(100%) on .hero — keep it,
-   it will desaturate the colorized audience correctly for the B&W opening */
-
-
-/* ── 3. HERO — VERTICAL FILM STRIP (right decoration) ────────── */
-
+/* Decorative vertical film strip on the right */
 .hero-filmstrip {
   position: absolute;
-  right: -24px;
-  top: -40px;
-  height: 115%;
+  right: 0;
+  top: 0;
+  height: 100%;
   width: auto;
-  max-width: 220px;
+  max-width: 180px;
   object-fit: cover;
-  object-position: center;
-  opacity: 0.22;
+  opacity: 0.18;
+  filter: grayscale(1) contrast(1.1);
   z-index: 1;
-  transform: rotate(2deg);
   pointer-events: none;
-  /* Inherit grayscale from parent .hero */
 }
 
 @media (max-width: 1100px) {
   .hero-filmstrip { display: none; }
 }
 
+/* Make sure hero content stays above bg images */
+.navbar, .hero-inner, .hero-scroll-hint, .hero-overlay {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* ── 3. B&W → COLOR ARC (the real one) ───────────────────────── */
+
+/*
+  The arc works like this:
+  - Hero: grayscale on the bg image only. Page feels B&W.
+  - Production: desaturated (stage-muted already does this)
+  - Genres: slightly more saturated (stage-accent)
+  - Ratings: nearly full color (stage-richer)
+  - Finance: full color (stage-richest)
+  - Movies + Findings: full natural color, no filter
+
+  The stage filters apply to the WHOLE section including charts,
+  which is what makes it feel like color is "returning".
+  We just need to make the transitions more dramatic.
+*/
+
+.stage-muted   { filter: saturate(0.15) brightness(0.95); }
+.stage-accent  { filter: saturate(0.45) brightness(0.97); }
+.stage-richer  { filter: saturate(0.78); }
+.stage-richest { filter: saturate(1.0); }
+
 
 /* ── 4. KODAK STRIP DIVIDER ───────────────────────────────────── */
 
 .strip-divider {
   width: 100%;
-  height: 64px;
+  height: 56px;
   overflow: hidden;
   line-height: 0;
   position: relative;
@@ -972,20 +1001,16 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 40%;
-  opacity: 0.45;
-  filter: grayscale(1) contrast(1.1);
+  object-position: center;
+  opacity: 0.4;
+  filter: grayscale(1) contrast(1.2);
   display: block;
 }
 
 
-/* ── 5. SECTION BACKGROUND IMAGES (generic) ──────────────────── */
+/* ── 5. SECTION BACKGROUND IMAGES ────────────────────────────── */
 
-/* All sections that use a bg image need position: relative */
-#overview,
-#finance,
-#movies,
-#findings {
+#overview, #finance, #movies, #findings {
   position: relative;
   overflow: hidden;
 }
@@ -998,23 +1023,36 @@ a {
   object-fit: cover;
   pointer-events: none;
   z-index: 0;
-
-  /* Default: faint full-section texture */
   opacity: 0.05;
   filter: grayscale(1);
 }
 
-/* Finance section: TVs anchored to right/bottom, slightly more visible */
-.section-bg-img--right {
-  object-position: right bottom;
-  opacity: 0.07;
-  filter: grayscale(0.4);
-  width: 50%;
+/* Finance TVs: right-anchored, barely visible, no grayscale filter */
+#finance .section-bg-img {
   left: auto;
   right: 0;
+  width: 35%;
+  height: 85%;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.06;
+  filter: none;
+  object-position: right center;
 }
 
-/* Ensure section content sits above bg images */
+/* Movies: scattered strips, very faint */
+#movies .section-bg-img {
+  opacity: 0.04;
+  filter: none;
+}
+
+/* Findings: red negatives warmth */
+#findings .section-bg-img {
+  opacity: 0.05;
+  filter: none;
+}
+
+/* All section content above bg */
 #overview  > *:not(.section-bg-img),
 #finance   > *:not(.section-bg-img),
 #movies    > *:not(.section-bg-img),
@@ -1023,34 +1061,15 @@ a {
   z-index: 1;
 }
 
-/* Overview: B&W audience — very subtle, even more faint */
-#overview .section-bg-img {
-  opacity: 0.05;
-  object-position: center 20%;
-}
-
-/* Movies: scattered strips — tile horizontally */
-#movies .section-bg-img {
-  opacity: 0.04;
-  object-fit: cover;
-  filter: grayscale(0);
-}
-
-/* Findings: red negatives — warm tone at very low opacity */
-#findings .section-bg-img {
-  opacity: 0.06;
-  filter: grayscale(0); /* keep the red warmth */
-}
-
 
 /* ── 6. "THE END" CLOSING CARD ────────────────────────────────── */
 
 .the-end-wrap {
   position: relative;
   width: 100%;
-  height: 340px;
-  margin-top: 56px;
-  border-radius: 24px;
+  height: 300px;
+  margin-top: 48px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
@@ -1059,8 +1078,7 @@ a {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.75;
-  filter: grayscale(0.15);
+  opacity: 0.8;
   display: block;
 }
 
@@ -1068,29 +1086,32 @@ a {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%),
-    linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%);
+    linear-gradient(to top,  rgba(0,0,0,0.55) 0%, transparent 45%),
+    linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 30%);
 }
 
 
-/* ── 7. HERO TEXT FADE-IN ANIMATION ──────────────────────────── */
+/* ── 7. HERO TEXT FADE-IN ─────────────────────────────────────── */
 
 .hero-left > * {
   opacity: 0;
-  transform: translateY(16px);
-  animation: hero-word-in 0.7s ease forwards;
+  transform: translateY(14px);
+  animation: hero-in 0.65s ease forwards;
 }
 
-.hero-left .eyebrow    { animation-delay: 1.9s; }
-.hero-left h1          { animation-delay: 2.1s; }
-.hero-left .subtitle   { animation-delay: 2.35s; }
+/* Delays account for 1.8s countdown + stagger */
+.hero-left .eyebrow      { animation-delay: 2.0s; }
+.hero-left h1            { animation-delay: 2.2s; }
+.hero-left .subtitle     { animation-delay: 2.4s; }
 .hero-left .hero-actions { animation-delay: 2.6s; }
-.hero-scroll-hint      {
+
+.hero-scroll-hint {
   opacity: 0;
-  animation: hero-word-in 0.7s ease 2.8s forwards, floaty 1.8s 3.5s infinite;
+  animation: hero-in 0.65s ease 2.8s forwards,
+             floaty 1.8s ease-in-out 3.5s infinite;
 }
 
-@keyframes hero-word-in {
+@keyframes hero-in {
   to { opacity: 1; transform: translateY(0); }
 }
 

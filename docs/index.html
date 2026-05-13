@@ -8,32 +8,21 @@
 </head>
 <body>
 
-  <!-- ── COUNTDOWN LOADER ─────────────────────────────────────── -->
+  <!-- ① COUNTDOWN LOADER (removed from DOM after 1.9s by JS) -->
   <div class="countdown-loader" id="countdown-loader">
     <img src="assets/countdown.jpg" alt="" class="countdown-img" />
-    <div class="countdown-flicker"></div>
+    <div class="countdown-scanlines"></div>
   </div>
 
-  <!-- ── SCROLL PROGRESS BAR ──────────────────────────────────── -->
   <div class="timeline-progress"></div>
 
-  <!-- ── HERO ─────────────────────────────────────────────────── -->
+  <!-- ② HERO — colorized audience bg + sepia filmstrip decoration -->
   <header class="hero section-dark">
-
-    <!-- Darkening overlay (gradient only, no image) -->
-    <div class="hero-overlay"></div>
-
-    <!-- Background: colorized audience photo -->
     <img src="assets/audience-colorized.jpg"
-         alt=""
-         class="hero-bg-img"
-         aria-hidden="true" />
-
-    <!-- Decorative vertical film strip (right side) -->
+         alt="" aria-hidden="true" class="hero-bg-img" />
     <img src="assets/filmstrip-vertical.jpg"
-         alt=""
-         class="hero-filmstrip"
-         aria-hidden="true" />
+         alt="" aria-hidden="true" class="hero-filmstrip" />
+    <div class="hero-overlay"></div>
 
     <nav class="navbar">
       <div class="logo">DataFlix</div>
@@ -60,24 +49,18 @@
         </div>
       </div>
     </div>
-
     <div class="hero-scroll-hint">Scroll to enter the timeline</div>
   </header>
 
-  <!-- ── KODAK STRIP DIVIDER ───────────────────────────────────── -->
+  <!-- ③ KODAK STRIP DIVIDER between hero and main content -->
   <div class="strip-divider">
     <img src="assets/kodak-strip.jpg" alt="" aria-hidden="true" />
   </div>
 
   <main>
 
-    <!-- ── OVERVIEW ──────────────────────────────────────────────── -->
+    <!-- OVERVIEW — NO background image (was cluttered) -->
     <section id="overview" class="section intro-section section-dark reveal">
-      <!-- Faint audience texture -->
-      <img src="assets/audience-bw.jpg"
-           alt="" aria-hidden="true"
-           class="section-bg-img" />
-
       <div class="section-copy narrow">
         <p class="section-label">Introduction</p>
         <h2>A story guided by time</h2>
@@ -106,7 +89,7 @@
       </div>
     </section>
 
-    <!-- ── PRODUCTION ─────────────────────────────────────────────── -->
+    <!-- PRODUCTION — most desaturated, feels like early B&W era -->
     <section id="production" class="section split-section reveal stage-muted">
       <div class="section-copy">
         <p class="section-label">1. Movie Production Over Time</p>
@@ -122,7 +105,6 @@
           <button class="chip active" data-genre="all">All genres</button>
         </div>
       </div>
-
       <div class="viz-panel">
         <div class="viz-header">
           <h3>Movies released per year</h3>
@@ -132,7 +114,7 @@
       </div>
     </section>
 
-    <!-- ── GENRES ─────────────────────────────────────────────────── -->
+    <!-- GENRES — slightly more color returning -->
     <section id="genres" class="section split-section reveal stage-accent">
       <div class="viz-panel">
         <div class="viz-header">
@@ -141,7 +123,6 @@
         </div>
         <div class="chart-placeholder genre-chart"></div>
       </div>
-
       <div class="section-copy">
         <p class="section-label">2. Genre Evolution</p>
         <h2>Which genres dominated different periods?</h2>
@@ -155,7 +136,7 @@
       </div>
     </section>
 
-    <!-- ── RATINGS ────────────────────────────────────────────────── -->
+    <!-- RATINGS — nearly full color -->
     <section id="ratings" class="section split-section reveal stage-richer">
       <div class="section-copy">
         <p class="section-label">3. Quality Distribution Over Time</p>
@@ -166,7 +147,6 @@
           remained stable, improved, or declined as the industry scaled.
         </p>
       </div>
-
       <div class="viz-panel">
         <div class="viz-header">
           <h3>Quality metrics by year</h3>
@@ -176,13 +156,10 @@
       </div>
     </section>
 
-    <!-- ── FINANCE ────────────────────────────────────────────────── -->
+    <!-- FINANCE — full color, very faint TVs on right -->
     <section id="finance" class="section split-section reveal stage-richest">
-      <!-- Vintage TVs texture (home video / distribution era) -->
       <img src="assets/vintage-tvs.jpg"
-           alt="" aria-hidden="true"
-           class="section-bg-img section-bg-img--right" />
-
+           alt="" aria-hidden="true" class="section-bg-img" />
       <div class="viz-panel">
         <div class="viz-header">
           <h3>Budget vs revenue dynamics</h3>
@@ -190,7 +167,6 @@
         </div>
         <div class="chart-placeholder finance-chart"></div>
       </div>
-
       <div class="section-copy">
         <p class="section-label">4. The Economics of Cinema</p>
         <h2>How do budgets relate to revenue?</h2>
@@ -210,13 +186,10 @@
       </div>
     </section>
 
-    <!-- ── MOVIES ─────────────────────────────────────────────────── -->
+    <!-- MOVIES — full natural color, scattered strips texture -->
     <section id="movies" class="section reveal movies-section">
-      <!-- Scattered film strips texture -->
       <img src="assets/filmstrips-scattered.jpg"
-           alt="" aria-hidden="true"
-           class="section-bg-img" />
-
+           alt="" aria-hidden="true" class="section-bg-img" />
       <div class="section-copy centered">
         <p class="section-label">5. Representative Films</p>
         <h2>What films represent each era?</h2>
@@ -230,12 +203,10 @@
       <div class="movie-strip" id="movie-strip"></div>
     </section>
 
-    <!-- ── FINDINGS ───────────────────────────────────────────────── -->
+    <!-- FINDINGS — red negatives warmth, "The End" closing card -->
     <section id="findings" class="section final-section reveal">
-      <!-- Red negatives texture (warmth) -->
       <img src="assets/film-negatives.jpg"
-           alt="" aria-hidden="true"
-           class="section-bg-img" />
+           alt="" aria-hidden="true" class="section-bg-img" />
 
       <div class="section-copy centered narrow">
         <p class="section-label">6. Key Insights</p>
@@ -283,7 +254,49 @@
         </div>
       </div>
 
-      <!-- Era personalizer goes here (injected by JS) -->
+      <!-- Era personalizer (your existing HTML — paste it here) -->
+      <div class="era-personalizer reveal">
+        <div class="era-header">
+          <p class="section-label">Your Cinema Era</p>
+          <h3>What did cinema look like when you were born?</h3>
+          <p class="era-sub">Move the slider to explore any year in the dataset.</p>
+        </div>
+        <div class="era-slider-wrap">
+          <span class="era-slider-label">1988</span>
+          <input type="range" id="birth-year-slider" class="era-slider"
+                 min="1988" max="2024" value="1994" step="1" />
+          <span class="era-slider-label">2024</span>
+        </div>
+        <div class="era-year-display">
+          <span id="era-selected-year">1994</span>
+        </div>
+        <div class="era-stats" id="era-stats">
+          <div class="era-stat-card" id="estat-films">
+            <div class="era-stat-icon">🎬</div>
+            <div class="era-stat-value"><span class="era-count" data-target="0">0</span></div>
+            <div class="era-stat-label">films released</div>
+          </div>
+          <div class="era-stat-card" id="estat-genre">
+            <div class="era-stat-icon">🎭</div>
+            <div class="era-stat-value era-stat-text" id="era-genre-val">—</div>
+            <div class="era-stat-label">dominant genre of your decade</div>
+          </div>
+          <div class="era-stat-card" id="estat-rating">
+            <div class="era-stat-icon">⭐</div>
+            <div class="era-stat-value"><span class="era-count era-decimal" data-target="0">0</span><span class="era-stat-unit">/10</span></div>
+            <div class="era-stat-label">average film rating</div>
+          </div>
+          <div class="era-stat-card" id="estat-blockbuster">
+            <div class="era-stat-icon">🏆</div>
+            <div class="era-stat-value era-stat-text" id="era-blockbuster-val">—</div>
+            <div class="era-stat-label">decade's biggest blockbuster</div>
+          </div>
+        </div>
+        <div class="era-chart-wrap">
+          <p class="era-chart-label">Film production 1988–2024 — your year highlighted</p>
+          <svg id="era-sparkline" width="100%" height="90" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
 
       <div class="closing-timeline">
         <span>1988</span>
@@ -291,15 +304,13 @@
         <span>2025</span>
       </div>
 
-      <!-- THE END -->
+      <!-- ④ THE END closing card -->
       <div class="the-end-wrap reveal">
-        <img src="assets/the-end.jpg"
-             alt="The End"
-             class="the-end-img" />
+        <img src="assets/the-end.jpg" alt="The End" class="the-end-img" />
         <div class="the-end-overlay"></div>
       </div>
-    </section>
 
+    </section>
   </main>
 
   <script src="script.js"></script>
