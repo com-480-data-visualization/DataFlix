@@ -899,58 +899,26 @@ a {
 }
 
 
-/* ── 2. BODY BACKGROUND — real color arc ─────────────────────── */
-/* Each section blends FROM its own color TO the next section's
-   color at the bottom — creating one seamless continuous scroll. */
-
-.hero {
-  background: linear-gradient(to bottom, #050505 0%, #080608 100%);
+/* Revert to original body gradient */
+body {
+  background: linear-gradient(to bottom, #050505 0%, #0d0d10 18%, #15171d 40%, #20232c 70%, #2b3140 100%);
 }
 
-#overview {
-  background: linear-gradient(to bottom, #080608 0%, #0a0808 100%);
-}
+.hero       { background: transparent; }
+#overview   { background: transparent; }
+#production { background: transparent; }
+#genres     { background: transparent; }
+#ratings    { background: transparent; }
+#finance    { background: transparent; }
+#movies     { background: transparent; }
+#findings   { background: transparent; }
 
-/* Production → fades into genres' maroon */
-#production {
-  background: linear-gradient(to bottom, #0a0808 0%, #241b15 100%);
-}
+.strip-divider { background: transparent; }
+.section-dark  { background: rgba(0,0,0,0.18); }
 
-/* Genres → fades into ratings' deep red */
-#genres {
-  background: linear-gradient(to bottom, #241b15 0%, #320511 100%);
-}
-
-/* Ratings → fades into finance's blue-purple (the big tonal shift) */
-#ratings {
-  background: linear-gradient(to bottom, #320511 0%, #05055a 100%);
-}
-
-/* Finance → fades into movies' bright navy */
-#finance {
-  background: linear-gradient(to bottom, #05055a 0%, #2468b1 100%);
-}
-
-/* Movies → fades into findings' deep indigo */
-#movies {
-  background: linear-gradient(to bottom, #2468b1 0%, #0e1127 100%);
-}
-
-/* Findings → closes into deep dark */
-#findings {
-  background: linear-gradient(to bottom, #0e1127 0%, #080a16 100%);
-}
-
-/* Strip divider matches hero bottom */
-.strip-divider { background: #080608; }
-
-/* section-dark must not override with solid color */
-.section-dark { background: transparent; }
-
-/* Stage filters — unchanged */
-.stage-muted   { filter: saturate(0.12); }
-.stage-accent  { filter: saturate(0.42); }
-.stage-richer  { filter: saturate(0.80); }
+.stage-muted   { filter: saturate(0.45); }
+.stage-accent  { filter: saturate(0.72); }
+.stage-richer  { filter: saturate(0.95); }
 .stage-richest { filter: saturate(1.1);  }
 
 
