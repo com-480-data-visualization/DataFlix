@@ -302,30 +302,6 @@ a {
   border-color: rgba(215,180,106,0.4);
 }
 
-.finance-range {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 10px;
-  row-gap: 8px;
-  align-items: center;
-}
-
-.finance-range label {
-  color: rgba(255,255,255,0.75);
-  font-size: 0.8rem;
-}
-
-.finance-range input[type="range"] {
-  width: 100%;
-}
-
-.finance-range-label {
-  grid-column: 1 / -1;
-  color: var(--gold);
-  font-size: 0.85rem;
-}
-
 .finance-top-roi {
   margin-top: 14px;
   border-top: 1px solid rgba(255,255,255,0.12);

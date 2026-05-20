@@ -9,7 +9,6 @@ const GENRE_COLORS = {
 };
 
 let data = {};
-let financeYearRange = { start: 1990, end: 2019 };
 
 // ── Shared filter state (for cross-chart filtering) ────────────────────────
 let activeGenreFilter = null;
@@ -67,7 +66,6 @@ Promise.all([
   showMovies();
   setupMovieDecadeButtons();
   setupDecadeButtons();
-  setupFinanceRangeControls();
   initEraPersonalizer();
 }).catch(err => console.error('Data load error:', err));
 
@@ -624,7 +622,7 @@ function drawFinance(decade = 'all', genreFilter = null) {
   if (!container) return;
   container.innerHTML = '';
 
-  let filtered = data.finance.filter(d => d.year >= financeYearRange.start && d.year <= financeYearRange.end);
+  let filtered = data.finance;
   if (decade !== 'all') {
     const decNum = parseInt(decade, 10);
     filtered = filtered.filter(m => m.decade >= decNum && m.decade < decNum + 10);
@@ -933,32 +931,6 @@ function setupDecadeButtons() {
       drawFinance(btn.getAttribute('data-decade'), activeGenreFilter);
     };
   });
-}
-
-function setupFinanceRangeControls() {
-  const start = document.getElementById('finance-year-start');
-  const end = document.getElementById('finance-year-end');
-  const label = document.getElementById('finance-range-label');
-  if (!start || !end || !label) return;
-
-  const sync = () => {
-    let s = parseInt(start.value, 10);
-    let e = parseInt(end.value, 10);
-    if (s > e) {
-      if (document.activeElement === start) e = s;
-      else s = e;
-      start.value = s;
-      end.value = e;
-    }
-    financeYearRange = { start: s, end: e };
-    label.textContent = `${s} - ${e}`;
-    const activeDecade = document.querySelector('#finance-decades .chip.active')?.getAttribute('data-decade') || 'all';
-    drawFinance(activeDecade, activeGenreFilter);
-  };
-
-  start.addEventListener('input', sync);
-  end.addEventListener('input', sync);
-  sync();
 }
 
 document.querySelectorAll('.reveal').forEach(el => {
