@@ -263,11 +263,7 @@ a {
   height: 360px;
   border-radius: 18px;
   overflow: hidden;
-  background:
-    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(to top, rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(180deg, #13141a, #1d2028);
-  background-size: 44px 44px, 44px 44px, cover;
+  background: linear-gradient(180deg, #13141a, #1d2028);
 }
 
 
@@ -304,6 +300,41 @@ a {
 .toggle.active {
   background: rgba(215,180,106,0.18);
   border-color: rgba(215,180,106,0.4);
+}
+
+/* ── Production genre filter — right-aligned, sexy pills ── */
+#production-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+#production-genres .chip {
+  padding: 4px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.5);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+#production-genres .chip:hover {
+  border-color: rgba(255,255,255,0.35);
+  color: #fff;
+  background: rgba(255,255,255,0.09);
+}
+
+#production-genres .chip.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(102,139,255,0.35);
 }
 
 .control-row {

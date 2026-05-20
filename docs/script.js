@@ -10,20 +10,25 @@ const GENRE_COLORS = {
 
 let data = {};
 
-initCountdownLoader()
+// ── Shared filter state (for cross-chart filtering) ────────────────────────
+let activeGenreFilter = null;
+
+initCountdownLoader();
+
 Promise.all([
   fetch('data/production.json').then(r => r.json()),
   fetch('data/genres.json').then(r => r.json()),
   fetch('data/ratings.json').then(r => r.json()),
   fetch('data/finance.json').then(r => r.json()),
-  fetch('data/movies.json').then(r => r.json())
-]).then(([prod, genres, ratings, finance, movies]) => {
-  data = { production: prod, genres, ratings, finance, movies };
-  
+  fetch('data/movies.json').then(r => r.json()),
+  fetch('data/genres_by_year.json').then(r => r.json())
+]).then(([prod, genres, ratings, finance, movies, genresByYear]) => {
+  data = { production: prod, genres, ratings, finance, movies, genresByYear };
+
   const genreSet = new Set();
   genres.forEach(d => d.genres.forEach(g => genreSet.add(g.name)));
   const allGenres = Array.from(genreSet).sort();
-  
+
   // Genre buttons
   const genresContainer = document.getElementById('production-genres');
   const allBtn = document.createElement('button');
@@ -35,7 +40,7 @@ Promise.all([
     drawProduction('all');
   };
   genresContainer.appendChild(allBtn);
-  
+
   allGenres.forEach(genre => {
     const btn = document.createElement('button');
     btn.className = 'chip';
@@ -47,7 +52,7 @@ Promise.all([
     };
     genresContainer.appendChild(btn);
   });
-  
+
   drawProduction('all');
   drawGenres();
   drawRatings();
@@ -58,155 +63,469 @@ Promise.all([
   initEraPersonalizer();
 }).catch(err => console.error('Data load error:', err));
 
-function drawProduction(genre = 'all') {
-  const canvas = setupCanvas('.production-chart', 'Movies released per year (1988-2025)');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  const { width, height, padding, plotWidth, plotHeight } = getCanvasDims(canvas);
-  
-  let chartData = data.production;
-  if (genre !== 'all') {
-    chartData = [];
-    const decadeData = {};
-    data.genres.forEach(d => {
-      const g = d.genres.find(x => x.name === genre);
-      if (g) decadeData[d.decade] = g.count;
-    });
-    const decades = Object.keys(decadeData).map(Number).sort((a,b) => a-b);
-    for (let year = 1988; year <= 2025; year++) {
-      let count = 0;
-      for (let i = 0; i < decades.length; i++) {
-        const curr = decades[i], next = decades[i+1];
-        if (year >= curr && year < (next || 2030)) {
-          if (next && decadeData[next]) {
-            const prog = (year - curr) / 10;
-            count = decadeData[curr] * (1-prog) + decadeData[next] * prog;
-          } else {
-            count = decadeData[curr];
-          }
-          break;
-        }
-      }
-      chartData.push({ year, count });
-    }
+// ── Cross-chart filter dispatcher ──────────────────────────────────────────
+function applyGenreFilter(genre) {
+  // Filter production chart
+  drawProduction(genre || 'all');
+
+  // Redraw finance with genre filter
+  if (data.finance) {
+    const activeDecade = document.querySelector('#finance-decades .chip.active')
+      ?.getAttribute('data-decade') || 'all';
+    drawFinance(activeDecade, genre);
   }
-  
-  const max = Math.max(...chartData.map(d => d.count), 1);
-  drawGrid(ctx, padding, width, height, plotWidth, plotHeight);
-  drawYLabels(ctx, padding, plotHeight, max);
-  
-  const barWidth = plotWidth / chartData.length;
-  ctx.fillStyle = '#668bff';
-  chartData.forEach((p, i) => {
-    const h = (p.count / max) * plotHeight;
-    const x = padding.left + i * barWidth + barWidth * 0.1;
-    const y = height - padding.bottom - h;
-    ctx.fillRect(x, y, barWidth * 0.8, h);
+
+  // Sync production genre chips
+  document.querySelectorAll('#production-genres .chip').forEach(btn => {
+    if (!genre) {
+      btn.classList.toggle('active', btn.getAttribute('data-genre') === 'all');
+    } else {
+      btn.classList.toggle('active', btn.textContent === genre);
+    }
   });
-  
-  drawAxes(ctx, padding, width, height);
+}
+
+function drawProduction(genre = 'all') {
+  const container = document.querySelector('.production-chart');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // ── Build chart data ───────────────────────────────────────────────────────
+  let chartData;
+  if (genre === 'all') {
+    chartData = data.production.map(d => ({ year: d.year, count: d.count }));
+  } else {
+    chartData = data.genresByYear.map(d => ({ year: d.year, count: d[genre] || 0 }));
+  }
+
+  const margin = { top: 30, right: 30, bottom: 40, left: 60 };
+  const totalW = container.offsetWidth || 700;
+  const totalH = 360;
+  const W = totalW - margin.left - margin.right;
+  const H = totalH - margin.top - margin.bottom;
+
+  const svg = d3.select(container)
+    .append('svg')
+    .attr('width', totalW)
+    .attr('height', totalH)
+    .style('display', 'block');
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // ── Scales ─────────────────────────────────────────────────────────────────
+  const xScale = d3.scaleLinear()
+    .domain(d3.extent(chartData, d => d.year))
+    .range([0, W]);
+
+  const yScale = d3.scaleLinear()
+    .domain([0, d3.max(chartData, d => d.count) * 1.08])
+    .range([H, 0]);
+
+  // ── Grid ───────────────────────────────────────────────────────────────────
+  g.append('g')
+    .call(d3.axisLeft(yScale).ticks(5).tickSize(-W).tickFormat(''))
+    .call(ax => ax.select('.domain').remove())
+    .call(ax => ax.selectAll('line')
+      .attr('stroke', 'rgba(255,255,255,0.08)')
+      .attr('stroke-dasharray', '3,3'));
+
+  // ── Gradient def ───────────────────────────────────────────────────────────
+  const color = genre !== 'all' ? (GENRE_COLORS[genre] || '#668bff') : '#668bff';
+  const gradId = 'prod-grad-' + genre.replace(/\s/g, '');
+  const defs = svg.append('defs');
+  const grad = defs.append('linearGradient')
+    .attr('id', gradId)
+    .attr('x1', '0').attr('y1', '0')
+    .attr('x2', '0').attr('y2', '1');
+  grad.append('stop').attr('offset', '0%').attr('stop-color', color).attr('stop-opacity', 0.35);
+  grad.append('stop').attr('offset', '100%').attr('stop-color', color).attr('stop-opacity', 0.02);
+
+  // ── Area fill ──────────────────────────────────────────────────────────────
+  const areaGen = d3.area()
+    .x(d => xScale(d.year))
+    .y0(H)
+    .y1(d => yScale(d.count))
+    .curve(d3.curveCatmullRom.alpha(0.5));
+
+  g.append('path')
+    .datum(chartData)
+    .attr('fill', `url(#${gradId})`)
+    .attr('d', areaGen);
+
+  // ── Line ───────────────────────────────────────────────────────────────────
+  const lineGen = d3.line()
+    .x(d => xScale(d.year))
+    .y(d => yScale(d.count))
+    .curve(d3.curveCatmullRom.alpha(0.5));
+
+  g.append('path')
+    .datum(chartData)
+    .attr('fill', 'none')
+    .attr('stroke', color)
+    .attr('stroke-width', 2.5)
+    .attr('stroke-linecap', 'round')
+    .attr('d', lineGen);
+
+  // ── Axes ───────────────────────────────────────────────────────────────────
+  g.append('g')
+    .attr('transform', `translate(0,${H})`)
+    .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format('d')))
+    .call(ax => ax.select('.domain').attr('stroke', 'rgba(255,255,255,0.3)'))
+    .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.6)').attr('font-size', '11px'))
+    .call(ax => ax.selectAll('line').attr('stroke', 'rgba(255,255,255,0.2)'));
+
+  g.append('g')
+    .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => d >= 1000 ? (d / 1000).toFixed(0) + 'k' : d))
+    .call(ax => ax.select('.domain').attr('stroke', 'rgba(255,255,255,0.3)'))
+    .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.6)').attr('font-size', '11px'))
+    .call(ax => ax.selectAll('line').attr('stroke', 'rgba(255,255,255,0.2)'));
+
+  // ── Hover ──────────────────────────────────────────────────────────────────
+  const tooltip = d3.select('body').append('div')
+    .style('position', 'fixed')
+    .style('background', 'rgba(14,18,28,0.96)')
+    .style('color', '#d9dce4')
+    .style('padding', '8px 13px')
+    .style('border-radius', '7px')
+    .style('font-size', '13px')
+    .style('pointer-events', 'none')
+    .style('display', 'none')
+    .style('border', '1px solid rgba(255,255,255,0.15)')
+    .style('box-shadow', '0 4px 16px rgba(0,0,0,0.5)')
+    .style('z-index', '9999')
+    .style('line-height', '1.6');
+
+  const bisect = d3.bisector(d => d.year).left;
+
+  const dot = g.append('circle')
+    .attr('r', 5)
+    .attr('fill', '#fff')
+    .attr('stroke', color)
+    .attr('stroke-width', 2)
+    .style('display', 'none')
+    .style('pointer-events', 'none');
+
+  const vLine = g.append('line')
+    .attr('stroke', 'rgba(255,255,255,0.25)')
+    .attr('stroke-width', 1)
+    .attr('stroke-dasharray', '4,3')
+    .attr('y1', 0).attr('y2', H)
+    .style('display', 'none')
+    .style('pointer-events', 'none');
+
+  g.append('rect')
+    .attr('width', W).attr('height', H)
+    .attr('fill', 'transparent')
+    .on('mousemove', function(event) {
+      const [mx] = d3.pointer(event, this);
+      const year = Math.round(xScale.invert(mx));
+      const idx  = Math.min(bisect(chartData, year, 0), chartData.length - 1);
+      const d    = chartData[idx];
+      if (!d) return;
+
+      dot.style('display', null).attr('cx', xScale(d.year)).attr('cy', yScale(d.count));
+      vLine.style('display', null).attr('x1', xScale(d.year)).attr('x2', xScale(d.year));
+
+      tooltip
+        .style('display', 'block')
+        .style('left', (event.clientX + 14) + 'px')
+        .style('top',  (event.clientY - 10) + 'px')
+        .html(`
+          <span style="color:rgba(255,255,255,0.5)">${d.year}</span><br/>
+          <strong>${d.count.toLocaleString()}</strong> movies
+          ${genre !== 'all' ? `<span style="color:${color}"> (${genre})</span>` : ''}
+        `);
+    })
+    .on('mouseleave', function() {
+      dot.style('display', 'none');
+      vLine.style('display', 'none');
+      tooltip.style('display', 'none');
+    });
 }
 
 function drawGenres() {
-  const canvas = setupCanvas('.genre-chart', 'Genre composition over time (1988-2025)');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  const { width, height, padding, plotWidth, plotHeight } = getCanvasDims(canvas);
-  
-  const genreSet = new Set();
-  const maxCounts = {};
-  data.genres.forEach(d => {
-    d.genres.forEach(g => {
-      genreSet.add(g.name);
-      maxCounts[g.name] = Math.max(maxCounts[g.name] || 0, g.count);
-    });
-  });
-  
-  const topGenres = Array.from(genreSet)
-    .sort((a,b) => (maxCounts[b]||0) - (maxCounts[a]||0))
-    .slice(0, 10);
-  
-  const barWidth = plotWidth / data.genres.length;
-  const max = Math.max(...data.genres.map(d => d.genres.reduce((s,g) => s+g.count, 0)), 1);
-  
-  const barPositions = [];
-  
-  drawGrid(ctx, padding, width, height, plotWidth, plotHeight);
-  drawYLabels(ctx, padding, plotHeight, max);
-  
-  data.genres.forEach((decade, idx) => {
-    let stacked = 0;
-    [...decade.genres].sort((a,b) => b.count - a.count).forEach(g => {
-      if (topGenres.includes(g.name)) {
-        const h = (g.count / max) * plotHeight;
-        const x = padding.left + idx * barWidth;
-        const y = height - padding.bottom - stacked - h;
-        
-        ctx.fillStyle = GENRE_COLORS[g.name] || '#999';
-        ctx.globalAlpha = 0.85;
-        ctx.fillRect(x, y, barWidth - 1, h);
-        
-        barPositions.push({ x, y, width: barWidth-1, height: h, genre: g.name, count: g.count, decade: decade.decade });
-        stacked += h;
+  const container = document.querySelector('.genre-chart');
+  if (!container || !data.genresByYear) return;
+  container.innerHTML = '';
+
+  const genres = Object.keys(data.genresByYear[0])
+      .filter(k => k !== 'year')
+      .sort((a, b) =>
+          d3.sum(data.genresByYear, d => d[b]) - d3.sum(data.genresByYear, d => d[a])
+      );
+
+  const margin = { top: 30, right: 30, bottom: 40, left: 55 };
+  const totalW = container.offsetWidth || 700;
+  const totalH = 380;
+  const W = totalW - margin.left - margin.right;
+  const H = totalH - margin.top - margin.bottom;
+
+  // ── SVG ───────────────────────────────────────────────────────────────────
+  const svg = d3.select(container)
+    .append('svg')
+    .attr('width', totalW)
+    .attr('height', totalH)
+    .style('display', 'block');
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // ── Scales ────────────────────────────────────────────────────────────────
+  const xScale = d3.scaleLinear()
+    .domain(d3.extent(data.genresByYear, d => d.year))
+    .range([0, W]);
+
+  const stack = d3.stack()
+    .keys(genres)
+    .order(d3.stackOrderNone)
+    .offset(d3.stackOffsetNone);
+
+  const series = stack(data.genresByYear);
+
+  const yMax = d3.max(series, s => d3.max(s, d => d[1]));
+  const yScale = d3.scaleLinear()
+    .domain([0, yMax])
+    .range([H, 0]);
+
+  // ── Smooth area generator ─────────────────────────────────────────────────
+  const area = d3.area()
+    .x(d => xScale(d.data.year))
+    .y0(d => yScale(d[0]))
+    .y1(d => yScale(d[1]))
+    .curve(d3.curveCatmullRom.alpha(0.5));
+
+  // ── Grid lines ────────────────────────────────────────────────────────────
+  g.append('g')
+    .attr('class', 'grid')
+    .call(
+      d3.axisLeft(yScale)
+        .ticks(5)
+        .tickSize(-W)
+        .tickFormat('')
+    )
+    .call(ax => ax.select('.domain').remove())
+    .call(ax => ax.selectAll('line')
+      .attr('stroke', 'rgba(255,255,255,0.08)')
+      .attr('stroke-dasharray', '3,3'));
+
+  // ── Areas ─────────────────────────────────────────────────────────────────
+  const paths = g.selectAll('.area-path')
+    .data(series)
+    .join('path')
+    .attr('class', 'area-path')
+    .attr('d', area)
+    .attr('fill', d => GENRE_COLORS[d.key] || '#999')
+    .attr('fill-opacity', 0.85)
+    .attr('stroke', d => GENRE_COLORS[d.key] || '#999')
+    .attr('stroke-width', 0.5)
+    .style('cursor', 'pointer')
+    .style('transition', 'fill-opacity 0.25s');
+
+  // ── Tooltip ───────────────────────────────────────────────────────────────
+  const tooltip = d3.select('body').append('div')
+    .style('position', 'fixed')
+    .style('background', 'rgba(14,18,28,0.96)')
+    .style('color', '#d9dce4')
+    .style('padding', '9px 14px')
+    .style('border-radius', '7px')
+    .style('font-size', '13px')
+    .style('pointer-events', 'none')
+    .style('display', 'none')
+    .style('border', '1px solid rgba(255,255,255,0.15)')
+    .style('box-shadow', '0 4px 16px rgba(0,0,0,0.5)')
+    .style('z-index', '9999')
+    .style('line-height', '1.6');
+
+  // ── Vertical hover line ───────────────────────────────────────────────────
+  const hoverLine = g.append('line')
+    .attr('stroke', 'rgba(255,255,255,0.35)')
+    .attr('stroke-width', 1.5)
+    .attr('stroke-dasharray', '4,3')
+    .attr('y1', 0).attr('y2', H)
+    .style('display', 'none')
+    .style('pointer-events', 'none');
+
+  // ── Hover overlay ─────────────────────────────────────────────────────────
+  g.append('rect')
+    .attr('width', W).attr('height', H)
+    .attr('fill', 'transparent')
+    .on('mousemove', function (event) {
+      const [mx, my] = d3.pointer(event, this);
+      const year = Math.round(xScale.invert(mx));
+
+      // Find which layer the mouse is in
+      let hoveredKey = null;
+      for (const s of [...series].reverse()) {
+        const bisect = d3.bisector(d => d.data.year).left;
+        const idx = bisect(s, year, 0, s.length - 1);
+        const pt = s[idx] || s[s.length - 1];
+        if (pt && my >= yScale(pt[1]) && my <= yScale(pt[0])) {
+          hoveredKey = s.key;
+          break;
+        }
+      }
+
+      // Highlight hovered, fade others
+      paths.attr('fill-opacity', d => {
+        if (!hoveredKey) return activeGenreFilter ? (d.key === activeGenreFilter ? 1 : 0.18) : 0.85;
+        return d.key === hoveredKey ? 1 : 0.18;
+      });
+
+      hoverLine
+        .style('display', null)
+        .attr('x1', mx).attr('x2', mx);
+
+      if (hoveredKey) {
+        const bisect = d3.bisector(d => d.data.year).left;
+        const s = series.find(s => s.key === hoveredKey);
+        const idx = bisect(s, year, 0, s.length - 1);
+        const pt = s[idx] || s[s.length - 1];
+        const count = pt ? Math.round(pt[1] - pt[0]) : 0;
+        const color = GENRE_COLORS[hoveredKey] || '#999';
+
+        tooltip
+          .style('display', 'block')
+          .style('left', (event.clientX + 14) + 'px')
+          .style('top', (event.clientY - 10) + 'px')
+          .html(`
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;
+              background:${color};margin-right:6px;vertical-align:middle"></span>
+            <strong>${hoveredKey}</strong><br/>
+            <span style="color:#aaa">${year}</span> — ${count.toLocaleString()} films
+          `);
+      } else {
+        tooltip.style('display', 'none');
+      }
+    })
+    .on('mouseleave', function () {
+      paths.attr('fill-opacity', d =>
+        activeGenreFilter ? (d.key === activeGenreFilter ? 1 : 0.18) : 0.85
+      );
+      hoverLine.style('display', 'none');
+      tooltip.style('display', 'none');
+    })
+    .on('click', function (event) {
+      const [mx, my] = d3.pointer(event, this);
+      const year = Math.round(xScale.invert(mx));
+
+      let clickedKey = null;
+      for (const s of [...series].reverse()) {
+        const bisect = d3.bisector(d => d.data.year).left;
+        const idx = bisect(s, year, 0, s.length - 1);
+        const pt = s[idx] || s[s.length - 1];
+        if (pt && my >= yScale(pt[1]) && my <= yScale(pt[0])) {
+          clickedKey = s.key;
+          break;
+        }
+      }
+
+      if (activeGenreFilter === clickedKey) {
+        activeGenreFilter = null;
+        paths.attr('fill-opacity', 0.85);
+        updateLegendHighlight(null);
+        applyGenreFilter(null);
+      } else {
+        activeGenreFilter = clickedKey;
+        paths.attr('fill-opacity', d => d.key === clickedKey ? 1 : 0.18);
+        updateLegendHighlight(clickedKey);
+        applyGenreFilter(clickedKey);
       }
     });
-  });
-  
-  ctx.globalAlpha = 1;
-  drawAxes(ctx, padding, width, height);
-  
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-  ctx.font = '11px Arial';
-  ctx.textAlign = 'center';
-  data.genres.forEach((d, i) => {
-    if (i % 3 === 0) {
-      const x = padding.left + i * barWidth + barWidth / 2;
-      ctx.fillText(d.decade, x, height - padding.bottom + 20);
-    }
-  });
-  
-  createLegend('#genre-legend', topGenres);
-  
-  const tooltip = document.createElement('div');
-  tooltip.style.cssText = `position:fixed;background:rgba(20,25,35,0.95);color:#d9dce4;padding:8px 12px;border-radius:6px;font-size:13px;pointer-events:none;display:none;border:1px solid rgba(255,255,255,0.2);z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.5)`;
-  document.body.appendChild(tooltip);
-  
-  canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const bar = barPositions.find(b => x >= b.x && x <= b.x + b.width && y >= b.y && y <= b.y + b.height);
-    if (bar) {
-      tooltip.innerHTML = `<strong>${bar.genre}</strong><br/>${bar.count} movies<br/>Decade: ${bar.decade}s`;
-      tooltip.style.display = 'block';
-      tooltip.style.left = (e.clientX + 10) + 'px';
-      tooltip.style.top = (e.clientY + 10) + 'px';
-    } else {
-      tooltip.style.display = 'none';
-    }
-  });
-  
-  canvas.addEventListener('mouseleave', () => tooltip.style.display = 'none');
+
+  // ── Axes ──────────────────────────────────────────────────────────────────
+  g.append('g')
+    .attr('transform', `translate(0,${H})`)
+    .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format('d')))
+    .call(ax => ax.select('.domain').attr('stroke', 'rgba(255,255,255,0.3)'))
+    .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.6)').attr('font-size', '11px'))
+    .call(ax => ax.selectAll('line').attr('stroke', 'rgba(255,255,255,0.2)'));
+
+  g.append('g')
+    .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => d >= 1000 ? (d / 1000).toFixed(0) + 'k' : d))
+    .call(ax => ax.select('.domain').attr('stroke', 'rgba(255,255,255,0.3)'))
+    .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.6)').attr('font-size', '11px'))
+    .call(ax => ax.selectAll('line').attr('stroke', 'rgba(255,255,255,0.2)'));
+
+  // ── Legend highlight helper (hoisted so click handler can use it) ─────────
+  let legendWrap = null;
+
+  function updateLegendHighlight(activeGenre) {
+    if (!legendWrap) return;
+    legendWrap.querySelectorAll('span').forEach(s => {
+      if (!activeGenre) {
+        s.style.borderColor = 'transparent';
+        s.style.opacity = '1';
+      } else {
+        const isActive = s.dataset.genre === activeGenre;
+        s.style.borderColor = isActive ? (GENRE_COLORS[activeGenre] || '#999') : 'transparent';
+        s.style.opacity = isActive ? '1' : '0.45';
+      }
+    });
+  }
+
+  // ── Legend ────────────────────────────────────────────────────────────────
+  const legendEl = document.getElementById('genre-legend');
+  if (legendEl) {
+    legendEl.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin-top:12px';
+    legendWrap = wrap; // expose to updateLegendHighlight
+
+    genres.forEach(genre => {
+      const item = document.createElement('span');
+      item.style.cssText = `
+        display:flex;align-items:center;gap:6px;
+        font-size:0.85rem;color:#d9dce4;
+        cursor:pointer;padding:4px 8px;border-radius:4px;
+        border:1px solid transparent;transition:border-color 0.2s,opacity 0.2s
+      `;
+      item.dataset.genre = genre;
+
+      const dot = document.createElement('div');
+      dot.style.cssText = `
+        width:10px;height:10px;border-radius:50%;
+        background:${GENRE_COLORS[genre] || '#999'};flex-shrink:0
+      `;
+      item.appendChild(dot);
+      item.appendChild(document.createTextNode(genre));
+
+      item.addEventListener('click', () => {
+        if (activeGenreFilter === genre) {
+          activeGenreFilter = null;
+          paths.attr('fill-opacity', 0.85);
+          updateLegendHighlight(null);
+          applyGenreFilter(null);
+        } else {
+          activeGenreFilter = genre;
+          paths.attr('fill-opacity', d => d.key === genre ? 1 : 0.18);
+          updateLegendHighlight(genre);
+          applyGenreFilter(genre);
+        }
+      });
+
+      wrap.appendChild(item);
+    });
+
+    legendEl.appendChild(wrap);
+  }
 }
 
 function drawRatings() {
   const container = document.querySelector('.ratings-chart');
   container.innerHTML = '';
-  
+
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   const width = container.offsetWidth || 800;
   const height = 360;
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svg.setAttribute('style', 'width: 100%; height: 100%; display: block;');
   container.appendChild(svg);
-  
+
   const pad = { top: 40, right: 40, bottom: 40, left: 50 };
   const plotWidth = width - pad.left - pad.right;
   const plotHeight = height - pad.top - pad.bottom;
-  
+
   for (let i = 0; i < 5; i++) {
     const y = pad.top + (i * plotHeight / 4);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -218,13 +537,13 @@ function drawRatings() {
     line.setAttribute('stroke-width', '1');
     svg.appendChild(line);
   }
-  
+
   const maxRating = Math.max(...data.ratings.map(d => d.rating), 10);
   const minRating = Math.min(...data.ratings.map(d => d.rating), 0);
   const range = maxRating - minRating || 1;
-  
+
   for (let i = 0; i <= 4; i++) {
-    const val = (maxRating - (i/4) * range).toFixed(1);
+    const val = (maxRating - (i / 4) * range).toFixed(1);
     const y = pad.top + (i * plotHeight / 4);
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', pad.left - 10);
@@ -235,14 +554,14 @@ function drawRatings() {
     text.textContent = val;
     svg.appendChild(text);
   }
-  
+
   let path = 'M';
   data.ratings.forEach((p, i) => {
     const x = pad.left + (i / (data.ratings.length - 1)) * plotWidth;
     const y = pad.top + plotHeight - ((p.rating - minRating) / range * plotHeight);
     path += (i === 0 ? '' : ' L') + x + ',' + y;
   });
-  
+
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   line.setAttribute('d', path);
   line.setAttribute('stroke', '#668bff');
@@ -250,7 +569,7 @@ function drawRatings() {
   line.setAttribute('fill', 'none');
   line.setAttribute('stroke-linecap', 'round');
   svg.appendChild(line);
-  
+
   const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   yAxis.setAttribute('x1', pad.left);
   yAxis.setAttribute('y1', pad.top);
@@ -259,7 +578,7 @@ function drawRatings() {
   yAxis.setAttribute('stroke', 'rgba(255,255,255,0.3)');
   yAxis.setAttribute('stroke-width', '2');
   svg.appendChild(yAxis);
-  
+
   const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   xAxis.setAttribute('x1', pad.left);
   xAxis.setAttribute('y1', height - pad.bottom);
@@ -268,7 +587,7 @@ function drawRatings() {
   xAxis.setAttribute('stroke', 'rgba(255,255,255,0.3)');
   xAxis.setAttribute('stroke-width', '2');
   svg.appendChild(xAxis);
-  
+
   for (let i = 0; i < data.ratings.length; i += Math.ceil(data.ratings.length / 10)) {
     const x = pad.left + (i / (data.ratings.length - 1)) * plotWidth;
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -280,7 +599,7 @@ function drawRatings() {
     text.textContent = data.ratings[i].year;
     svg.appendChild(text);
   }
-  
+
   const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   title.setAttribute('x', width / 2);
   title.setAttribute('y', 20);
@@ -292,51 +611,54 @@ function drawRatings() {
   svg.appendChild(title);
 }
 
-function drawFinance(decade = 'all') {
+function drawFinance(decade = 'all', genreFilter = null) {
   const canvas = setupCanvas('.finance-chart', 'Budget vs Revenue by Genre');
   if (!canvas) return;
-  
+
   const ctx = canvas.getContext('2d');
   const { width, height, padding, plotWidth, plotHeight } = getCanvasDims(canvas);
-  
+
   let filtered = data.finance;
   if (decade !== 'all') {
     const decNum = parseInt(decade);
     filtered = data.finance.filter(m => m.decade >= decNum && m.decade < decNum + 10);
   }
-  
+  if (genreFilter) {
+    filtered = filtered.filter(m => m.primary_genre === genreFilter);
+  }
+
   if (!filtered.length) {
     ctx.fillStyle = '#999';
     ctx.font = '14px Arial';
     ctx.fillText('No data', width / 2 - 30, height / 2);
     return;
   }
-  
+
   const maxBudget = Math.max(...filtered.map(d => d.budget), 1);
   const maxRevenue = Math.max(...filtered.map(d => d.revenue), 1);
-  
+
   drawGrid(ctx, padding, width, height, plotWidth, plotHeight);
-  
+
   ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
   ctx.font = '11px Arial';
   ctx.textAlign = 'right';
   for (let i = 0; i <= 4; i++) {
-    const val = Math.round(((4-i) / 4) * maxRevenue / 1000000);
+    const val = Math.round(((4 - i) / 4) * maxRevenue / 1000000);
     const y = padding.top + (i * plotHeight / 4);
     ctx.fillText(val + 'M', padding.left - 10, y + 4);
   }
-  
+
   ctx.textAlign = 'center';
   for (let i = 0; i <= 4; i++) {
     const val = Math.round((i / 4) * maxBudget / 1000000);
     const x = padding.left + (i * plotWidth / 4);
     ctx.fillText(val + 'M', x, height - padding.bottom + 20);
   }
-  
+
   filtered.forEach(m => {
     const x = padding.left + (m.budget / maxBudget) * plotWidth;
     const y = height - padding.bottom - (m.revenue / maxRevenue) * plotHeight;
-    
+
     ctx.fillStyle = GENRE_COLORS[m.primary_genre] || '#999';
     ctx.globalAlpha = 0.7;
     ctx.beginPath();
@@ -344,20 +666,20 @@ function drawFinance(decade = 'all') {
     ctx.fill();
     ctx.globalAlpha = 1;
   });
-  
+
   drawAxes(ctx, padding, width, height);
-  
+
   ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
   ctx.font = '12px Arial';
   ctx.textAlign = 'center';
   ctx.fillText('Budget', width / 2, height - 8);
-  
+
   ctx.save();
   ctx.translate(15, height / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText('Revenue', 0, 0);
   ctx.restore();
-  
+
   createLegend('.finance-chart', Array.from(new Set(filtered.map(m => m.primary_genre))).slice(0, 10));
 }
 
@@ -365,10 +687,8 @@ function drawFinance(decade = 'all') {
    REPRESENTATIVE MOVIES PANEL
    ───────────────────────────────────────────── */
 
-// ── State ────────────────────────────────────
 let activeMovieDecade = 'all';
 
-// ── Called once on data load ─────────────────
 function showMovies(decade = 'all') {
   activeMovieDecade = decade;
   const container = document.getElementById('movie-strip');
@@ -389,7 +709,6 @@ function showMovies(decade = 'all') {
   });
 }
 
-// ── Build one card ────────────────────────────
 function createMovieCard(m, featured = false) {
   const card = document.createElement('article');
   card.className = 'movie-card' + (featured ? ' featured' : '');
@@ -435,19 +754,16 @@ function createMovieCard(m, featured = false) {
     window.open(`https://www.imdb.com/title/${m.imdb_id}/`, '_blank', 'noopener');
   });
 
-  // Hover lift
   card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-6px)');
   card.addEventListener('mouseleave', () => card.style.transform = '');
 
   return card;
 }
 
-// ── Decade filter tabs ────────────────────────
 function setupMovieDecadeButtons() {
   const section = document.getElementById('movies');
   if (!section) return;
 
-  // Insert tab bar above the strip
   const tabBar = document.createElement('div');
   tabBar.className = 'movie-decade-tabs';
   tabBar.innerHTML = `
@@ -470,7 +786,9 @@ function setupMovieDecadeButtons() {
   });
 }
 
-// ──────────────────────────────────────
+/* ─────────────────────────────────────────────
+   CANVAS HELPERS
+   ───────────────────────────────────────────── */
 
 function setupCanvas(selector, title) {
   const container = document.querySelector(selector);
@@ -482,13 +800,13 @@ function setupCanvas(selector, title) {
   const height = 360;
   canvas.width = width;
   canvas.height = height;
-  
+
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.font = 'bold 14px Arial';
   ctx.textAlign = 'center';
   ctx.fillText(title, width / 2, 20);
-  
+
   return canvas;
 }
 
@@ -538,22 +856,22 @@ function drawAxes(ctx, padding, width, height) {
 function createLegend(target, genres) {
   const container = typeof target === 'string' ? document.querySelector(target) : target;
   if (!container) return;
-  
+
   const leg = document.createElement('div');
   leg.style.cssText = 'display:flex;flex-wrap:wrap;gap:15px;margin-top:15px;padding:10px 0;justify-content:center';
-  
+
   genres.forEach(g => {
     const item = document.createElement('span');
     item.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:0.9rem;color:#d9dce4';
-    
+
     const dot = document.createElement('div');
     dot.style.cssText = `width:10px;height:10px;border-radius:50%;background:${GENRE_COLORS[g] || '#999'};flex-shrink:0`;
-    
+
     item.appendChild(dot);
     item.appendChild(document.createTextNode(g));
     leg.appendChild(item);
   });
-  
+
   container.appendChild(leg);
 }
 
@@ -562,7 +880,7 @@ function setupDecadeButtons() {
     btn.onclick = () => {
       document.getElementById('finance-decades').querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      drawFinance(btn.getAttribute('data-decade'));
+      drawFinance(btn.getAttribute('data-decade'), activeGenreFilter);
     };
   });
 }
@@ -583,40 +901,30 @@ window.addEventListener('scroll', () => {
 
 /* ════════════════════════════════════════════════════════
    YOUR CINEMA ERA — personalizer
-   ════════════════════════════════════════════════════════
-   ─────────────────────────────────────────────────────── */
+   ════════════════════════════════════════════════════════ */
 
-// ── Top non-documentary genre per decade (pre-computed from data) ──────────
-// Built from genres.json, excluding Documentary & TV Movie
 const ERA_GENRE_BY_DECADE = {
-  1990: 'Drama',
-  2000: 'Drama',
-  2010: 'Drama',
-  2020: 'Drama',
+  1990: 'Drama', 2000: 'Drama', 2010: 'Drama', 2020: 'Drama',
 };
 
-// ── Biggest blockbuster per decade (pre-computed from finance.json) ─────────
 const ERA_BLOCKBUSTER_BY_DECADE = {
-  1990: { title: 'Titanic',                   revenue: 2.26 },
-  2000: { title: 'Avatar',                    revenue: 2.92 },
-  2010: { title: 'Avengers: Endgame',         revenue: 2.80 },
-  2020: { title: 'Avatar: The Way of Water',  revenue: 2.35 },
+  1990: { title: 'Titanic', revenue: 2.26 },
+  2000: { title: 'Avatar', revenue: 2.92 },
+  2010: { title: 'Avengers: Endgame', revenue: 2.80 },
+  2020: { title: 'Avatar: The Way of Water', revenue: 2.35 },
 };
 
-// ── Main init ───────────────────────────────────────────────────────────────
 function initEraPersonalizer() {
-  const slider     = document.getElementById('birth-year-slider');
-  const yearLabel  = document.getElementById('era-selected-year');
+  const slider = document.getElementById('birth-year-slider');
+  const yearLabel = document.getElementById('era-selected-year');
   if (!slider) return;
 
-  // Build fast lookup maps from already-loaded data
-  const prodByYear   = {};
+  const prodByYear = {};
   const ratingByYear = {};
 
-  data.production.forEach(d => { prodByYear[d.year]   = d.count; });
-  data.ratings.forEach(d    => { ratingByYear[d.year]  = d.rating; });
+  data.production.forEach(d => { prodByYear[d.year] = d.count; });
+  data.ratings.forEach(d => { ratingByYear[d.year] = d.rating; });
 
-  // Compute blockbuster per decade live from finance data (more accurate)
   const blockbusterByDecade = {};
   data.finance.forEach(m => {
     if (!m.revenue || m.revenue <= 0) return;
@@ -626,7 +934,6 @@ function initEraPersonalizer() {
     }
   });
 
-  // Compute top non-doc genre per decade live from genres data
   const EXCLUDE_GENRES = new Set(['Documentary', 'TV Movie']);
   const genreByDecade = {};
   data.genres.forEach(d => {
@@ -637,59 +944,46 @@ function initEraPersonalizer() {
     }
   });
 
-  // Draw sparkline once; update marker on slider move
   drawEraSparkline(prodByYear);
-
-  // Initial render
   updateEra(parseInt(slider.value));
 
-  // Debounced slider handler
   let rafId;
   slider.addEventListener('input', () => {
     cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(() => updateEra(parseInt(slider.value)));
   });
 
-  // ── Core update ────────────────────────────────────────────────────────────
   function updateEra(year) {
     yearLabel.textContent = year;
 
     const decade = Math.floor(year / 10) * 10;
-    const films   = prodByYear[year]   ?? null;
-    const rating  = ratingByYear[year] ?? null;
-    const genre   = genreByDecade[decade] ?? '—';
-    const block   = blockbusterByDecade[decade];
+    const films = prodByYear[year] ?? null;
+    const rating = ratingByYear[year] ?? null;
+    const genre = genreByDecade[decade] ?? '—';
+    const block = blockbusterByDecade[decade];
 
-    // Films count
     animateCount('estat-films', '.era-count:not(.era-decimal)', films, false);
 
-    // Genre
     const genreEl = document.getElementById('era-genre-val');
     if (genreEl) fadeTextUpdate(genreEl, genre);
 
-    // Rating
     animateCount('estat-rating', '.era-decimal', rating, true);
 
-    // Blockbuster
     const blockEl = document.getElementById('era-blockbuster-val');
     if (blockEl && block) {
       fadeTextUpdate(blockEl,
-        `${block.title} <span style="color:var(--gold);font-size:0.75em">$${(block.revenue/1e9).toFixed(2)}B</span>`
+        `${block.title} <span style="color:var(--gold);font-size:0.75em">$${(block.revenue / 1e9).toFixed(2)}B</span>`
       );
     }
 
-    // Sparkline marker
     updateEraMarker(year);
 
-    // Pop animation on cards
     document.querySelectorAll('.era-stat-card').forEach(c => {
       c.classList.remove('era-pop');
-      void c.offsetWidth; // reflow
+      void c.offsetWidth;
       c.classList.add('era-pop');
     });
   }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
 
   function animateCount(cardId, selector, target, isDecimal) {
     if (target === null) return;
@@ -698,15 +992,15 @@ function initEraPersonalizer() {
     const el = card.querySelector(selector);
     if (!el) return;
 
-    const start  = parseFloat(el.textContent.replace(/,/g, '')) || 0;
-    const end    = target;
-    const dur    = 500; // ms
-    const t0     = performance.now();
+    const start = parseFloat(el.textContent.replace(/,/g, '')) || 0;
+    const end = target;
+    const dur = 500;
+    const t0 = performance.now();
 
     function tick(now) {
       const progress = Math.min((now - t0) / dur, 1);
-      const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      const val  = start + (end - start) * ease;
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const val = start + (end - start) * ease;
       el.textContent = isDecimal
         ? val.toFixed(2)
         : Math.round(val).toLocaleString();
@@ -727,7 +1021,6 @@ function initEraPersonalizer() {
   }
 }
 
-// ── Sparkline (drawn once, marker updated on slide) ─────────────────────────
 function drawEraSparkline(prodByYear) {
   const svg = document.getElementById('era-sparkline');
   if (!svg) return;
@@ -738,48 +1031,43 @@ function drawEraSparkline(prodByYear) {
   const plotW = W - PAD.left - PAD.right;
   const plotH = H - PAD.top - PAD.bottom;
 
-  const years  = Object.keys(prodByYear).map(Number).sort((a,b) => a-b);
+  const years = Object.keys(prodByYear).map(Number).sort((a, b) => a - b);
   const counts = years.map(y => prodByYear[y]);
-  const minY   = 0;
-  const maxY   = Math.max(...counts);
+  const maxY = Math.max(...counts);
 
-  const xScale = y => PAD.left + ((y - years[0]) / (years[years.length-1] - years[0])) * plotW;
+  const xScale = y => PAD.left + ((y - years[0]) / (years[years.length - 1] - years[0])) * plotW;
   const yScale = v => PAD.top + plotH - (v / maxY) * plotH;
 
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-  // Grid lines (subtle)
   [0.25, 0.5, 0.75, 1].forEach(f => {
     const y = PAD.top + plotH * (1 - f);
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', PAD.left); line.setAttribute('x2', W - PAD.right);
-    line.setAttribute('y1', y);        line.setAttribute('y2', y);
+    line.setAttribute('y1', y); line.setAttribute('y2', y);
     line.setAttribute('stroke', 'rgba(255,255,255,0.06)');
     line.setAttribute('stroke-width', '1');
     svg.appendChild(line);
-    // Y label
-    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     txt.setAttribute('x', PAD.left - 6); txt.setAttribute('y', y + 4);
-    txt.setAttribute('text-anchor','end');
-    txt.setAttribute('fill','rgba(255,255,255,0.3)');
-    txt.setAttribute('font-size','9');
+    txt.setAttribute('text-anchor', 'end');
+    txt.setAttribute('fill', 'rgba(255,255,255,0.3)');
+    txt.setAttribute('font-size', '9');
     txt.textContent = Math.round(maxY * f / 1000) + 'k';
     svg.appendChild(txt);
   });
 
-  // Area fill
   const areaPoints = [
     `${xScale(years[0])},${PAD.top + plotH}`,
     ...years.map(y => `${xScale(y)},${yScale(prodByYear[y])}`),
-    `${xScale(years[years.length-1])},${PAD.top + plotH}`
+    `${xScale(years[years.length - 1])},${PAD.top + plotH}`
   ].join(' ');
-  const area = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
   area.setAttribute('points', areaPoints);
   area.setAttribute('fill', 'url(#eraAreaGrad)');
   area.setAttribute('opacity', '0.4');
 
-  // Gradient def
-  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   defs.innerHTML = `
     <linearGradient id="eraAreaGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#d7b46a" stop-opacity="0.6"/>
@@ -788,53 +1076,49 @@ function drawEraSparkline(prodByYear) {
   svg.appendChild(defs);
   svg.appendChild(area);
 
-  // Line
   const pathD = years.map((y, i) =>
     `${i === 0 ? 'M' : 'L'}${xScale(y)},${yScale(prodByYear[y])}`
   ).join(' ');
-  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   path.setAttribute('d', pathD);
-  path.setAttribute('fill','none');
-  path.setAttribute('stroke','#d7b46a');
-  path.setAttribute('stroke-width','2');
-  path.setAttribute('stroke-linejoin','round');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', '#d7b46a');
+  path.setAttribute('stroke-width', '2');
+  path.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(path);
 
-  // X-axis year labels
   const labelYears = years.filter(y => y % 5 === 0);
   labelYears.forEach(y => {
-    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     txt.setAttribute('x', xScale(y)); txt.setAttribute('y', H - 4);
-    txt.setAttribute('text-anchor','middle');
-    txt.setAttribute('fill','rgba(255,255,255,0.3)');
-    txt.setAttribute('font-size','9');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('fill', 'rgba(255,255,255,0.3)');
+    txt.setAttribute('font-size', '9');
     txt.textContent = y;
     svg.appendChild(txt);
   });
 
-  // Marker group (updated on slide)
-  const markerG = document.createElementNS('http://www.w3.org/2000/svg','g');
-  markerG.setAttribute('id','era-marker');
+  const markerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  markerG.setAttribute('id', 'era-marker');
 
-  const markerLine = document.createElementNS('http://www.w3.org/2000/svg','line');
-  markerLine.setAttribute('id','era-marker-line');
-  markerLine.setAttribute('stroke','#fff');
-  markerLine.setAttribute('stroke-width','1.5');
-  markerLine.setAttribute('stroke-dasharray','3 3');
+  const markerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  markerLine.setAttribute('id', 'era-marker-line');
+  markerLine.setAttribute('stroke', '#fff');
+  markerLine.setAttribute('stroke-width', '1.5');
+  markerLine.setAttribute('stroke-dasharray', '3 3');
   markerLine.setAttribute('y1', PAD.top); markerLine.setAttribute('y2', PAD.top + plotH);
 
-  const markerDot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  markerDot.setAttribute('id','era-marker-dot');
-  markerDot.setAttribute('r','5');
-  markerDot.setAttribute('fill','#fff');
-  markerDot.setAttribute('stroke','#d7b46a');
-  markerDot.setAttribute('stroke-width','2');
+  const markerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  markerDot.setAttribute('id', 'era-marker-dot');
+  markerDot.setAttribute('r', '5');
+  markerDot.setAttribute('fill', '#fff');
+  markerDot.setAttribute('stroke', '#d7b46a');
+  markerDot.setAttribute('stroke-width', '2');
 
   markerG.appendChild(markerLine);
   markerG.appendChild(markerDot);
   svg.appendChild(markerG);
 
-  // Store scales for later use by updateEraMarker
   svg._xScale = xScale;
   svg._yScale = yScale;
   svg._prodByYear = prodByYear;
@@ -847,23 +1131,18 @@ function updateEraMarker(year) {
   const y = svg._yScale(svg._prodByYear[year] ?? 0);
 
   const line = document.getElementById('era-marker-line');
-  const dot  = document.getElementById('era-marker-dot');
+  const dot = document.getElementById('era-marker-dot');
   if (line) { line.setAttribute('x1', x); line.setAttribute('x2', x); }
-  if (dot)  { dot.setAttribute('cx', x);  dot.setAttribute('cy', y); }
+  if (dot) { dot.setAttribute('cx', x); dot.setAttribute('cy', y); }
 }
 
 /* ═══════════════════════════════════════════════════════════════
    CINEMATIC ADDITIONS
    ═══════════════════════════════════════════════════════════════ */
 
-
 function initCountdownLoader() {
   const loader = document.getElementById('countdown-loader');
   if (!loader) return;
-
-  // The CSS animation fades it out over 1.8s
-  // After 1.9s, remove it from the DOM entirely so it
-  // doesn't block clicks or affect layout
   setTimeout(() => {
     loader.style.display = 'none';
   }, 1950);

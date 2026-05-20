@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DataFlix : The Evolution of Cinema</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 </head>
 <body>
 
@@ -16,12 +17,9 @@
 
   <div class="timeline-progress"></div>
 
-  <!-- HERO — colorized audience bg (grayscale via CSS) + sepia filmstrip -->
   <header class="hero section-dark">
-    <img src="assets/audience-bw.jpeg"
-         alt="" aria-hidden="true" class="hero-bg-img" />
-    <img src="assets/filmstripvert.png"
-         alt="" aria-hidden="true" class="hero-filmstrip" />
+    <img src="assets/audience-bw.jpeg" alt="" aria-hidden="true" class="hero-bg-img" />
+    <img src="assets/filmstripvert.png" alt="" aria-hidden="true" class="hero-filmstrip" />
     <div class="hero-overlay"></div>
 
     <nav class="navbar">
@@ -52,14 +50,13 @@
     <div class="hero-scroll-hint">Scroll to enter the timeline</div>
   </header>
 
-  <!-- KODAK STRIP DIVIDER -->
   <div class="strip-divider">
     <img src="assets/kodak-strip.jpg" alt="" aria-hidden="true" />
   </div>
 
   <main>
 
-    <!-- OVERVIEW — clean, no background image -->
+    <!-- OVERVIEW -->
     <section id="overview" class="section intro-section section-dark reveal">
       <div class="section-copy narrow">
         <p class="section-label">Introduction</p>
@@ -88,7 +85,7 @@
       </div>
     </section>
 
-    <!-- PRODUCTION — most desaturated (near B&W) -->
+    <!-- 1. PRODUCTION -->
     <section id="production" class="section split-section reveal stage-muted">
       <div class="section-copy">
         <p class="section-label">1. Movie Production Over Time</p>
@@ -100,9 +97,7 @@
           industry. Click on a genre below to filter the data and discover which
           genres drove production growth.
         </p>
-        <div class="controls" id="production-genres">
-          <button class="chip active" data-genre="all">All genres</button>
-        </div>
+        <div class="controls" id="production-genres"></div>
       </div>
       <div class="viz-panel">
         <div class="viz-header">
@@ -113,15 +108,8 @@
       </div>
     </section>
 
-    <!-- GENRES — color starts returning -->
+    <!-- 2. GENRES -->
     <section id="genres" class="section split-section reveal stage-accent">
-      <div class="viz-panel">
-        <div class="viz-header">
-          <h3>Genre evolution</h3>
-          <span class="badge">Stacked composition by decade</span>
-        </div>
-        <div class="chart-placeholder genre-chart"></div>
-      </div>
       <div class="section-copy">
         <p class="section-label">2. Genre Evolution</p>
         <h2>Which genres dominated different periods?</h2>
@@ -130,12 +118,20 @@
           This visualization shows how different genres have grown (or declined)
           over time from 1988 to 2025. Each color represents a distinct genre,
           revealing which storytelling traditions have endured and which have emerged.
+          <strong>Hover</strong> to highlight a genre — <strong>click</strong> to
+          filter the production and economics charts.
         </p>
         <div class="legend" id="genre-legend"></div>
       </div>
+      <div class="viz-panel">
+        <div class="viz-header">
+          <h3>Genre evolution</h3>
+        </div>
+        <div class="chart-placeholder genre-chart"></div>
+      </div>
     </section>
 
-    <!-- RATINGS — nearly full color -->
+    <!-- 3. RATINGS -->
     <section id="ratings" class="section split-section reveal stage-richer">
       <div class="section-copy">
         <p class="section-label">3. Quality Distribution Over Time</p>
@@ -155,15 +151,8 @@
       </div>
     </section>
 
-    <!-- FINANCE — full color, NO background image -->
+    <!-- 4. FINANCE -->
     <section id="finance" class="section split-section reveal stage-richest">
-      <div class="viz-panel">
-        <div class="viz-header">
-          <h3>Budget vs revenue dynamics</h3>
-          <span class="badge">By genre and time period</span>
-        </div>
-        <div class="chart-placeholder finance-chart"></div>
-      </div>
       <div class="section-copy">
         <p class="section-label">4. The Economics of Cinema</p>
         <h2>How do budgets relate to revenue?</h2>
@@ -181,9 +170,16 @@
           <button class="chip" data-decade="2010">2010s</button>
         </div>
       </div>
+      <div class="viz-panel">
+        <div class="viz-header">
+          <h3>Budget vs revenue dynamics</h3>
+          <span class="badge">By genre and time period</span>
+        </div>
+        <div class="chart-placeholder finance-chart"></div>
+      </div>
     </section>
 
-    <!-- MOVIES — full color, NO background image -->
+    <!-- 5. MOVIES -->
     <section id="movies" class="section reveal movies-section">
       <div class="section-copy centered">
         <p class="section-label">5. Representative Films</p>
@@ -198,7 +194,7 @@
       <div class="movie-strip" id="movie-strip"></div>
     </section>
 
-    <!-- FINDINGS — red negatives texture, "The End" closing card -->
+    <!-- 6. FINDINGS -->
     <section id="findings" class="section final-section reveal">
       <div class="section-copy centered narrow">
         <p class="section-label">6. Key Insights</p>
@@ -296,7 +292,6 @@
         <span>2025</span>
       </div>
 
-      <!-- THE END — properly centered -->
       <div class="the-end-wrap reveal">
         <img src="assets/audience-colorized-2.jpeg" alt="The End" class="the-end-img" />
         <div class="the-end-overlay"></div>
