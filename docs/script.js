@@ -9,6 +9,7 @@ const GENRE_COLORS = {
 };
 
 let data = {};
+let financeYearRange = { start: 1990, end: 2019 };
 
 // ── Shared filter state (for cross-chart filtering) ────────────────────────
 let activeGenreFilter = null;
@@ -23,7 +24,13 @@ Promise.all([
   fetch('data/movies.json').then(r => r.json()),
   fetch('data/genres_by_year.json').then(r => r.json())
 ]).then(([prod, genres, ratings, finance, movies, genresByYear]) => {
+  const normalizedFinance = finance.map(d => ({
+    ...d,
+    primary_genre: d.primary_genre || d.genre || 'Unknown'
+  }));
+
   data = { production: prod, genres, ratings, finance, movies, genresByYear };
+  data.finance = normalizedFinance;
 
   const genreSet = new Set();
   genres.forEach(d => d.genres.forEach(g => genreSet.add(g.name)));
@@ -60,6 +67,7 @@ Promise.all([
   showMovies();
   setupMovieDecadeButtons();
   setupDecadeButtons();
+  setupFinanceRangeControls();
   initEraPersonalizer();
 }).catch(err => console.error('Data load error:', err));
 
@@ -612,75 +620,117 @@ function drawRatings() {
 }
 
 function drawFinance(decade = 'all', genreFilter = null) {
-  const canvas = setupCanvas('.finance-chart', 'Budget vs Revenue by Genre');
-  if (!canvas) return;
+  const container = document.querySelector('.finance-chart');
+  if (!container) return;
+  container.innerHTML = '';
 
-  const ctx = canvas.getContext('2d');
-  const { width, height, padding, plotWidth, plotHeight } = getCanvasDims(canvas);
-
-  let filtered = data.finance;
+  let filtered = data.finance.filter(d => d.year >= financeYearRange.start && d.year <= financeYearRange.end);
   if (decade !== 'all') {
-    const decNum = parseInt(decade);
-    filtered = data.finance.filter(m => m.decade >= decNum && m.decade < decNum + 10);
+    const decNum = parseInt(decade, 10);
+    filtered = filtered.filter(m => m.decade >= decNum && m.decade < decNum + 10);
   }
-  if (genreFilter) {
-    filtered = filtered.filter(m => m.primary_genre === genreFilter);
-  }
+  if (genreFilter) filtered = filtered.filter(m => m.primary_genre === genreFilter);
 
-  if (!filtered.length) {
-    ctx.fillStyle = '#999';
-    ctx.font = '14px Arial';
-    ctx.fillText('No data', width / 2 - 30, height / 2);
+  const grouped = Array.from(d3.group(filtered, d => d.primary_genre), ([genre, rows]) => ({
+    genre,
+    budget: d3.mean(rows, d => d.budget) || 0,
+    revenue: d3.mean(rows, d => d.revenue) || 0,
+    totalRevenue: d3.sum(rows, d => d.revenue) || 0,
+    count: rows.length,
+    movies: rows
+  })).filter(d => d.budget > 0 && d.revenue > 0);
+
+  const totalW = container.offsetWidth || 700;
+  const totalH = 360;
+  const margin = { top: 30, right: 24, bottom: 48, left: 70 };
+  const W = totalW - margin.left - margin.right;
+  const H = totalH - margin.top - margin.bottom;
+
+  const svg = d3.select(container).append('svg').attr('width', totalW).attr('height', totalH);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  if (!grouped.length) {
+    g.append('text').attr('x', W / 2).attr('y', H / 2).attr('fill', '#aaa').attr('text-anchor', 'middle').text('No finance data for this filter');
+    renderTopRoiList([]);
     return;
   }
 
-  const maxBudget = Math.max(...filtered.map(d => d.budget), 1);
-  const maxRevenue = Math.max(...filtered.map(d => d.revenue), 1);
+  const x = d3.scaleLog().domain([1e5, d3.max(grouped, d => d.budget) * 1.15]).range([0, W]);
+  const y = d3.scaleLog().domain([1e5, d3.max(grouped, d => d.revenue) * 1.15]).range([H, 0]);
+  const r = d3.scaleSqrt().domain([0, d3.max(grouped, d => d.totalRevenue)]).range([8, 44]);
 
-  drawGrid(ctx, padding, width, height, plotWidth, plotHeight);
+  g.append('g')
+    .attr('transform', `translate(0,${H})`)
+    .call(d3.axisBottom(x).ticks(6, '~s'))
+    .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.7)').attr('font-size', '11px'))
+    .call(ax => ax.selectAll('line,.domain').attr('stroke', 'rgba(255,255,255,0.25)'));
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.font = '11px Arial';
-  ctx.textAlign = 'right';
-  for (let i = 0; i <= 4; i++) {
-    const val = Math.round(((4 - i) / 4) * maxRevenue / 1000000);
-    const y = padding.top + (i * plotHeight / 4);
-    ctx.fillText(val + 'M', padding.left - 10, y + 4);
+  g.append('g')
+    .call(d3.axisLeft(y).ticks(6, '~s'))
+    .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.7)').attr('font-size', '11px'))
+    .call(ax => ax.selectAll('line,.domain').attr('stroke', 'rgba(255,255,255,0.25)'));
+
+  g.append('text').attr('x', W / 2).attr('y', H + 38).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Average budget (log scale)');
+  g.append('text').attr('transform', `translate(-48,${H / 2}) rotate(-90)`).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Average revenue (log scale)');
+
+  const tooltip = d3.select('body').append('div')
+    .style('position', 'fixed')
+    .style('background', 'rgba(14,18,28,0.97)')
+    .style('color', '#e5e8f0')
+    .style('padding', '8px 12px')
+    .style('border-radius', '7px')
+    .style('font-size', '12px')
+    .style('display', 'none')
+    .style('pointer-events', 'none')
+    .style('border', '1px solid rgba(255,255,255,0.15)')
+    .style('z-index', '9999');
+
+  g.selectAll('circle')
+    .data(grouped.sort((a, b) => b.totalRevenue - a.totalRevenue))
+    .join('circle')
+    .attr('cx', d => x(d.budget))
+    .attr('cy', d => y(d.revenue))
+    .attr('r', d => r(d.totalRevenue))
+    .attr('fill', d => GENRE_COLORS[d.genre] || '#999')
+    .attr('fill-opacity', 0.58)
+    .attr('stroke', 'rgba(255,255,255,0.8)')
+    .attr('stroke-width', 1.2)
+    .style('cursor', 'pointer')
+    .on('mousemove', function(event, d) {
+      tooltip
+        .style('display', 'block')
+        .style('left', `${event.clientX + 14}px`)
+        .style('top', `${event.clientY - 10}px`)
+        .html(`<strong>${d.genre}</strong><br/>Budget: $${d3.format(',.0f')(d.budget)}<br/>Revenue: $${d3.format(',.0f')(d.revenue)}<br/>Movies: ${d.count}`);
+    })
+    .on('mouseleave', () => tooltip.style('display', 'none'))
+    .on('click', function(_, d) {
+      g.selectAll('circle').attr('stroke-width', 1.2).attr('stroke', 'rgba(255,255,255,0.8)');
+      d3.select(this).attr('stroke-width', 2.5).attr('stroke', '#f8cf7a');
+      renderTopRoiList(d.movies, d.genre);
+    });
+
+  createLegend('.finance-chart', grouped.map(d => d.genre));
+  renderTopRoiList([]);
+}
+
+function renderTopRoiList(movies, genre = null) {
+  const wrap = document.getElementById('finance-top-roi');
+  if (!wrap) return;
+
+  if (!movies.length) {
+    wrap.innerHTML = '<p class="finance-top-roi-title">Click a bubble to see the top ROI movies in that genre and period.</p>';
+    return;
   }
 
-  ctx.textAlign = 'center';
-  for (let i = 0; i <= 4; i++) {
-    const val = Math.round((i / 4) * maxBudget / 1000000);
-    const x = padding.left + (i * plotWidth / 4);
-    ctx.fillText(val + 'M', x, height - padding.bottom + 20);
-  }
+  const rows = [...movies]
+    .filter(m => Number.isFinite(m.roi))
+    .sort((a, b) => b.roi - a.roi)
+    .slice(0, 20);
 
-  filtered.forEach(m => {
-    const x = padding.left + (m.budget / maxBudget) * plotWidth;
-    const y = height - padding.bottom - (m.revenue / maxRevenue) * plotHeight;
-
-    ctx.fillStyle = GENRE_COLORS[m.primary_genre] || '#999';
-    ctx.globalAlpha = 0.7;
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-
-  drawAxes(ctx, padding, width, height);
-
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-  ctx.font = '12px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('Budget', width / 2, height - 8);
-
-  ctx.save();
-  ctx.translate(15, height / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillText('Revenue', 0, 0);
-  ctx.restore();
-
-  createLegend('.finance-chart', Array.from(new Set(filtered.map(m => m.primary_genre))).slice(0, 10));
+  wrap.innerHTML = `<p class="finance-top-roi-title">Top ROI films — ${genre}</p>${rows.map((m, i) =>
+    `<div class="finance-top-roi-item"><span>${i + 1}. ${m.title} (${m.year})</span><span>${m.roi.toFixed(1)}%</span></div>`
+  ).join('')}`;
 }
 
 /* ─────────────────────────────────────────────
@@ -883,6 +933,32 @@ function setupDecadeButtons() {
       drawFinance(btn.getAttribute('data-decade'), activeGenreFilter);
     };
   });
+}
+
+function setupFinanceRangeControls() {
+  const start = document.getElementById('finance-year-start');
+  const end = document.getElementById('finance-year-end');
+  const label = document.getElementById('finance-range-label');
+  if (!start || !end || !label) return;
+
+  const sync = () => {
+    let s = parseInt(start.value, 10);
+    let e = parseInt(end.value, 10);
+    if (s > e) {
+      if (document.activeElement === start) e = s;
+      else s = e;
+      start.value = s;
+      end.value = e;
+    }
+    financeYearRange = { start: s, end: e };
+    label.textContent = `${s} - ${e}`;
+    const activeDecade = document.querySelector('#finance-decades .chip.active')?.getAttribute('data-decade') || 'all';
+    drawFinance(activeDecade, activeGenreFilter);
+  };
+
+  start.addEventListener('input', sync);
+  end.addEventListener('input', sync);
+  sync();
 }
 
 document.querySelectorAll('.reveal').forEach(el => {

@@ -302,6 +302,52 @@ a {
   border-color: rgba(215,180,106,0.4);
 }
 
+.finance-range {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  row-gap: 8px;
+  align-items: center;
+}
+
+.finance-range label {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.8rem;
+}
+
+.finance-range input[type="range"] {
+  width: 100%;
+}
+
+.finance-range-label {
+  grid-column: 1 / -1;
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+
+.finance-top-roi {
+  margin-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 10px;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.82rem;
+  max-height: 170px;
+  overflow: auto;
+}
+
+.finance-top-roi-title {
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.finance-top-roi-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+}
+
 /* ── Production genre filter — right-aligned, sexy pills ── */
 #production-genres {
   display: flex;
