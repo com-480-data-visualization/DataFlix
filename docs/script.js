@@ -10,7 +10,7 @@ const GENRE_COLORS = {
 
 let data = {};
 
-const FINANCE_MIN_BUDGET = 500000;
+const FINANCE_MIN_BUDGET = 250000;
 const FINANCE_MIN_REVENUE = 100000;
 const FINANCE_MAX_ROI = 5000;
 
@@ -690,8 +690,9 @@ function drawFinance(decade = 'all', genreFilter = null) {
     .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.7)').attr('font-size', '11px'))
     .call(ax => ax.selectAll('line,.domain').attr('stroke', 'rgba(255,255,255,0.25)'));
 
-  g.append('text').attr('x', W / 2).attr('y', H + 38).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Median budget (log scale)');
-  g.append('text').attr('transform', `translate(-48,${H / 2}) rotate(-90)`).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Median revenue (log scale)');
+  g.append('text').attr('x', W / 2).attr('y', H + 38).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Median budget');
+  g.append('text').attr('transform', `translate(-48,${H / 2}) rotate(-90)`).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Median revenue');
+  g.append('text').attr('x', W / 2).attr('y', -10).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.62)').attr('font-size', '11px').text('Only movies with meaningful financial data are included.');
 
   d3.selectAll('.finance-tooltip').remove();
   const tooltip = d3.select('body').append('div')
