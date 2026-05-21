@@ -725,6 +725,12 @@ function drawFinance(decade = 'all', genreFilter = null) {
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const moneyInMillions = d3.format(',.1f');
+  const bubbleFill = genre => {
+    const base = d3.hsl(GENRE_COLORS[genre] || '#999999');
+    base.s = Math.min(1, base.s * 1.15);
+    base.l = Math.max(0.4, Math.min(0.62, base.l));
+    return base.formatHex();
+  };
 
   g.selectAll('circle')
     .data(nodes)
@@ -732,10 +738,11 @@ function drawFinance(decade = 'all', genreFilter = null) {
     .attr('cx', d => clamp(d.x, r(d.count), W - r(d.count)))
     .attr('cy', d => clamp(d.y, r(d.count), H - r(d.count)))
     .attr('r', d => r(d.count))
-    .attr('fill', d => GENRE_COLORS[d.genre] || '#999')
-    .attr('fill-opacity', 0.42)
-    .attr('stroke', 'rgba(255,255,255,0.8)')
-    .attr('stroke-width', 1.2)
+    .attr('fill', d => bubbleFill(d.genre))
+    .attr('fill-opacity', 0.44)
+    .attr('stroke', '#ffffff')
+    .attr('stroke-opacity', 0.95)
+    .attr('stroke-width', 1.35)
     .style('cursor', 'pointer')
     .on('mousemove', function(event, d) {
       tooltip
