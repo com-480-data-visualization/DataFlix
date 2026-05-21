@@ -10,6 +10,10 @@ const GENRE_COLORS = {
 
 let data = {};
 
+const FINANCE_MIN_BUDGET = 500000;
+const FINANCE_MIN_REVENUE = 100000;
+const FINANCE_MAX_ROI = 5000;
+
 // ── Shared filter state (for cross-chart filtering) ────────────────────────
 let activeGenreFilter = null;
 
@@ -23,10 +27,28 @@ Promise.all([
   fetch('data/movies.json').then(r => r.json()),
   fetch('data/genres_by_year.json').then(r => r.json())
 ]).then(([prod, genres, ratings, finance, movies, genresByYear]) => {
-  const normalizedFinance = finance.map(d => ({
-    ...d,
-    primary_genre: d.primary_genre || d.genre || 'Unknown'
-  }));
+  const normalizedFinance = finance
+    .map(d => {
+      const rawGenre = (d.primary_genre || d.genre || '').trim();
+      const primaryGenre = !rawGenre || rawGenre.toLowerCase() === 'unknown' ? null : rawGenre;
+      const budget = Number(d.budget);
+      const revenue = Number(d.revenue);
+      const roi = Number.isFinite(budget) && budget > 0
+        ? ((revenue - budget) / budget) * 100
+        : NaN;
+
+      return {
+        ...d,
+        budget,
+        revenue,
+        roi,
+        primary_genre: primaryGenre
+      };
+    })
+    .filter(d => d.primary_genre)
+    .filter(d => Number.isFinite(d.budget) && Number.isFinite(d.revenue))
+    .filter(d => d.budget >= FINANCE_MIN_BUDGET && d.revenue >= FINANCE_MIN_REVENUE)
+    .filter(d => Number.isFinite(d.roi) && d.roi > -100 && d.roi <= FINANCE_MAX_ROI);
 
   data = { production: prod, genres, ratings, finance, movies, genresByYear };
   data.finance = normalizedFinance;
@@ -631,15 +653,15 @@ function drawFinance(decade = 'all', genreFilter = null) {
 
   const grouped = Array.from(d3.group(filtered, d => d.primary_genre), ([genre, rows]) => ({
     genre,
-    budget: d3.mean(rows, d => d.budget) || 0,
-    revenue: d3.mean(rows, d => d.revenue) || 0,
+    budget: d3.median(rows, d => d.budget) || 0,
+    revenue: d3.median(rows, d => d.revenue) || 0,
     totalRevenue: d3.sum(rows, d => d.revenue) || 0,
     count: rows.length,
     movies: rows
   })).filter(d => d.budget > 0 && d.revenue > 0);
 
   const totalW = container.offsetWidth || 700;
-  const totalH = 360;
+  const totalH = Math.max(340, Math.min(460, Math.round(totalW * 0.5)));
   const margin = { top: 30, right: 24, bottom: 48, left: 70 };
   const W = totalW - margin.left - margin.right;
   const H = totalH - margin.top - margin.bottom;
@@ -655,7 +677,7 @@ function drawFinance(decade = 'all', genreFilter = null) {
 
   const x = d3.scaleLog().domain([1e5, d3.max(grouped, d => d.budget) * 1.15]).range([0, W]);
   const y = d3.scaleLog().domain([1e5, d3.max(grouped, d => d.revenue) * 1.15]).range([H, 0]);
-  const r = d3.scaleSqrt().domain([0, d3.max(grouped, d => d.totalRevenue)]).range([8, 44]);
+  const r = d3.scaleSqrt().domain([0, d3.max(grouped, d => d.count)]).range([5, 24]);
 
   g.append('g')
     .attr('transform', `translate(0,${H})`)
@@ -668,10 +690,12 @@ function drawFinance(decade = 'all', genreFilter = null) {
     .call(ax => ax.selectAll('text').attr('fill', 'rgba(255,255,255,0.7)').attr('font-size', '11px'))
     .call(ax => ax.selectAll('line,.domain').attr('stroke', 'rgba(255,255,255,0.25)'));
 
-  g.append('text').attr('x', W / 2).attr('y', H + 38).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Average budget (log scale)');
-  g.append('text').attr('transform', `translate(-48,${H / 2}) rotate(-90)`).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Average revenue (log scale)');
+  g.append('text').attr('x', W / 2).attr('y', H + 38).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Median budget (log scale)');
+  g.append('text').attr('transform', `translate(-48,${H / 2}) rotate(-90)`).attr('text-anchor', 'middle').attr('fill', 'rgba(255,255,255,0.75)').text('Median revenue (log scale)');
 
+  d3.selectAll('.finance-tooltip').remove();
   const tooltip = d3.select('body').append('div')
+    .attr('class', 'finance-tooltip')
     .style('position', 'fixed')
     .style('background', 'rgba(14,18,28,0.97)')
     .style('color', '#e5e8f0')
@@ -683,14 +707,32 @@ function drawFinance(decade = 'all', genreFilter = null) {
     .style('border', '1px solid rgba(255,255,255,0.15)')
     .style('z-index', '9999');
 
+  const nodes = grouped
+    .sort((a, b) => b.count - a.count)
+    .map(d => ({
+      ...d,
+      x: x(d.budget),
+      y: y(d.revenue)
+    }));
+
+  d3.forceSimulation(nodes)
+    .force('x', d3.forceX(d => x(d.budget)).strength(0.25))
+    .force('y', d3.forceY(d => y(d.revenue)).strength(0.25))
+    .force('collide', d3.forceCollide(d => r(d.count) + 2))
+    .stop()
+    .tick(120);
+
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const moneyInMillions = d3.format(',.1f');
+
   g.selectAll('circle')
-    .data(grouped.sort((a, b) => b.totalRevenue - a.totalRevenue))
+    .data(nodes)
     .join('circle')
-    .attr('cx', d => x(d.budget))
-    .attr('cy', d => y(d.revenue))
-    .attr('r', d => r(d.totalRevenue))
+    .attr('cx', d => clamp(d.x, r(d.count), W - r(d.count)))
+    .attr('cy', d => clamp(d.y, r(d.count), H - r(d.count)))
+    .attr('r', d => r(d.count))
     .attr('fill', d => GENRE_COLORS[d.genre] || '#999')
-    .attr('fill-opacity', 0.58)
+    .attr('fill-opacity', 0.42)
     .attr('stroke', 'rgba(255,255,255,0.8)')
     .attr('stroke-width', 1.2)
     .style('cursor', 'pointer')
@@ -699,7 +741,7 @@ function drawFinance(decade = 'all', genreFilter = null) {
         .style('display', 'block')
         .style('left', `${event.clientX + 14}px`)
         .style('top', `${event.clientY - 10}px`)
-        .html(`<strong>${d.genre}</strong><br/>Budget: $${d3.format(',.0f')(d.budget)}<br/>Revenue: $${d3.format(',.0f')(d.revenue)}<br/>Movies: ${d.count}`);
+        .html(`<strong>${d.genre}</strong><br/>Median budget: $${moneyInMillions(d.budget / 1e6)}M<br/>Median revenue: $${moneyInMillions(d.revenue / 1e6)}M<br/>Movies: ${d.count}`);
     })
     .on('mouseleave', () => tooltip.style('display', 'none'))
     .on('click', function(_, d) {
