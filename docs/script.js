@@ -656,6 +656,7 @@ function drawFinance(decade = 'all', genreFilter = null) {
     budget: d3.median(rows, d => d.budget) || 0,
     revenue: d3.median(rows, d => d.revenue) || 0,
     totalRevenue: d3.sum(rows, d => d.revenue) || 0,
+    medianRoi: d3.median(rows, d => d.roi) || 0,
     count: rows.length,
     movies: rows
   })).filter(d => d.budget > 0 && d.revenue > 0);
@@ -725,12 +726,9 @@ function drawFinance(decade = 'all', genreFilter = null) {
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const moneyInMillions = d3.format(',.1f');
-  const bubbleFill = genre => {
-    const base = d3.hsl(GENRE_COLORS[genre] || '#999999');
-    base.s = Math.min(1, base.s * 1.15);
-    base.l = Math.max(0.4, Math.min(0.62, base.l));
-    return base.formatHex();
-  };
+  const maxAbsRoi = d3.max(nodes, d => Math.abs(d.medianRoi)) || 1;
+  const glowScale = d3.scaleLinear().domain([0, maxAbsRoi]).range([0.28, 0.78]).clamp(true);
+  const glowSize = d3.scaleLinear().domain([0, maxAbsRoi]).range([4, 12]).clamp(true);
 
   g.selectAll('circle')
     .data(nodes)
@@ -738,11 +736,17 @@ function drawFinance(decade = 'all', genreFilter = null) {
     .attr('cx', d => clamp(d.x, r(d.count), W - r(d.count)))
     .attr('cy', d => clamp(d.y, r(d.count), H - r(d.count)))
     .attr('r', d => r(d.count))
-    .attr('fill', d => bubbleFill(d.genre))
+    .attr('fill', d => GENRE_COLORS[d.genre] || '#999')
     .attr('fill-opacity', 0.44)
     .attr('stroke', '#ffffff')
     .attr('stroke-opacity', 0.95)
     .attr('stroke-width', 1.35)
+    .style('filter', d => {
+      const c = d3.color(GENRE_COLORS[d.genre] || '#999999');
+      const alpha = glowScale(Math.abs(d.medianRoi));
+      const blur = glowSize(Math.abs(d.medianRoi));
+      return `drop-shadow(0 0 ${blur}px rgba(${c.r}, ${c.g}, ${c.b}, ${alpha}))`;
+    })
     .style('cursor', 'pointer')
     .on('mousemove', function(event, d) {
       tooltip
