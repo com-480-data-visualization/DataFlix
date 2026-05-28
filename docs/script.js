@@ -57,29 +57,34 @@ Promise.all([
   genres.forEach(d => d.genres.forEach(g => genreSet.add(g.name)));
   const allGenres = Array.from(genreSet).sort();
 
-  // Genre buttons
-  const genresContainer = document.getElementById('production-genres');
-  const allBtn = document.createElement('button');
-  allBtn.className = 'chip active';
-  allBtn.textContent = 'All genres';
-  allBtn.onclick = () => {
-    genresContainer.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-    allBtn.classList.add('active');
-    drawProduction('all');
-  };
-  genresContainer.appendChild(allBtn);
+// Genre buttons
+const genresContainer = document.getElementById('production-genres');
 
-  allGenres.forEach(genre => {
-    const btn = document.createElement('button');
-    btn.className = 'chip';
-    btn.textContent = genre;
-    btn.onclick = () => {
-      genresContainer.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      drawProduction(genre);
-    };
-    genresContainer.appendChild(btn);
-  });
+const allBtn = document.createElement('button');
+allBtn.className = 'chip active';
+allBtn.textContent = 'All genres';
+allBtn.dataset.genre = 'all';
+
+allBtn.onclick = () => {
+  activeGenreFilter = null;
+  applyGenreFilter(null);
+};
+
+genresContainer.appendChild(allBtn);
+
+allGenres.forEach(genre => {
+  const btn = document.createElement('button');
+  btn.className = 'chip';
+  btn.textContent = genre;
+  btn.dataset.genre = genre;
+
+  btn.onclick = () => {
+    activeGenreFilter = genre;
+    applyGenreFilter(genre);
+  };
+
+  genresContainer.appendChild(btn);
+});
 
   drawProduction('all');
   drawGenres();
