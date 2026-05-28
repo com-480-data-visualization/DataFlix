@@ -937,7 +937,7 @@ a {
 
 .lamp {
   --lamp-x-start: -44vw;
-  --lamp-x-center: 57.5vw;
+  --lamp-x-center: 60vw;
   position: absolute;
   left: 0;
   top: 0;
@@ -1162,7 +1162,7 @@ a {
 
 .title-gap {
   display: inline-block;
-  width: clamp(110px, 12vw, 170px);
+  width: clamp(122px, 13vw, 186px);
   height: 1px;
 }
 
@@ -1297,7 +1297,7 @@ a {
 
   .lamp {
     --lamp-x-start: -56vw;
-    --lamp-x-center: 56.5vw;
+    --lamp-x-center: 58.5vw;
   }
 
   .intro-title {
@@ -1310,7 +1310,7 @@ a {
   }
 
   .title-gap {
-    width: clamp(72px, 11vw, 108px);
+    width: clamp(82px, 12vw, 118px);
   }
 }
 
