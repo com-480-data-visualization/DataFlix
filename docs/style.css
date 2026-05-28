@@ -937,7 +937,7 @@ a {
 
 .lamp {
   --lamp-x-start: -44vw;
-  --lamp-x-center: 62vw;
+  --lamp-x-center: 56vw;
   position: absolute;
   left: 0;
   top: 0;
@@ -1123,7 +1123,7 @@ a {
   position: absolute;
   left: 50vw;
   top: calc(var(--lamp-y) + 24vh);
-  transform: translate(-56%, -50%);
+  transform: translate(-50%, -50%);
   width: min(96vw, 1240px);
   display: block;
   text-align: center;
@@ -1162,7 +1162,7 @@ a {
 
 .title-gap {
   display: inline-block;
-  width: clamp(44px, 5.2vw, 72px);
+  width: clamp(110px, 12vw, 170px);
   height: 1px;
 }
 
@@ -1297,12 +1297,12 @@ a {
 
   .lamp {
     --lamp-x-start: -56vw;
-    --lamp-x-center: 60vw;
+    --lamp-x-center: 55vw;
   }
 
   .intro-title {
     top: calc(var(--lamp-y) + 20vh);
-    transform: translate(-54%, -50%);
+    transform: translate(-50%, -50%);
   }
 
   .title-word {
@@ -1310,7 +1310,7 @@ a {
   }
 
   .title-gap {
-    width: clamp(28px, 4vw, 42px);
+    width: clamp(72px, 11vw, 108px);
   }
 }
 
