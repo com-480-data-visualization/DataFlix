@@ -1274,7 +1274,7 @@ function initCinematicLampIntro() {
   };
 
   flash.addEventListener('animationend', finishIntro, { once: true });
-  setTimeout(finishIntro, 7600);
+  setTimeout(finishIntro, 8200);
 }
 
 initCountdownLoader();
