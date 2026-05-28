@@ -937,7 +937,7 @@ a {
 
 .lamp {
   --lamp-x-start: -44vw;
-  --lamp-x-center: 56vw;
+  --lamp-x-center: 62vw;
   position: absolute;
   left: 0;
   top: 0;
@@ -1214,10 +1214,10 @@ a {
     transform: translate3d(31vw, calc(var(--lamp-y) - 2.3vh), 0) rotateY(-16deg) rotateZ(0deg);
   }
   78% {
-    transform: translate3d(43vw, calc(var(--lamp-y) + 0.3vh), 0) rotateY(-14deg) rotateZ(0deg);
+    transform: translate3d(48vw, calc(var(--lamp-y) + 0.3vh), 0) rotateY(-14deg) rotateZ(0deg);
   }
   84% {
-    transform: translate3d(43vw, calc(var(--lamp-y) - 1.9vh), 0) rotateY(-14deg) rotateZ(0deg);
+    transform: translate3d(48vw, calc(var(--lamp-y) - 1.9vh), 0) rotateY(-14deg) rotateZ(0deg);
   }
   92% {
     transform: translate3d(calc(var(--lamp-x-center) - 50.4%), calc(var(--lamp-y) + 0.15vh), 0) rotateY(-12deg) rotateZ(0deg);
@@ -1297,7 +1297,7 @@ a {
 
   .lamp {
     --lamp-x-start: -56vw;
-    --lamp-x-center: 54vw;
+    --lamp-x-center: 60vw;
   }
 
   .intro-title {
