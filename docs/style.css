@@ -945,8 +945,9 @@ a {
   height: clamp(80px, 12vw, 155px);
   transform-style: preserve-3d;
   transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-38deg) rotateZ(-6deg);
-  animation: lampEnter 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-play-state: paused;
+  animation:
+    lampEnter 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    lampSettle 0.75s ease-in-out 3.45s 2 alternate;
 }
 
 .lamp-head {
@@ -959,6 +960,9 @@ a {
   border: 2px solid rgba(255, 255, 255, 0.26);
   background: linear-gradient(145deg, #4f5361 0%, #2c2f3a 55%, #171820 100%);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.48);
+  transform-origin: 20% 50%;
+  transform: rotateY(-28deg);
+  animation: lampHeadLook 0.9s cubic-bezier(0.2, 0.9, 0.2, 1) 2.45s forwards;
 }
 
 .lamp-lens {
@@ -1004,8 +1008,7 @@ a {
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(222, 232, 255, 0.2) 42%, rgba(197, 218, 255, 0.06) 66%, rgba(255, 255, 255, 0) 78%);
   filter: blur(0.7px);
-  animation: beamWarmup 2.2s ease-out 2.2s forwards;
-  animation-play-state: paused;
+  animation: beamWarmup 2.2s ease-out 4.0s forwards;
 }
 
 .lamp-glow {
@@ -1019,8 +1022,7 @@ a {
   border-radius: 50%;
   opacity: 0;
   background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.88) 30%, rgba(246, 250, 255, 0.52) 55%, rgba(238, 246, 255, 0.16) 72%, rgba(255, 255, 255, 0) 84%);
-  animation: projectorBlast 2.6s cubic-bezier(0.22, 1, 0.36, 1) 2.55s forwards;
-  animation-play-state: paused;
+  animation: projectorBlast 2.6s cubic-bezier(0.22, 1, 0.36, 1) 4.35s forwards;
 }
 
 .intro-flash {
@@ -1028,15 +1030,7 @@ a {
   inset: 0;
   background: #fff;
   opacity: 0;
-  animation: flashToHome 0.65s ease-out 4.85s forwards;
-  animation-play-state: paused;
-}
-
-.cinematic-intro.play .lamp,
-.cinematic-intro.play .lamp-beam,
-.cinematic-intro.play .lamp-glow,
-.cinematic-intro.play .intro-flash {
-  animation-play-state: running;
+  animation: flashToHome 0.65s ease-out 6.65s forwards;
 }
 
 .cinematic-intro.done {
@@ -1048,14 +1042,53 @@ a {
   0% {
     transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-38deg) rotateZ(-6deg);
   }
-  68% {
-    transform: translate3d(calc(var(--lamp-x-center) - 52%), var(--lamp-y), 0) rotateY(-8deg) rotateZ(0deg);
+  20% {
+    transform: translate3d(-16vw, calc(var(--lamp-y) - 0.6vh), 0) rotateY(-30deg) rotateZ(-4deg);
+  }
+  32% {
+    transform: translate3d(2vw, calc(var(--lamp-y) + 1.4vh), 0) rotateY(-24deg) rotateZ(-2deg);
+  }
+  44% {
+    transform: translate3d(18vw, calc(var(--lamp-y) - 1.2vh), 0) rotateY(-18deg) rotateZ(-1deg);
+  }
+  57% {
+    transform: translate3d(31vw, calc(var(--lamp-y) + 1.8vh), 0) rotateY(-13deg) rotateZ(-0.5deg);
+  }
+  72% {
+    transform: translate3d(43vw, calc(var(--lamp-y) - 1.1vh), 0) rotateY(-8deg) rotateZ(0deg);
   }
   84% {
-    transform: translate3d(calc(var(--lamp-x-center) - 50%), var(--lamp-y), 0) rotateY(0deg) rotateZ(0deg);
+    transform: translate3d(calc(var(--lamp-x-center) - 51%), calc(var(--lamp-y) + 0.7vh), 0) rotateY(-5deg) rotateZ(0deg);
+  }
+  93% {
+    transform: translate3d(calc(var(--lamp-x-center) - 49.6%), calc(var(--lamp-y) - 0.45vh), 0) rotateY(-2deg) rotateZ(0deg);
   }
   100% {
     transform: translate3d(calc(var(--lamp-x-center) - 50%), var(--lamp-y), 0) rotateY(0deg) rotateZ(0deg);
+  }
+}
+
+@keyframes lampHeadLook {
+  0% {
+    transform: rotateY(-28deg);
+  }
+  70% {
+    transform: rotateY(4deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes lampSettle {
+  0% {
+    transform: translate3d(calc(var(--lamp-x-center) - 50%), var(--lamp-y), 0) rotateY(0deg) rotateZ(0deg);
+  }
+  50% {
+    transform: translate3d(calc(var(--lamp-x-center) - 50.15%), calc(var(--lamp-y) - 0.32vh), 0) rotateY(0deg) rotateZ(-0.25deg);
+  }
+  100% {
+    transform: translate3d(calc(var(--lamp-x-center) - 49.9%), calc(var(--lamp-y) + 0.22vh), 0) rotateY(0deg) rotateZ(0.2deg);
   }
 }
 

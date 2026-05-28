@@ -1262,15 +1262,19 @@ function initCinematicLampIntro() {
     existingCountdown.remove();
   }
 
-  intro.classList.add('play');
-
-  flash.addEventListener('animationend', () => {
+  let introFinished = false;
+  const finishIntro = () => {
+    if (introFinished) return;
+    introFinished = true;
     intro.classList.add('done');
     setTimeout(() => {
       intro.remove();
       document.body.classList.remove('intro-playing');
     }, 460);
-  }, { once: true });
+  };
+
+  flash.addEventListener('animationend', finishIntro, { once: true });
+  setTimeout(finishIntro, 7600);
 }
 
 initCountdownLoader();
