@@ -1119,6 +1119,50 @@ a {
   z-index: 5;
 }
 
+.intro-title {
+  position: absolute;
+  left: 50%;
+  top: 44vh;
+  transform: translate(-50%, -50%);
+  width: min(88vw, 980px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 14px);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.title-letter {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.2rem, 5.2vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(245, 241, 224, 0.96);
+  text-shadow:
+    0 2px 0 rgba(50, 40, 20, 0.55),
+    0 10px 24px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(18px) scale(0.92);
+  animation: titleLetterIn 0.45s ease-out calc(3.55s + var(--i) * 70ms) forwards;
+}
+
+.title-letter.left {
+  margin-right: 0;
+}
+
+.title-letter.right {
+  margin-left: 0;
+}
+
+.title-letter.left:last-of-type {
+  margin-right: clamp(26px, 3.2vw, 46px);
+}
+
+.title-letter.right:first-of-type {
+  margin-left: clamp(26px, 3.2vw, 46px);
+}
+
 .intro-flash {
   position: absolute;
   inset: 0;
@@ -1230,6 +1274,17 @@ a {
 @keyframes introPulse {
   0% { opacity: 0.9; }
   100% { opacity: 1; }
+}
+
+@keyframes titleLetterIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (max-width: 760px) {
