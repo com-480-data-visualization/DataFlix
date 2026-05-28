@@ -954,11 +954,11 @@ a {
 .lamp-head {
   position: absolute;
   left: 50%;
-  top: 3%;
-  width: 64%;
-  height: 34%;
+  top: 2%;
+  width: 38%;
+  height: 46%;
   transform: translateX(-50%);
-  border-radius: 36% 36% 46% 46%;
+  border-radius: 30px;
   border: 2px solid rgba(255, 255, 255, 0.26);
   background: linear-gradient(165deg, #6a7081 0%, #383e4c 56%, #1d2029 100%);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
@@ -982,9 +982,9 @@ a {
 .lamp-lens {
   position: absolute;
   left: 50%;
-  top: 56%;
-  width: 40%;
-  height: 58%;
+  top: 50%;
+  width: 58%;
+  height: 34%;
   border-radius: 50%;
   border: 2px solid rgba(245, 247, 255, 0.72);
   transform: translate(-50%, -50%);
@@ -995,9 +995,9 @@ a {
 .lamp-trunk {
   position: absolute;
   left: 50%;
-  top: 36%;
+  top: 44%;
   width: 10%;
-  height: 43%;
+  height: 33%;
   transform: translateX(-50%);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.14);
