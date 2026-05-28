@@ -941,8 +941,8 @@ a {
   position: absolute;
   left: 0;
   top: 0;
-  width: clamp(120px, 17vw, 230px);
-  height: clamp(80px, 12vw, 155px);
+  width: clamp(150px, 21vw, 280px);
+  height: clamp(170px, 25vw, 300px);
   overflow: visible;
   transform-style: flat;
   transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-26deg) rotateZ(0deg);
@@ -953,24 +953,38 @@ a {
 
 .lamp-head {
   position: absolute;
-  right: 2%;
-  top: 4%;
-  width: 56%;
-  height: 48%;
-  border-radius: 52% 52% 46% 46%;
-  border: 2px solid rgba(255, 255, 255, 0.24);
-  background: linear-gradient(155deg, #585d6d 0%, #323744 58%, #1a1c25 100%);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+  left: 50%;
+  top: 3%;
+  width: 64%;
+  height: 34%;
+  transform: translateX(-50%);
+  border-radius: 36% 36% 46% 46%;
+  border: 2px solid rgba(255, 255, 255, 0.26);
+  background: linear-gradient(165deg, #6a7081 0%, #383e4c 56%, #1d2029 100%);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
   transform: none;
   z-index: 4;
+}
+
+.lamp-head::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -10%;
+  width: 42%;
+  height: 20%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8b91a3 0%, #505868 100%);
+  opacity: 0.55;
 }
 
 .lamp-lens {
   position: absolute;
   left: 50%;
-  top: 53%;
-  width: 36%;
-  height: 52%;
+  top: 56%;
+  width: 40%;
+  height: 58%;
   border-radius: 50%;
   border: 2px solid rgba(245, 247, 255, 0.72);
   transform: translate(-50%, -50%);
@@ -980,34 +994,38 @@ a {
 
 .lamp-trunk {
   position: absolute;
-  left: 46%;
-  top: 40%;
-  width: 8%;
-  height: 38%;
+  left: 50%;
+  top: 36%;
+  width: 10%;
+  height: 43%;
   transform: translateX(-50%);
-  border-radius: 20px;
+  border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(180deg, #656b7d 0%, #2b2f3c 100%);
+  background: linear-gradient(180deg, #757c90 0%, #434a5c 40%, #2a2e3a 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.22);
   z-index: 2;
 }
 
 .lamp-base {
   position: absolute;
   left: 50%;
-  bottom: 2%;
-  width: 52%;
-  height: 18%;
+  bottom: 5%;
+  width: 62%;
+  height: 14%;
   transform: translateX(-50%);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(180deg, #3f4352, #1b1d25);
+  background: linear-gradient(180deg, #565d70, #252a35);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.14);
   z-index: 1;
 }
 
 .lamp-beam {
   position: absolute;
-  left: 78%;
-  top: 28%;
+  left: 50%;
+  top: 22%;
   width: 14vmin;
   height: 14vmin;
   opacity: 0;
@@ -1021,8 +1039,8 @@ a {
 
 .lamp-glow {
   position: absolute;
-  left: 78%;
-  top: 28%;
+  left: 50%;
+  top: 22%;
   width: min(210vw, 240vh);
   height: min(210vw, 240vh);
   transform: translate(-50%, -50%) scale(0.03);
