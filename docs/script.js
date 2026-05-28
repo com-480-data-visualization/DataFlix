@@ -18,7 +18,6 @@ const FINANCE_MAX_ROI = 5000;
 let activeGenreFilter = null;
 
 initCinematicLampIntro();
-initCountdownLoader();
 
 Promise.all([
   fetch('data/production.json').then(r => r.json()),
@@ -1258,6 +1257,13 @@ function initCinematicLampIntro() {
 
   document.body.classList.add('intro-playing');
 
+  const existingCountdown = document.getElementById('countdown-loader');
+  if (existingCountdown) {
+    existingCountdown.remove();
+  }
+
+  intro.classList.add('play');
+
   flash.addEventListener('animationend', () => {
     intro.classList.add('done');
     setTimeout(() => {
@@ -1266,6 +1272,8 @@ function initCinematicLampIntro() {
     }, 460);
   }, { once: true });
 }
+
+initCountdownLoader();
 
 /* ═══════════════════════════════════════════════════════════════════════
    POPULARITY vs QUALITY HEATMAP

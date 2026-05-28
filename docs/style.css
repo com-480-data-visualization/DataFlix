@@ -946,6 +946,7 @@ a {
   transform-style: preserve-3d;
   transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-38deg) rotateZ(-6deg);
   animation: lampEnter 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-play-state: paused;
 }
 
 .lamp-head {
@@ -1004,6 +1005,7 @@ a {
     radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(222, 232, 255, 0.2) 42%, rgba(197, 218, 255, 0.06) 66%, rgba(255, 255, 255, 0) 78%);
   filter: blur(0.7px);
   animation: beamWarmup 2.2s ease-out 2.2s forwards;
+  animation-play-state: paused;
 }
 
 .lamp-glow {
@@ -1018,6 +1020,7 @@ a {
   opacity: 0;
   background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.88) 30%, rgba(246, 250, 255, 0.52) 55%, rgba(238, 246, 255, 0.16) 72%, rgba(255, 255, 255, 0) 84%);
   animation: projectorBlast 2.6s cubic-bezier(0.22, 1, 0.36, 1) 2.55s forwards;
+  animation-play-state: paused;
 }
 
 .intro-flash {
@@ -1026,6 +1029,14 @@ a {
   background: #fff;
   opacity: 0;
   animation: flashToHome 0.65s ease-out 4.85s forwards;
+  animation-play-state: paused;
+}
+
+.cinematic-intro.play .lamp,
+.cinematic-intro.play .lamp-beam,
+.cinematic-intro.play .lamp-glow,
+.cinematic-intro.play .intro-flash {
+  animation-play-state: running;
 }
 
 .cinematic-intro.done {
