@@ -937,7 +937,7 @@ a {
 
 .lamp {
   --lamp-x-start: -44vw;
-  --lamp-x-center: 80vw;
+  --lamp-x-center: 62vw;
   position: absolute;
   left: 0;
   top: 0;
@@ -1301,7 +1301,7 @@ a {
   }
 
   .intro-title {
-    top: calc(var(--lamp-y) + 5vh);
+    top: calc(var(--lamp-y) + 20vh);
     transform: translate(-54%, -50%);
   }
 
