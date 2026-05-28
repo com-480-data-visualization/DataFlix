@@ -953,58 +953,61 @@ a {
 
 .lamp-head {
   position: absolute;
-  right: 0;
-  top: 12%;
-  width: 52%;
-  height: 58%;
-  border-radius: 60% 48% 46% 56%;
-  border: 2px solid rgba(255, 255, 255, 0.26);
-  background: linear-gradient(145deg, #4f5361 0%, #2c2f3a 55%, #171820 100%);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.48);
+  right: 2%;
+  top: 4%;
+  width: 56%;
+  height: 48%;
+  border-radius: 52% 52% 46% 46%;
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  background: linear-gradient(155deg, #585d6d 0%, #323744 58%, #1a1c25 100%);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
   transform: none;
   z-index: 4;
 }
 
 .lamp-lens {
   position: absolute;
-  right: 11%;
-  top: 27%;
-  width: 34%;
-  height: 44%;
+  left: 50%;
+  top: 53%;
+  width: 36%;
+  height: 52%;
   border-radius: 50%;
   border: 2px solid rgba(245, 247, 255, 0.72);
-  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.42), rgba(186, 196, 234, 0.08) 68%, rgba(40, 46, 72, 0));
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.55), rgba(186, 196, 234, 0.12) 62%, rgba(40, 46, 72, 0) 82%);
   z-index: 5;
 }
 
-.lamp-arm {
+.lamp-trunk {
   position: absolute;
-  left: 14%;
-  top: 44%;
-  width: 54%;
-  height: 14%;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #666a79, #2c2e36);
+  left: 46%;
+  top: 40%;
+  width: 8%;
+  height: 38%;
+  transform: translateX(-50%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #656b7d 0%, #2b2f3c 100%);
   z-index: 2;
-  transform: translateZ(0);
 }
 
 .lamp-base {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 56%;
-  height: 26%;
+  left: 50%;
+  bottom: 2%;
+  width: 52%;
+  height: 18%;
+  transform: translateX(-50%);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(180deg, #414452, #1b1c22);
+  background: linear-gradient(180deg, #3f4352, #1b1d25);
   z-index: 1;
 }
 
 .lamp-beam {
   position: absolute;
-  left: 76%;
-  top: 40%;
+  left: 78%;
+  top: 28%;
   width: 14vmin;
   height: 14vmin;
   opacity: 0;
@@ -1018,8 +1021,8 @@ a {
 
 .lamp-glow {
   position: absolute;
-  left: 76%;
-  top: 40%;
+  left: 78%;
+  top: 28%;
   width: min(210vw, 240vh);
   height: min(210vw, 240vh);
   transform: translate(-50%, -50%) scale(0.03);
