@@ -945,7 +945,7 @@ a {
   height: clamp(230px, 33vw, 390px);
   overflow: visible;
   transform-style: preserve-3d;
-  filter: saturate(1.08);
+  filter: saturate(1.35) contrast(1.04);
   transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-26deg) rotateZ(0deg);
   animation:
     lampEnter 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards,
@@ -954,11 +954,11 @@ a {
 
 .lamp-head {
   position: absolute;
-  left: 59%;
-  top: 3%;
-  width: 51%;
-  height: 28%;
-  transform: rotate(16deg);
+  left: 47%;
+  top: 6%;
+  width: 46%;
+  height: 26%;
+  transform: rotate(14deg);
   border-radius: 26px 30px 24px 24px;
   border: 2px solid rgba(255, 247, 236, 0.62);
   background:
@@ -984,8 +984,8 @@ a {
 
 .lamp-lens {
   position: absolute;
-  left: 76%;
-  top: 68%;
+  left: 70%;
+  top: 66%;
   width: 38%;
   height: 34%;
   border-radius: 50%;
@@ -1003,7 +1003,7 @@ a {
   width: 8.6%;
   border-radius: 999px;
   border: 1px solid rgba(255, 240, 224, 0.52);
-  background: linear-gradient(180deg, #f5c79c 0%, #cf744c 45%, #863d2b 100%);
+  background: linear-gradient(180deg, #ffd9a7 0%, #ea884f 45%, #a7442f 100%);
   box-shadow: inset 0 0 0 1px rgba(113, 45, 27, 0.26);
   z-index: 2;
 }
@@ -1035,7 +1035,7 @@ a {
   border: 1px solid rgba(255, 244, 229, 0.68);
   background:
     radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0) 42%),
-    linear-gradient(180deg, #ffd9b7 0%, #de8b5c 42%, #8f462f 100%);
+    linear-gradient(180deg, #ffe2bf 0%, #ef9961 42%, #a34630 100%);
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.32),
     inset 0 -1px 3px rgba(107, 45, 27, 0.42);
@@ -1045,6 +1045,19 @@ a {
 .lamp-joint-base {
   left: 40%;
   top: 68%;
+}
+
+.lamp-trunk {
+  position: absolute;
+  left: 47.5%;
+  bottom: 12%;
+  width: 9%;
+  height: 15%;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 242, 226, 0.58);
+  background: linear-gradient(180deg, #ffd7a4 0%, #e5814a 52%, #923f2d 100%);
+  box-shadow: inset 0 0 0 1px rgba(112, 45, 27, 0.24);
+  z-index: 2;
 }
 
 .lamp-joint-mid {
@@ -1068,7 +1081,7 @@ a {
   border: 1px solid rgba(255, 240, 224, 0.56);
   background:
     radial-gradient(circle at 30% 32%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 46%),
-    linear-gradient(180deg, #f1c28f 0%, #cf744c 54%, #7e392b 100%);
+    linear-gradient(180deg, #ffd4a1 0%, #ea854c 54%, #8e3d2d 100%);
   box-shadow:
     0 10px 26px rgba(0, 0, 0, 0.42),
     inset 0 2px 4px rgba(255, 245, 232, 0.26);
@@ -1077,8 +1090,8 @@ a {
 
 .lamp-beam {
   position: absolute;
-  left: 73%;
-  top: 22%;
+  left: 79%;
+  top: 23%;
   width: 14vmin;
   height: 14vmin;
   opacity: 0;
@@ -1092,8 +1105,8 @@ a {
 
 .lamp-glow {
   position: absolute;
-  left: 73%;
-  top: 22%;
+  left: 79%;
+  top: 23%;
   width: min(210vw, 240vh);
   height: min(210vw, 240vh);
   transform: translate(-50%, -50%) scale(0.03);
