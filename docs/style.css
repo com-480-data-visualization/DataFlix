@@ -937,7 +937,7 @@ a {
 .lamp {
   --lamp-x-start: -44vw;
   --lamp-x-center: 50vw;
-  --lamp-y: 48vh;
+  --lamp-y: 44vh;
   position: absolute;
   left: 0;
   top: 0;
@@ -1227,84 +1227,6 @@ a {
   100% { opacity: 1; }
 }
 
-/* Intro section fun-fact (separate from cinematic overlay) */
-.intro-funfact {
-  margin-top: 14px;
-  width: 100%;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(14, 17, 24, 0.82);
-}
-
-.intro-funfact p {
-  margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.35;
-  color: #eef2ff;
-}
-
-.fact-lamp {
-  position: relative;
-  width: 34px;
-  height: 60px;
-  flex: 0 0 34px;
-}
-
-.fact-lamp-base,
-.fact-lamp-trunk,
-.fact-lamp-head {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: block;
-}
-
-.fact-lamp-base {
-  bottom: 0;
-  width: 24px;
-  height: 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(180deg, #565d70, #252a35);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.14);
-}
-
-.fact-lamp-trunk {
-  bottom: 7px;
-  width: 4px;
-  height: 31px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #757c90 0%, #434a5c 40%, #2a2e3a 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.fact-lamp-head {
-  top: 6px;
-  width: 16px;
-  height: 12px;
-  border-radius: 5px 5px 4px 4px;
-  background: linear-gradient(165deg, #6f7688 0%, #3e4554 56%, #1f232d 100%);
-  border: 1px solid rgba(255, 255, 255, 0.24);
-}
-
-.fact-lamp-head::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -3px;
-  width: 7px;
-  height: 4px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 190, 120, 0.9);
-  background: radial-gradient(circle at 40% 40%, rgba(255, 245, 210, 0.92), rgba(255, 181, 102, 0.45) 56%, rgba(255, 133, 61, 0.16) 80%, rgba(40, 46, 72, 0) 100%);
-  box-shadow: 0 0 8px rgba(255, 165, 88, 0.42);
-}
-
 @keyframes introPulse {
   0% { opacity: 0.9; }
   100% { opacity: 1; }
@@ -1313,7 +1235,7 @@ a {
 @media (max-width: 760px) {
   .lamp {
     --lamp-x-start: -56vw;
-    --lamp-y: 52vh;
+    --lamp-y: 48vh;
   }
 }
 
