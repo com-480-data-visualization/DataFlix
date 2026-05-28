@@ -945,7 +945,7 @@ a {
   height: clamp(80px, 12vw, 155px);
   overflow: visible;
   transform-style: preserve-3d;
-  transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-64deg) rotateZ(-6deg);
+  transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-64deg) rotateZ(0deg);
   animation:
     lampEnter 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards,
     lampFaceUser 0.95s cubic-bezier(0.2, 0.9, 0.2, 1) 3.45s forwards,
@@ -1044,37 +1044,37 @@ a {
 
 @keyframes lampEnter {
   0% {
-    transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-64deg) rotateZ(-6deg);
+    transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-64deg) rotateZ(0deg);
   }
   10% {
-    transform: translate3d(-27vw, calc(var(--lamp-y) + 1.6vh), 0) rotateY(-58deg) rotateZ(-5deg);
+    transform: translate3d(-27vw, calc(var(--lamp-y) + 1.6vh), 0) rotateY(-58deg) rotateZ(0deg);
   }
   16% {
-    transform: translate3d(-27vw, calc(var(--lamp-y) - 4.2vh), 0) rotateY(-58deg) rotateZ(-5deg);
+    transform: translate3d(-27vw, calc(var(--lamp-y) - 4.2vh), 0) rotateY(-58deg) rotateZ(0deg);
   }
   22% {
-    transform: translate3d(-15vw, calc(var(--lamp-y) + 1.5vh), 0) rotateY(-52deg) rotateZ(-3.6deg);
+    transform: translate3d(-15vw, calc(var(--lamp-y) + 1.5vh), 0) rotateY(-52deg) rotateZ(0deg);
   }
   28% {
-    transform: translate3d(-15vw, calc(var(--lamp-y) - 3.9vh), 0) rotateY(-52deg) rotateZ(-3.6deg);
+    transform: translate3d(-15vw, calc(var(--lamp-y) - 3.9vh), 0) rotateY(-52deg) rotateZ(0deg);
   }
   36% {
-    transform: translate3d(0vw, calc(var(--lamp-y) + 1.2vh), 0) rotateY(-46deg) rotateZ(-2.2deg);
+    transform: translate3d(0vw, calc(var(--lamp-y) + 1.2vh), 0) rotateY(-46deg) rotateZ(0deg);
   }
   42% {
-    transform: translate3d(0vw, calc(var(--lamp-y) - 3.6vh), 0) rotateY(-46deg) rotateZ(-2.2deg);
+    transform: translate3d(0vw, calc(var(--lamp-y) - 3.6vh), 0) rotateY(-46deg) rotateZ(0deg);
   }
   50% {
-    transform: translate3d(16vw, calc(var(--lamp-y) + 1.0vh), 0) rotateY(-40deg) rotateZ(-1.4deg);
+    transform: translate3d(16vw, calc(var(--lamp-y) + 1.0vh), 0) rotateY(-40deg) rotateZ(0deg);
   }
   56% {
-    transform: translate3d(16vw, calc(var(--lamp-y) - 3.2vh), 0) rotateY(-40deg) rotateZ(-1.4deg);
+    transform: translate3d(16vw, calc(var(--lamp-y) - 3.2vh), 0) rotateY(-40deg) rotateZ(0deg);
   }
   64% {
-    transform: translate3d(31vw, calc(var(--lamp-y) + 0.8vh), 0) rotateY(-34deg) rotateZ(-0.8deg);
+    transform: translate3d(31vw, calc(var(--lamp-y) + 0.8vh), 0) rotateY(-34deg) rotateZ(0deg);
   }
   70% {
-    transform: translate3d(31vw, calc(var(--lamp-y) - 2.8vh), 0) rotateY(-34deg) rotateZ(-0.8deg);
+    transform: translate3d(31vw, calc(var(--lamp-y) - 2.8vh), 0) rotateY(-34deg) rotateZ(0deg);
   }
   78% {
     transform: translate3d(43vw, calc(var(--lamp-y) + 0.6vh), 0) rotateY(-30deg) rotateZ(0deg);
