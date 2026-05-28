@@ -998,6 +998,7 @@ a {
   z-index: 5;
 }
 
+
 .lamp-arm {
   position: absolute;
   width: 8.6%;
@@ -1224,6 +1225,65 @@ a {
   0% { opacity: 0; }
   15% { opacity: 0.68; }
   100% { opacity: 1; }
+}
+
+/* Intro section fun-fact (separate from cinematic overlay) */
+.intro-funfact {
+  margin-top: 20px;
+  max-width: 380px;
+  justify-self: end;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 12, 18, 0.55);
+}
+
+.intro-funfact p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: #d7dceb;
+}
+
+.fact-lamp {
+  position: relative;
+  width: 32px;
+  height: 56px;
+  flex: 0 0 32px;
+}
+
+.fact-lamp-base,
+.fact-lamp-trunk,
+.fact-lamp-head {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: block;
+  background: linear-gradient(180deg, #6f7688, #2b3040);
+}
+
+.fact-lamp-base {
+  bottom: 0;
+  width: 22px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.fact-lamp-trunk {
+  bottom: 7px;
+  width: 5px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+.fact-lamp-head {
+  top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 6px;
 }
 
 @keyframes introPulse {
