@@ -941,8 +941,8 @@ a {
   position: absolute;
   left: 0;
   top: 0;
-  width: clamp(150px, 21vw, 280px);
-  height: clamp(170px, 25vw, 300px);
+  width: clamp(150px, 18vw, 250px);
+  height: clamp(230px, 33vw, 390px);
   overflow: visible;
   transform-style: flat;
   transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-26deg) rotateZ(0deg);
@@ -954,9 +954,9 @@ a {
 .lamp-head {
   position: absolute;
   left: 50%;
-  top: 2%;
-  width: 38%;
-  height: 46%;
+  top: 1%;
+  width: 36%;
+  height: 42%;
   transform: translateX(-50%);
   border-radius: 30px;
   border: 2px solid rgba(255, 255, 255, 0.26);
@@ -982,9 +982,9 @@ a {
 .lamp-lens {
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: 58%;
-  height: 34%;
+  top: 42%;
+  width: 62%;
+  height: 28%;
   border-radius: 50%;
   border: 2px solid rgba(245, 247, 255, 0.72);
   transform: translate(-50%, -50%);
@@ -995,9 +995,9 @@ a {
 .lamp-trunk {
   position: absolute;
   left: 50%;
-  top: 44%;
-  width: 10%;
-  height: 33%;
+  top: 41%;
+  width: 9%;
+  height: 43%;
   transform: translateX(-50%);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1009,9 +1009,9 @@ a {
 .lamp-base {
   position: absolute;
   left: 50%;
-  bottom: 5%;
-  width: 62%;
-  height: 14%;
+  bottom: 4%;
+  width: 56%;
+  height: 10%;
   transform: translateX(-50%);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
