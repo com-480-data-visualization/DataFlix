@@ -208,7 +208,58 @@
       </div>
     </section>
 
-    <!-- 5. FINANCE -->
+    <!-- 5 QUALITY THROUGH TIME — SANKEY -->
+    <section id="sankey" class="section split-section reveal stage-richer">
+      <div class="section-copy">
+        <p class="section-label">2.5 Quality Through Time</p>
+        <h2>How does genre quality distribute across eras?</h2>
+        <p>
+          Each ribbon connects a genre to a rating tier. The wider the flow,
+          the more films from that genre landed in that quality band.
+          Early decades appear in black-and-white — colour bleeds in as
+          cinema matures. Hit <strong>Play</strong> to watch the chart
+          evolve decade by decade.
+        </p>
+
+        <!-- Play / Pause + speed -->
+        <div class="sankey-controls">
+          <button class="sankey-play-btn" id="sankey-play-btn" aria-label="Play animation">
+            <span class="play-icon" id="sankey-play-icon">▶</span>
+            <span id="sankey-play-label">Play</span>
+          </button>
+          <div class="sankey-speed-wrap">
+            <span class="sankey-speed-label">Speed</span>
+            <input type="range" id="sankey-speed" min="400" max="2400" step="200" value="1200" />
+          </div>
+        </div>
+
+        <!-- Stars legend -->
+        <div class="sankey-star-legend">
+          <span class="sankey-legend-title">Rating tiers</span>
+          <div class="sankey-star-items" id="sankey-star-items"></div>
+        </div>
+      </div>
+
+      <div class="viz-panel sankey-viz-panel">
+        <div class="viz-header">
+          <h3>Genre → Quality flow</h3>
+          <span class="badge" id="sankey-decade-badge">—</span>
+        </div>
+
+        <!-- Decade timeline strip -->
+        <div class="sankey-timeline" id="sankey-timeline"></div>
+
+        <!-- SVG canvas -->
+        <div class="sankey-canvas-wrap">
+          <svg id="sankey-svg" width="100%" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="sankey-tooltip" id="sankey-tooltip"></div>
+      </div>
+    </section>
+
+    <!-- 6. FINANCE -->
     <section id="finance" class="section split-section reveal stage-richest">
       <div class="section-copy">
         <p class="section-label">4. The Economics of Cinema</p>
@@ -237,7 +288,7 @@
       </div>
     </section>
 
-    <!-- 6. MOVIES -->
+    <!-- 7. MOVIES -->
     <section id="movies" class="section reveal movies-section">
       <div class="section-copy centered">
         <p class="section-label">5. Representative Films</p>
@@ -252,7 +303,7 @@
       <div class="movie-strip" id="movie-strip"></div>
     </section>
 
-    <!-- 7. FINDINGS -->
+    <!-- 8. FINDINGS -->
     <section id="findings" class="section final-section reveal">
       <div class="section-copy centered narrow">
         <p class="section-label">6. Key Insights</p>

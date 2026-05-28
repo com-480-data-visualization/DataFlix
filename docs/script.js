@@ -1554,3 +1554,451 @@ function initCountdownLoader() {
   }
 
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   QUALITY THROUGH TIME — SANKEY
+   ═══════════════════════════════════════════════════════════════════════ */
+
+(function () {
+
+  /* ── Genre colours (re-use from GENRE_COLORS if available) ─────────── */
+  const SK_GENRE_COLORS = {
+    Comedy:   '#FFE66D',
+    Drama:    '#95E1D3',
+    Action:   '#FF6348',
+    Horror:   '#C0392B',
+    Romance:  '#FF69B4',
+    Thriller: '#E74C3C',
+  };
+
+  /* ── Quality tier definitions ──────────────────────────────────────── */
+  const TIERS = [
+    { key: '1star', label: '★',     stars: '★',         range: '1–2',  color: '#6b6b82' },
+    { key: '2star', label: '★★',    stars: '★★',        range: '3–4',  color: '#7a8c9e' },
+    { key: '3star', label: '★★★',   stars: '★★★',       range: '5–6',  color: '#8fb0c8' },
+    { key: '4star', label: '★★★★',  stars: '★★★★',      range: '7–8',  color: '#a8c8d8' },
+    { key: '5star', label: '★★★★★', stars: '★★★★★',     range: '9–10', color: '#c8e4ee' },
+  ];
+
+  const GENRES = ['Comedy', 'Drama', 'Action', 'Horror', 'Romance', 'Thriller'];
+
+  /* ── Colour saturation for b&w → colour transition ─────────────────── */
+  // decades before 1960 fade towards greyscale
+  function getSaturation(decade) {
+    const year = parseInt(decade);
+    if (year <= 1930) return 0;
+    if (year >= 1960) return 1;
+    return (year - 1930) / 30;   // linear ramp 1930→1960
+  }
+
+  function desaturateHex(hex, sat) {
+    // sat=0 → greyscale, sat=1 → full colour
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    const grey = Math.round(0.299*r + 0.587*g + 0.114*b);
+    const nr = Math.round(grey + (r - grey) * sat);
+    const ng = Math.round(grey + (g - grey) * sat);
+    const nb = Math.round(grey + (b - grey) * sat);
+    return `rgb(${nr},${ng},${nb})`;
+  }
+
+  /* ── State ─────────────────────────────────────────────────────────── */
+  let skData     = null;
+  let skDecades  = [];
+  let skDecadeIdx = 0;
+  let skPlaying  = false;
+  let skTimer    = null;
+  let skSpeed    = 1200;   // ms per decade
+
+  /* ── Load data ─────────────────────────────────────────────────────── */
+  fetch('data/sankey_quality.json')
+    .then(r => r.json())
+    .then(d => {
+      skData    = d;
+      skDecades = Object.keys(d).sort();
+      buildSankeyUI();
+      renderSankey(skDecades[skDecades.length - 1]);   // start at latest decade
+    })
+    .catch(err => {
+      console.warn('[Sankey] data load failed, using placeholder:', err);
+      buildSankeyPlaceholder();
+    });
+
+  /* ── Build static UI ───────────────────────────────────────────────── */
+  function buildSankeyUI() {
+    // Star legend
+    const legendEl = document.getElementById('sankey-star-items');
+    if (legendEl) {
+      legendEl.innerHTML = '';
+      TIERS.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'sankey-star-item';
+        row.innerHTML = `
+          <div class="sankey-star-swatch" style="background:${t.color}"></div>
+          <span class="sankey-star-stars">${t.stars}</span>
+          <span>${t.range}/10</span>
+        `;
+        legendEl.appendChild(row);
+      });
+    }
+
+    // Decade timeline
+    const timeline = document.getElementById('sankey-timeline');
+    if (timeline) {
+      timeline.innerHTML = '';
+      skDecades.forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'sankey-decade-btn';
+        btn.textContent = d;
+        btn.dataset.decade = d;
+        btn.addEventListener('click', () => {
+          stopPlay();
+          renderSankey(d);
+        });
+        timeline.appendChild(btn);
+      });
+    }
+
+    // Play button
+    const playBtn = document.getElementById('sankey-play-btn');
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        skPlaying ? stopPlay() : startPlay();
+      });
+    }
+
+    // Speed slider
+    const speedEl = document.getElementById('sankey-speed');
+    if (speedEl) {
+      speedEl.addEventListener('input', () => {
+        skSpeed = parseInt(speedEl.value);
+        if (skPlaying) { stopPlay(); startPlay(); }
+      });
+    }
+  }
+
+  /* ── Play / Stop ───────────────────────────────────────────────────── */
+  function startPlay() {
+    skPlaying = true;
+    setPlayUI(true);
+    // If we're at the last decade, restart from first
+    if (skDecadeIdx >= skDecades.length - 1) skDecadeIdx = 0;
+    advancePlay();
+  }
+
+  function advancePlay() {
+    if (!skPlaying) return;
+    renderSankey(skDecades[skDecadeIdx]);
+    if (skDecadeIdx >= skDecades.length - 1) {
+      stopPlay(); return;
+    }
+    skDecadeIdx++;
+    skTimer = setTimeout(advancePlay, skSpeed);
+  }
+
+  function stopPlay() {
+    skPlaying = false;
+    clearTimeout(skTimer);
+    setPlayUI(false);
+  }
+
+  function setPlayUI(playing) {
+    const btn   = document.getElementById('sankey-play-btn');
+    const icon  = document.getElementById('sankey-play-icon');
+    const label = document.getElementById('sankey-play-label');
+    if (!btn) return;
+    btn.classList.toggle('playing', playing);
+    if (icon)  icon.textContent  = playing ? '■' : '▶';
+    if (label) label.textContent = playing ? 'Stop' : 'Play';
+  }
+
+  /* ── Render one decade ─────────────────────────────────────────────── */
+  function renderSankey(decade) {
+    // Track selected decade index for play
+    skDecadeIdx = skDecades.indexOf(decade);
+
+    // Badge
+    const badge = document.getElementById('sankey-decade-badge');
+    if (badge) badge.textContent = decade;
+
+    // Highlight timeline button
+    document.querySelectorAll('.sankey-decade-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.decade === decade);
+    });
+
+    const svg = document.getElementById('sankey-svg');
+    if (!svg) return;
+
+    const decadeData = skData?.[decade] || {};
+    const sat = getSaturation(decade);
+
+    // Dimensions
+    const W = svg.parentElement.offsetWidth || 620;
+    const H = Math.max(340, Math.min(480, W * 0.72));
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('height', H);
+    svg.innerHTML = '';
+
+    const PAD   = { top: 20, bottom: 20, left: 16, right: 16 };
+    const INNER_H = H - PAD.top - PAD.bottom;
+
+    /* ── Layout constants ─────────────────────────────────────────── */
+    const NODE_W     = 22;
+    const NODE_GAP   = 10;   // gap between nodes in same column
+    const LEFT_X     = PAD.left + 80;          // genre column right edge
+    const RIGHT_X    = W - PAD.right - NODE_W; // quality column left edge
+    const LABEL_PAD  = 8;
+
+    /* ── Compute totals ───────────────────────────────────────────── */
+    // Per genre total (for left node heights)
+    const genreTotals = {};
+    GENRES.forEach(g => {
+      genreTotals[g] = TIERS.reduce((s, t) => s + ((decadeData[g]?.[t.key]) || 0), 0);
+    });
+    const grandTotal = Object.values(genreTotals).reduce((a, b) => a + b, 0) || 1;
+
+    // Per tier total (for right node heights)
+    const tierTotals = {};
+    TIERS.forEach(t => {
+      tierTotals[t.key] = GENRES.reduce((s, g) => s + ((decadeData[g]?.[t.key]) || 0), 0);
+    });
+
+    /* ── Build node positions ─────────────────────────────────────── */
+    // Left nodes (genres)
+    const totalNodeGapL = NODE_GAP * (GENRES.length - 1);
+    const availableHL   = INNER_H - totalNodeGapL;
+
+    let leftY = PAD.top;
+    const genreNodes = GENRES.map(g => {
+      const h = Math.max(4, (genreTotals[g] / grandTotal) * availableHL);
+      const node = { genre: g, x: LEFT_X, y: leftY, w: NODE_W, h };
+      leftY += h + NODE_GAP;
+      return node;
+    });
+
+    // Right nodes (quality tiers)
+    const totalNodeGapR = NODE_GAP * (TIERS.length - 1);
+    const availableHR   = INNER_H - totalNodeGapR;
+
+    let rightY = PAD.top;
+    const tierNodes = TIERS.map(t => {
+      const h = Math.max(4, (tierTotals[t.key] / grandTotal) * availableHR);
+      const node = { tier: t, x: RIGHT_X, y: rightY, w: NODE_W, h };
+      rightY += h + NODE_GAP;
+      return node;
+    });
+
+    /* ── Draw ribbons ─────────────────────────────────────────────── */
+    // Track current offset within each node for ribbon stacking
+    const genreOffset  = {};  GENRES.forEach(g => genreOffset[g] = 0);
+    const tierOffset   = {};  TIERS.forEach(t => tierOffset[t.key] = 0);
+
+    // Sort flow order: draw narrower ribbons on top (ascending count)
+    const flows = [];
+    GENRES.forEach(g => {
+      TIERS.forEach(t => {
+        const count = (decadeData[g]?.[t.key]) || 0;
+        if (count > 0) flows.push({ g, t, count });
+      });
+    });
+    flows.sort((a, b) => a.count - b.count);
+
+    const ribbonGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    ribbonGroup.setAttribute('class', 'sankey-ribbons');
+
+    const tooltip = document.getElementById('sankey-tooltip');
+
+    flows.forEach(({ g, t, count }) => {
+      const gNode = genreNodes.find(n => n.genre === g);
+      const tNode = tierNodes.find(n => n.tier.key === t.key);
+      if (!gNode || !tNode) return;
+
+      const ribbonH_left  = (count / grandTotal) * availableHL;
+      const ribbonH_right = (count / grandTotal) * availableHR;
+
+      const y0_top = gNode.y + genreOffset[g];
+      const y0_bot = y0_top + ribbonH_left;
+      const y1_top = tNode.y + tierOffset[t.key];
+      const y1_bot = y1_top + ribbonH_right;
+
+      genreOffset[g]     += ribbonH_left;
+      tierOffset[t.key]  += ribbonH_right;
+
+      const x0 = LEFT_X + NODE_W;
+      const x1 = RIGHT_X;
+      const cx = (x0 + x1) / 2;
+
+      // Cubic bezier ribbon path
+      const d = [
+        `M ${x0} ${y0_top}`,
+        `C ${cx} ${y0_top}, ${cx} ${y1_top}, ${x1} ${y1_top}`,
+        `L ${x1} ${y1_bot}`,
+        `C ${cx} ${y1_bot}, ${cx} ${y0_bot}, ${x0} ${y0_bot}`,
+        'Z'
+      ].join(' ');
+
+      const baseColor = SK_GENRE_COLORS[g] || '#aaa';
+      const fillColor = desaturateHex(baseColor.replace('#','').length === 6 ? baseColor : rgbToHex(baseColor), sat);
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('fill', fillColor);
+      path.setAttribute('fill-opacity', '0.62');
+      path.setAttribute('class', 'sankey-ribbon');
+      path.style.cursor = 'pointer';
+
+      // Animation: fade + stretch in
+      path.style.opacity = '0';
+      path.style.transition = 'opacity 0.45s ease';
+      setTimeout(() => { path.style.opacity = '1'; }, 30);
+
+      path.addEventListener('mouseenter', (e) => {
+        ribbonGroup.querySelectorAll('.sankey-ribbon').forEach(r => r.style.opacity = '0.18');
+        path.style.opacity = '1';
+        if (tooltip) {
+          const pct = ((count / grandTotal) * 100).toFixed(1);
+          tooltip.innerHTML = `
+            <strong>${g}</strong> → <strong>${t.label}</strong><br/>
+            ${count.toLocaleString()} films &nbsp;(${pct}%)
+          `;
+          tooltip.style.display = 'block';
+        }
+      });
+      path.addEventListener('mousemove', (e) => {
+        if (!tooltip) return;
+        tooltip.style.left = (e.clientX + 14) + 'px';
+        tooltip.style.top  = (e.clientY - 10) + 'px';
+      });
+      path.addEventListener('mouseleave', () => {
+        ribbonGroup.querySelectorAll('.sankey-ribbon').forEach(r => r.style.opacity = '0.62');
+        if (tooltip) tooltip.style.display = 'none';
+      });
+
+      ribbonGroup.appendChild(path);
+    });
+
+    svg.appendChild(ribbonGroup);
+
+    /* ── Draw left nodes (genres) ─────────────────────────────────── */
+    genreNodes.forEach(n => {
+      const baseColor  = SK_GENRE_COLORS[n.genre] || '#aaa';
+      const nodeColor  = desaturateHex(baseColor.replace('#','').length === 6 ? baseColor : rgbToHex(baseColor), sat);
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', n.x);
+      rect.setAttribute('y', n.y);
+      rect.setAttribute('width', n.w);
+      rect.setAttribute('height', Math.max(n.h, 2));
+      rect.setAttribute('fill', nodeColor);
+      rect.setAttribute('rx', '4');
+      rect.setAttribute('class', 'sankey-node-rect');
+      svg.appendChild(rect);
+
+      // Genre label (left of node)
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', n.x - LABEL_PAD);
+      text.setAttribute('y', n.y + n.h / 2 + 1);
+      text.setAttribute('text-anchor', 'end');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('font-size', '11');
+      text.setAttribute('font-weight', '700');
+      text.setAttribute('letter-spacing', '0.8');
+      text.setAttribute('fill', sat < 0.3 ? 'rgba(255,255,255,0.55)' : nodeColor);
+      text.textContent = n.genre.toUpperCase();
+      svg.appendChild(text);
+    });
+
+    /* ── Draw right nodes (quality tiers) ────────────────────────── */
+    tierNodes.forEach(n => {
+      const tierColor = sat < 0.3
+        ? 'rgba(200,200,200,0.7)'
+        : n.tier.color;
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', n.x);
+      rect.setAttribute('y', n.y);
+      rect.setAttribute('width', n.w);
+      rect.setAttribute('height', Math.max(n.h, 2));
+      rect.setAttribute('fill', tierColor);
+      rect.setAttribute('rx', '4');
+      rect.setAttribute('class', 'sankey-node-rect');
+      svg.appendChild(rect);
+
+      // Star label (right of node)
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', n.x + n.w + LABEL_PAD);
+      text.setAttribute('y', n.y + n.h / 2 + 1);
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('font-size', '13');
+      text.setAttribute('fill', sat < 0.3 ? 'rgba(255,255,255,0.45)' : 'rgba(215,180,106,0.9)');
+      text.textContent = n.tier.stars;
+      svg.appendChild(text);
+    });
+
+    /* ── B&W grain overlay for early decades ─────────────────────── */
+    if (sat < 0.8) {
+      const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      overlay.setAttribute('x', 0); overlay.setAttribute('y', 0);
+      overlay.setAttribute('width', W); overlay.setAttribute('height', H);
+      overlay.setAttribute('fill', 'url(#grainPattern)');
+      overlay.setAttribute('opacity', String((1 - sat) * 0.18));
+      overlay.setAttribute('pointer-events', 'none');
+
+      // Define grain pattern if not present
+      let defs = svg.querySelector('defs');
+      if (!defs) { defs = document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.prepend(defs); }
+      if (!defs.querySelector('#grainPattern')) {
+        defs.innerHTML += `
+          <filter id="grainFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="saturate" values="0"/>
+          </filter>
+          <rect id="grainPattern" x="0" y="0" width="${W}" height="${H}"
+                filter="url(#grainFilter)" opacity="1"/>
+        `;
+      }
+      svg.appendChild(overlay);
+    }
+  }
+
+  /* ── Helper: rgb(...) → hex ────────────────────────────────────────── */
+  function rgbToHex(color) {
+    // If already a hex, return as-is
+    if (color.startsWith('#')) return color.slice(1);
+    const m = color.match(/\d+/g);
+    if (!m) return '999999';
+    return m.slice(0,3).map(v => parseInt(v).toString(16).padStart(2,'0')).join('');
+  }
+
+  /* ── Placeholder if JSON missing ───────────────────────────────────── */
+  function buildSankeyPlaceholder() {
+    // Inject fake data and render
+    const fakeData = {};
+    const decades = ['1950s','1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
+    decades.forEach(d => {
+      fakeData[d] = {};
+      GENRES.forEach(g => {
+        fakeData[d][g] = {};
+        TIERS.forEach(t => {
+          // Bell-curve-ish fake distribution
+          const base = Math.random() * 400 + 50;
+          fakeData[d][g][t.key] = Math.round(base);
+        });
+      });
+    });
+    skData    = fakeData;
+    skDecades = decades;
+    buildSankeyUI();
+    renderSankey(decades[decades.length - 1]);
+
+    const panel = document.querySelector('#sankey .viz-panel');
+    if (panel) {
+      const notice = document.createElement('p');
+      notice.style.cssText = 'font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center';
+      notice.textContent = 'Preview mode — run generate_sankey_data.py to load real data';
+      panel.appendChild(notice);
+    }
+  }
+
+})();
