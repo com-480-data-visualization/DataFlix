@@ -1249,3 +1249,308 @@ function initCountdownLoader() {
     loader.style.display = 'none';
   }, 1950);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   POPULARITY vs QUALITY HEATMAP
+   ═══════════════════════════════════════════════════════════════════════ */
+
+(function () {
+
+  // ── Colour scale: cream → sage → teal → steel-blue → navy ─────────────
+  // Matches the palette in the hand-drawn sketch.
+  const HM_STOPS = [
+    [0.00,  [245, 240, 220]],   // warm cream
+    [0.15,  [214, 232, 208]],   // sage green
+    [0.35,  [158, 207, 192]],   // muted teal
+    [0.55,  [ 91, 158, 201]],   // sky blue
+    [0.75,  [ 33, 102, 168]],   // medium blue
+    [1.00,  [ 11,  61, 122]],   // deep navy
+  ];
+
+  function lerpColour(t) {
+    t = Math.max(0, Math.min(1, t));
+    let lo = HM_STOPS[0], hi = HM_STOPS[HM_STOPS.length - 1];
+    for (let i = 0; i < HM_STOPS.length - 1; i++) {
+      if (t >= HM_STOPS[i][0] && t <= HM_STOPS[i + 1][0]) {
+        lo = HM_STOPS[i]; hi = HM_STOPS[i + 1]; break;
+      }
+    }
+    const range = hi[0] - lo[0] || 1;
+    const u = (t - lo[0]) / range;
+    const r = Math.round(lo[1][0] + (hi[1][0] - lo[1][0]) * u);
+    const g = Math.round(lo[1][1] + (hi[1][1] - lo[1][1]) * u);
+    const b = Math.round(lo[1][2] + (hi[1][2] - lo[1][2]) * u);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // ── State ──────────────────────────────────────────────────────────────
+  let hmData = null;     // { all, 1990s, 2000s, 2010s }
+  let hmMeta = null;     // { genres, rating_bins, min, max }
+  let hmDecade = 'all';
+
+  const RATING_LABELS = ['1','2','3','4','5','6','7','8','9','10'];
+  const DECADE_LABELS  = { all: 'All time', '1990s': '1990s', '2000s': '2000s', '2010s': '2010s' };
+
+  // ── Load data ──────────────────────────────────────────────────────────
+  Promise.all([
+    fetch('data/popularity_quality.json').then(r => r.json()),
+    fetch('data/heatmap_meta.json').then(r => r.json()),
+  ]).then(([pq, meta]) => {
+    hmData = pq;
+    hmMeta = meta;
+    buildHeatmapUI();
+    renderHeatmap(hmDecade);
+  }).catch(err => {
+    console.warn('[Heatmap] Could not load data:', err);
+    // Render a placeholder so the section still looks good
+    renderHeatmapPlaceholder();
+  });
+
+  // ── Build static UI (genre labels, tick marks, decade buttons) ─────────
+  function buildHeatmapUI() {
+    const genres     = hmMeta.genres;        // ["Comedy","Action",...]
+    const ratingBins = hmMeta.rating_bins;   // ["1",..."10"]
+
+    // CSS var for column count
+    const grid = document.getElementById('heatmap-grid');
+    const ticks = document.getElementById('heatmap-x-ticks');
+    if (!grid) return;
+    grid.style.setProperty('--hm-cols', ratingBins.length);
+    if (ticks) ticks.style.setProperty('--hm-cols', ratingBins.length);
+
+    // Genre labels
+    const labelsEl = document.getElementById('heatmap-genre-labels');
+    if (labelsEl) {
+      labelsEl.innerHTML = '';
+      genres.forEach(g => {
+        const div = document.createElement('div');
+        div.className = 'heatmap-genre-label';
+        div.textContent = g;
+        div.dataset.genre = g;
+        labelsEl.appendChild(div);
+      });
+    }
+
+    // Rating tick labels
+    if (ticks) {
+      ticks.innerHTML = '';
+      ratingBins.forEach(b => {
+        const span = document.createElement('span');
+        span.className = 'hm-tick';
+        span.textContent = b;
+        ticks.appendChild(span);
+      });
+      // Offset ticks to align with the grid (skip genre-label column width)
+      alignTicks();
+    }
+
+    // Decade buttons
+    document.querySelectorAll('#heatmap-decades .chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#heatmap-decades .chip')
+          .forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        hmDecade = btn.getAttribute('data-hd');
+        const badge = document.getElementById('heatmap-decade-badge');
+        if (badge) badge.textContent = DECADE_LABELS[hmDecade] || hmDecade;
+        renderHeatmap(hmDecade);
+      });
+    });
+  }
+
+  function alignTicks() {
+    const labelsEl = document.getElementById('heatmap-genre-labels');
+    const ticks    = document.getElementById('heatmap-x-ticks');
+    if (!labelsEl || !ticks) return;
+    const w = labelsEl.offsetWidth + 12; // 12 = gap
+    ticks.style.paddingLeft = w + 'px';
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────
+  function renderHeatmap(decade) {
+    const grid = document.getElementById('heatmap-grid');
+    if (!grid || !hmData || !hmMeta) return;
+
+    const decadeData  = hmData[decade] || hmData['all'] || {};
+    const genres      = hmMeta.genres;
+    const ratingBins  = hmMeta.rating_bins;
+    const globalMin   = hmMeta.min;
+    const globalMax   = hmMeta.max;
+    const valueRange  = globalMax - globalMin || 1;
+
+    grid.innerHTML = '';
+
+    // Compute per-decade max for local contrast boost (optional but looks better)
+    let localMax = 0;
+    genres.forEach(g => ratingBins.forEach(b => {
+      const v = (decadeData[g] || {})[b] || 0;
+      if (v > localMax) localMax = v;
+    }));
+    // Blend global and local max so scale is meaningful but not washed out
+    const scaleMax = globalMax * 0.6 + localMax * 0.4;
+
+    const tooltip  = document.getElementById('heatmap-tooltip');
+
+    genres.forEach((genre, gi) => {
+      ratingBins.forEach((bin, bi) => {
+        const raw  = (decadeData[genre] || {})[bin] || 0;
+        const t    = Math.max(0, Math.min(1, (raw - globalMin) / (scaleMax - globalMin || 1)));
+        const colour = raw > 0 ? lerpColour(t) : 'rgba(255,255,255,0.04)';
+
+        const cell = document.createElement('div');
+        cell.className    = 'hm-cell';
+        cell.dataset.genre  = genre;
+        cell.dataset.bin    = bin;
+        cell.dataset.row    = gi;
+        // Stagger animation so cells pop in left→right, top→bottom
+        cell.style.animationDelay = `${(gi * ratingBins.length + bi) * 12}ms`;
+        cell.style.background = colour;
+        if (raw > 0) {
+          // Border colour = slightly lighter version of fill
+          cell.style.borderColor = lerpColour(Math.min(1, t + 0.15));
+        }
+
+        // ── Tooltip ─────────────────────────────────────────────────────
+        cell.addEventListener('mouseenter', (e) => {
+          if (!tooltip) return;
+
+          // Highlight row
+          grid.classList.add('row-hover');
+          grid.querySelectorAll('.hm-cell').forEach(c => {
+            c.classList.toggle('hovered-row', c.dataset.row === String(gi));
+          });
+          document.querySelectorAll('.heatmap-genre-label').forEach(l => {
+            l.classList.toggle('heatmap-row-hover', l.dataset.genre === genre);
+          });
+
+          const starCount = Math.round((parseInt(bin) / 10) * 5);
+          const stars = '★'.repeat(starCount) + '☆'.repeat(5 - starCount);
+          const displayVal = raw > 0
+            ? `${Math.round(Math.exp(raw) - 1).toLocaleString()}`
+            : '—';
+
+          tooltip.innerHTML = `
+            <strong>${genre}</strong><br/>
+            Rating ${bin}/10 &nbsp;${stars}<br/>
+            Popularity score: <strong>${displayVal}</strong>
+          `;
+          tooltip.style.display = 'block';
+          positionTooltip(e);
+        });
+
+        cell.addEventListener('mousemove', positionTooltip);
+
+        cell.addEventListener('mouseleave', () => {
+          if (tooltip) tooltip.style.display = 'none';
+          grid.classList.remove('row-hover');
+          grid.querySelectorAll('.hm-cell').forEach(c => c.classList.remove('hovered-row'));
+          document.querySelectorAll('.heatmap-genre-label').forEach(l => l.classList.remove('heatmap-row-hover'));
+        });
+
+        grid.appendChild(cell);
+      });
+    });
+
+    // Re-sync genre label heights after render
+    syncGenreLabelHeights(genres.length, ratingBins.length);
+    alignTicks();
+  }
+
+  function positionTooltip(e) {
+    const tooltip = document.getElementById('heatmap-tooltip');
+    if (!tooltip) return;
+    tooltip.style.left = (e.clientX + 16) + 'px';
+    tooltip.style.top  = (e.clientY - 10) + 'px';
+    // Flip if near right edge
+    if (e.clientX + tooltip.offsetWidth + 20 > window.innerWidth) {
+      tooltip.style.left = (e.clientX - tooltip.offsetWidth - 12) + 'px';
+    }
+  }
+
+  function syncGenreLabelHeights(numGenres, numBins) {
+    const grid     = document.getElementById('heatmap-grid');
+    const labelsEl = document.getElementById('heatmap-genre-labels');
+    if (!grid || !labelsEl) return;
+
+    // Wait for layout to settle
+    requestAnimationFrame(() => {
+      const gridH = grid.offsetHeight;
+      labelsEl.style.height = gridH + 'px';
+    });
+  }
+
+  // ── Placeholder (if JSON files not yet generated) ───────────────────────
+  function renderHeatmapPlaceholder() {
+    const grid = document.getElementById('heatmap-grid');
+    if (!grid) return;
+
+    const GENRES = ['Comedy','Action','Drama','Horror','Romance','Animation'];
+    const BINS   = 10;
+
+    grid.style.setProperty('--hm-cols', BINS);
+    grid.innerHTML = '';
+
+    GENRES.forEach((genre, gi) => {
+      for (let bi = 0; bi < BINS; bi++) {
+        // Fake data: bell curve centred around ratings 6-7 with some genre variation
+        const peakBin = 5 + gi * 0.3;
+        const noise   = Math.random() * 0.25;
+        const t       = Math.max(0, 1 - Math.pow((bi - peakBin) / 3, 2) + noise);
+
+        const cell = document.createElement('div');
+        cell.className  = 'hm-cell';
+        cell.dataset.row = gi;
+        cell.style.animationDelay = `${(gi * BINS + bi) * 14}ms`;
+        cell.style.background = t > 0.05 ? lerpColour(t) : 'rgba(255,255,255,0.04)';
+        grid.appendChild(cell);
+      }
+    });
+
+    const labelsEl = document.getElementById('heatmap-genre-labels');
+    if (labelsEl) {
+      labelsEl.innerHTML = '';
+      GENRES.forEach(g => {
+        const div = document.createElement('div');
+        div.className = 'heatmap-genre-label';
+        div.textContent = g;
+        labelsEl.appendChild(div);
+      });
+    }
+
+    const ticks = document.getElementById('heatmap-x-ticks');
+    if (ticks) {
+      ticks.style.setProperty('--hm-cols', BINS);
+      ticks.innerHTML = '';
+      for (let i = 1; i <= BINS; i++) {
+        const span = document.createElement('span');
+        span.className = 'hm-tick';
+        span.textContent = i;
+        ticks.appendChild(span);
+      }
+    }
+
+    syncGenreLabelHeights(GENRES.length, BINS);
+    alignTicks();
+
+    // Decade buttons still work (just re-render placeholder)
+    document.querySelectorAll('#heatmap-decades .chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#heatmap-decades .chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderHeatmapPlaceholder();
+        const badge = document.getElementById('heatmap-decade-badge');
+        if (badge) badge.textContent = DECADE_LABELS[btn.getAttribute('data-hd')] || btn.getAttribute('data-hd');
+      });
+    });
+
+    // Show a subtle notice
+    const panel = document.querySelector('#heatmap .viz-panel');
+    if (panel) {
+      const notice = document.createElement('p');
+      notice.style.cssText = 'font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center';
+      notice.textContent = 'Preview mode — run generate_heatmap_data.py to load real data';
+      panel.appendChild(notice);
+    }
+  }
+
+})();

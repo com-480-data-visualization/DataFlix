@@ -1,0 +1,24 @@
+{
+  "genres": [
+    "Comedy",
+    "Action",
+    "Drama",
+    "Horror",
+    "Romance",
+    "Animation"
+  ],
+  "rating_bins": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
+  ],
+  "min": 2.4426,
+  "max": 11.7086
+}
