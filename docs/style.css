@@ -954,13 +954,13 @@ a {
 .lamp-head {
   position: absolute;
   left: 50%;
-  top: 1%;
-  width: 36%;
-  height: 42%;
+  top: 9%;
+  width: 42%;
+  height: 28%;
   transform: translateX(-50%);
-  border-radius: 30px;
+  border-radius: 22px 22px 18px 18px;
   border: 2px solid rgba(255, 255, 255, 0.26);
-  background: linear-gradient(165deg, #6a7081 0%, #383e4c 56%, #1d2029 100%);
+  background: linear-gradient(165deg, #6f7688 0%, #3e4554 56%, #1f232d 100%);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
   transform: none;
   z-index: 4;
@@ -970,21 +970,21 @@ a {
   content: "";
   position: absolute;
   left: 50%;
-  top: -10%;
-  width: 42%;
-  height: 20%;
+  bottom: -22%;
+  width: 82%;
+  height: 26%;
   transform: translateX(-50%);
-  border-radius: 999px;
-  background: linear-gradient(180deg, #8b91a3 0%, #505868 100%);
-  opacity: 0.55;
+  border-radius: 999px 999px 14px 14px;
+  background: linear-gradient(180deg, #4f5668 0%, #2a2f3b 100%);
+  opacity: 0.95;
 }
 
 .lamp-lens {
   position: absolute;
   left: 50%;
-  top: 42%;
-  width: 62%;
-  height: 28%;
+  top: 78%;
+  width: 48%;
+  height: 30%;
   border-radius: 50%;
   border: 2px solid rgba(245, 247, 255, 0.72);
   transform: translate(-50%, -50%);
@@ -1006,12 +1006,25 @@ a {
   z-index: 2;
 }
 
+.lamp-neck {
+  position: absolute;
+  left: 50%;
+  top: 31%;
+  width: 7%;
+  height: 15%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #646c80 0%, #2f3441 100%);
+  z-index: 3;
+}
+
 .lamp-base {
   position: absolute;
   left: 50%;
   bottom: 4%;
-  width: 56%;
-  height: 10%;
+  width: 64%;
+  height: 11%;
   transform: translateX(-50%);
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1025,7 +1038,7 @@ a {
 .lamp-beam {
   position: absolute;
   left: 50%;
-  top: 22%;
+  top: 28%;
   width: 14vmin;
   height: 14vmin;
   opacity: 0;
@@ -1040,7 +1053,7 @@ a {
 .lamp-glow {
   position: absolute;
   left: 50%;
-  top: 22%;
+  top: 28%;
   width: min(210vw, 240vh);
   height: min(210vw, 240vh);
   transform: translate(-50%, -50%) scale(0.03);
