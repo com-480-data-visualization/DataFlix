@@ -937,7 +937,7 @@ a {
 .lamp {
   --lamp-x-start: -44vw;
   --lamp-x-center: 50vw;
-  --lamp-y: 56vh;
+  --lamp-y: 52vh;
   position: absolute;
   left: 0;
   top: 0;
@@ -1262,28 +1262,47 @@ a {
   left: 50%;
   transform: translateX(-50%);
   display: block;
-  background: linear-gradient(180deg, #6f7688, #2b3040);
+  background: linear-gradient(180deg, #565d70, #252a35);
 }
 
 .fact-lamp-base {
   bottom: 0;
-  width: 22px;
-  height: 8px;
+  width: 24px;
+  height: 9px;
   border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.14);
 }
 
 .fact-lamp-trunk {
   bottom: 7px;
-  width: 5px;
-  height: 28px;
+  width: 4px;
+  height: 30px;
   border-radius: 999px;
+  background: linear-gradient(180deg, #757c90 0%, #434a5c 40%, #2a2e3a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .fact-lamp-head {
-  top: 0;
-  width: 16px;
-  height: 16px;
-  border-radius: 6px;
+  top: 2px;
+  width: 15px;
+  height: 12px;
+  border-radius: 5px 5px 4px 4px;
+  background: linear-gradient(165deg, #6f7688 0%, #3e4554 56%, #1f232d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.fact-lamp-head::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 7px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 1px solid rgba(245, 247, 255, 0.72);
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.55), rgba(186, 196, 234, 0.12) 62%, rgba(40, 46, 72, 0) 82%);
 }
 
 @keyframes introPulse {
@@ -1294,7 +1313,7 @@ a {
 @media (max-width: 760px) {
   .lamp {
     --lamp-x-start: -56vw;
-    --lamp-y: 60vh;
+    --lamp-y: 56vh;
   }
 }
 
