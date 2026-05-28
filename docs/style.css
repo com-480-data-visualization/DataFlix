@@ -1123,7 +1123,7 @@ a {
   position: absolute;
   left: 50vw;
   top: calc(var(--lamp-y) + 24vh);
-  transform: translate(-50%, -50%);
+  transform: translate(-56%, -50%);
   width: min(96vw, 1240px);
   display: block;
   text-align: center;
@@ -1135,20 +1135,20 @@ a {
 .title-word {
   display: inline-flex;
   align-items: baseline;
-  gap: clamp(14px, 2vw, 24px);
+  gap: clamp(12px, 1.8vw, 20px);
 }
 
 .title-word-left {
-  margin-right: clamp(18px, 2.2vw, 26px);
+  margin-right: clamp(16px, 2vw, 24px);
 }
 
 .title-word-right {
-  margin-left: clamp(18px, 2.2vw, 26px);
+  margin-left: clamp(16px, 2vw, 24px);
 }
 
 .title-letter {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.8rem, 8vw, 7.2rem);
+  font-size: clamp(3.2rem, 8.8vw, 8rem);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: rgba(245, 241, 224, 0.96);
@@ -1301,10 +1301,11 @@ a {
 
   .intro-title {
     top: calc(var(--lamp-y) + 20vh);
+    transform: translate(-54%, -50%);
   }
 
   .title-word {
-    gap: clamp(8px, 1.6vw, 12px);
+    gap: clamp(8px, 1.5vw, 12px);
   }
 
   .title-gap {
