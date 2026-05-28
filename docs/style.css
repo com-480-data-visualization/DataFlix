@@ -31,6 +31,10 @@ body {
   line-height: 1.6;
 }
 
+body.intro-playing {
+  overflow: hidden;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -902,6 +906,194 @@ a {
 /* ═══════════════════════════════════════════════════════════════
    DATAFLIX — CINEMATIC V3
    ═══════════════════════════════════════════════════════════════ */
+
+/* ── 0. LAMP INTRO ───────────────────────────────────────────── */
+
+.cinematic-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 44%, #121317 0%, #07080a 48%, #000 100%);
+  overflow: hidden;
+}
+
+.intro-vignette {
+  position: absolute;
+  inset: -6%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05), transparent 28%),
+    radial-gradient(circle at 78% 25%, rgba(255, 255, 255, 0.04), transparent 28%),
+    radial-gradient(circle at 50% 58%, rgba(0, 0, 0, 0.08), transparent 56%);
+  animation: introPulse 2.6s ease-in-out infinite alternate;
+}
+
+.lamp-stage {
+  position: absolute;
+  inset: 0;
+  perspective: 1100px;
+}
+
+.lamp {
+  --lamp-x-start: -44vw;
+  --lamp-x-center: 50vw;
+  --lamp-y: 56vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(120px, 17vw, 230px);
+  height: clamp(80px, 12vw, 155px);
+  transform-style: preserve-3d;
+  transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-38deg) rotateZ(-6deg);
+  animation: lampEnter 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.lamp-head {
+  position: absolute;
+  right: 0;
+  top: 12%;
+  width: 52%;
+  height: 58%;
+  border-radius: 60% 48% 46% 56%;
+  border: 2px solid rgba(255, 255, 255, 0.26);
+  background: linear-gradient(145deg, #4f5361 0%, #2c2f3a 55%, #171820 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.48);
+}
+
+.lamp-lens {
+  position: absolute;
+  right: 11%;
+  top: 27%;
+  width: 34%;
+  height: 44%;
+  border-radius: 50%;
+  border: 2px solid rgba(245, 247, 255, 0.72);
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.42), rgba(186, 196, 234, 0.08) 68%, rgba(40, 46, 72, 0));
+}
+
+.lamp-arm {
+  position: absolute;
+  left: 14%;
+  top: 44%;
+  width: 54%;
+  height: 14%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #666a79, #2c2e36);
+}
+
+.lamp-base {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 56%;
+  height: 26%;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, #414452, #1b1c22);
+}
+
+.lamp-beam {
+  position: absolute;
+  left: 50%;
+  top: 57%;
+  width: 14vmin;
+  height: 14vmin;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(222, 232, 255, 0.2) 42%, rgba(197, 218, 255, 0.06) 66%, rgba(255, 255, 255, 0) 78%);
+  filter: blur(0.7px);
+  animation: beamWarmup 2.2s ease-out 2.2s forwards;
+}
+
+.lamp-glow {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: min(210vw, 240vh);
+  height: min(210vw, 240vh);
+  transform: translate(-50%, -50%) scale(0.03);
+  transform-origin: center;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.88) 30%, rgba(246, 250, 255, 0.52) 55%, rgba(238, 246, 255, 0.16) 72%, rgba(255, 255, 255, 0) 84%);
+  animation: projectorBlast 2.6s cubic-bezier(0.22, 1, 0.36, 1) 2.55s forwards;
+}
+
+.intro-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  animation: flashToHome 0.65s ease-out 4.85s forwards;
+}
+
+.cinematic-intro.done {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+@keyframes lampEnter {
+  0% {
+    transform: translate3d(var(--lamp-x-start), var(--lamp-y), 0) rotateY(-38deg) rotateZ(-6deg);
+  }
+  68% {
+    transform: translate3d(calc(var(--lamp-x-center) - 52%), var(--lamp-y), 0) rotateY(-8deg) rotateZ(0deg);
+  }
+  84% {
+    transform: translate3d(calc(var(--lamp-x-center) - 50%), var(--lamp-y), 0) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: translate3d(calc(var(--lamp-x-center) - 50%), var(--lamp-y), 0) rotateY(0deg) rotateZ(0deg);
+  }
+}
+
+@keyframes beamWarmup {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20% { opacity: 0.22; }
+  55% { opacity: 0.48; transform: translate(-50%, -50%) scale(0.9); }
+  100% { opacity: 0.64; transform: translate(-50%, -50%) scale(1.18); }
+}
+
+@keyframes projectorBlast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.03);
+  }
+  15% {
+    opacity: 0.26;
+  }
+  45% {
+    opacity: 0.56;
+    transform: translate(-50%, -50%) scale(0.48);
+  }
+  75% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.42);
+  }
+}
+
+@keyframes flashToHome {
+  0% { opacity: 0; }
+  15% { opacity: 0.68; }
+  100% { opacity: 1; }
+}
+
+@keyframes introPulse {
+  0% { opacity: 0.9; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 760px) {
+  .lamp {
+    --lamp-x-start: -56vw;
+    --lamp-y: 60vh;
+  }
+}
 
 
 /* ── 1. COUNTDOWN LOADER ──────────────────────────────────────── */

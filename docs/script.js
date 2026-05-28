@@ -17,6 +17,7 @@ const FINANCE_MAX_ROI = 5000;
 // ── Shared filter state (for cross-chart filtering) ────────────────────────
 let activeGenreFilter = null;
 
+initCinematicLampIntro();
 initCountdownLoader();
 
 Promise.all([
@@ -1248,6 +1249,22 @@ function initCountdownLoader() {
   setTimeout(() => {
     loader.style.display = 'none';
   }, 1950);
+}
+
+function initCinematicLampIntro() {
+  const intro = document.getElementById('cinematic-intro');
+  const flash = document.getElementById('intro-flash');
+  if (!intro || !flash) return;
+
+  document.body.classList.add('intro-playing');
+
+  flash.addEventListener('animationend', () => {
+    intro.classList.add('done');
+    setTimeout(() => {
+      intro.remove();
+      document.body.classList.remove('intro-playing');
+    }, 460);
+  }, { once: true });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
