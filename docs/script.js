@@ -88,7 +88,6 @@ allGenres.forEach(genre => {
 
   drawProduction('all');
   drawGenres();
-  drawRatings();
   drawFinance('all');
   showMovies();
   setupMovieDecadeButtons();
