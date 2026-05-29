@@ -10,7 +10,8 @@
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
 Here is our [website](https://com-480-data-visualization.github.io/DataFlix/)
-
+Here is our [video](https://drive.google.com/file/d/1vpp4RunCiOQVyvkbWXCALmJUgyCj8drE/view)
+Here is our [process-book](https://github.com/com-480-data-visualization/DataFlix/blob/master/milestone_3/process_book.pdf)
 ## Milestone 1 (20th March, 5pm)
 
 **10% of the final grade**
