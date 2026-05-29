@@ -1289,15 +1289,13 @@ initCountdownLoader();
 
 (function () {
 
-  // ── Colour scale: cream → sage → teal → steel-blue → navy ─────────────
-  // Matches the palette in the hand-drawn sketch.
   const HM_STOPS = [
-    [0.00,  [245, 240, 220]],   // warm cream
-    [0.15,  [214, 232, 208]],   // sage green
-    [0.35,  [158, 207, 192]],   // muted teal
-    [0.55,  [ 91, 158, 201]],   // sky blue
-    [0.75,  [ 33, 102, 168]],   // medium blue
-    [1.00,  [ 11,  61, 122]],   // deep navy
+    [0.00,  [245, 240, 220]],
+    [0.15,  [214, 232, 208]],
+    [0.35,  [158, 207, 192]],
+    [0.55,  [ 91, 158, 201]],
+    [0.75,  [ 33, 102, 168]],
+    [1.00,  [ 11,  61, 122]], 
   ];
 
   function lerpColour(t) {
@@ -1316,9 +1314,8 @@ initCountdownLoader();
     return `rgb(${r},${g},${b})`;
   }
 
-  // ── State ──────────────────────────────────────────────────────────────
-  let hmData = null;     // { all, 1990s, 2000s, 2010s }
-  let hmMeta = null;     // { genres, rating_bins, min, max }
+  let hmData = null;
+  let hmMeta = null; 
   let hmDecade = 'all';
 
   const RATING_LABELS = ['1','2','3','4','5','6','7','8','9','10'];
@@ -1335,23 +1332,18 @@ initCountdownLoader();
     renderHeatmap(hmDecade);
   }).catch(err => {
     console.warn('[Heatmap] Could not load data:', err);
-    // Render a placeholder so the section still looks good
-    renderHeatmapPlaceholder();
   });
 
-  // ── Build static UI (genre labels, tick marks, decade buttons) ─────────
   function buildHeatmapUI() {
-    const genres     = hmMeta.genres;        // ["Comedy","Action",...]
-    const ratingBins = hmMeta.rating_bins;   // ["1",..."10"]
+    const genres     = hmMeta.genres;
+    const ratingBins = hmMeta.rating_bins;
 
-    // CSS var for column count
     const grid = document.getElementById('heatmap-grid');
     const ticks = document.getElementById('heatmap-x-ticks');
     if (!grid) return;
     grid.style.setProperty('--hm-cols', ratingBins.length);
     if (ticks) ticks.style.setProperty('--hm-cols', ratingBins.length);
 
-    // Genre labels
     const labelsEl = document.getElementById('heatmap-genre-labels');
     if (labelsEl) {
       labelsEl.innerHTML = '';
@@ -1364,7 +1356,6 @@ initCountdownLoader();
       });
     }
 
-    // Rating tick labels
     if (ticks) {
       ticks.innerHTML = '';
       ratingBins.forEach(b => {
@@ -1373,11 +1364,9 @@ initCountdownLoader();
         span.textContent = b;
         ticks.appendChild(span);
       });
-      // Offset ticks to align with the grid (skip genre-label column width)
       alignTicks();
     }
 
-    // Decade buttons
     document.querySelectorAll('#heatmap-decades .chip').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('#heatmap-decades .chip')
@@ -1395,11 +1384,10 @@ initCountdownLoader();
     const labelsEl = document.getElementById('heatmap-genre-labels');
     const ticks    = document.getElementById('heatmap-x-ticks');
     if (!labelsEl || !ticks) return;
-    const w = labelsEl.offsetWidth + 12; // 12 = gap
+    const w = labelsEl.offsetWidth + 12;
     ticks.style.paddingLeft = w + 'px';
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────
   function renderHeatmap(decade) {
     const grid = document.getElementById('heatmap-grid');
     if (!grid || !hmData || !hmMeta) return;
@@ -1413,13 +1401,11 @@ initCountdownLoader();
 
     grid.innerHTML = '';
 
-    // Compute per-decade max for local contrast boost (optional but looks better)
     let localMax = 0;
     genres.forEach(g => ratingBins.forEach(b => {
       const v = (decadeData[g] || {})[b] || 0;
       if (v > localMax) localMax = v;
     }));
-    // Blend global and local max so scale is meaningful but not washed out
     const scaleMax = globalMax * 0.6 + localMax * 0.4;
 
     const tooltip  = document.getElementById('heatmap-tooltip');
@@ -1435,19 +1421,15 @@ initCountdownLoader();
         cell.dataset.genre  = genre;
         cell.dataset.bin    = bin;
         cell.dataset.row    = gi;
-        // Stagger animation so cells pop in left→right, top→bottom
         cell.style.animationDelay = `${(gi * ratingBins.length + bi) * 12}ms`;
         cell.style.background = colour;
         if (raw > 0) {
-          // Border colour = slightly lighter version of fill
           cell.style.borderColor = lerpColour(Math.min(1, t + 0.15));
         }
 
-        // ── Tooltip ─────────────────────────────────────────────────────
         cell.addEventListener('mouseenter', (e) => {
           if (!tooltip) return;
 
-          // Highlight row
           grid.classList.add('row-hover');
           grid.querySelectorAll('.hm-cell').forEach(c => {
             c.classList.toggle('hovered-row', c.dataset.row === String(gi));
@@ -1484,7 +1466,6 @@ initCountdownLoader();
       });
     });
 
-    // Re-sync genre label heights after render
     syncGenreLabelHeights(genres.length, ratingBins.length);
     alignTicks();
   }
@@ -1494,7 +1475,6 @@ initCountdownLoader();
     if (!tooltip) return;
     tooltip.style.left = (e.clientX + 16) + 'px';
     tooltip.style.top  = (e.clientY - 10) + 'px';
-    // Flip if near right edge
     if (e.clientX + tooltip.offsetWidth + 20 > window.innerWidth) {
       tooltip.style.left = (e.clientX - tooltip.offsetWidth - 12) + 'px';
     }
@@ -1505,85 +1485,10 @@ initCountdownLoader();
     const labelsEl = document.getElementById('heatmap-genre-labels');
     if (!grid || !labelsEl) return;
 
-    // Wait for layout to settle
     requestAnimationFrame(() => {
       const gridH = grid.offsetHeight;
       labelsEl.style.height = gridH + 'px';
     });
-  }
-
-  // ── Placeholder (if JSON files not yet generated) ───────────────────────
-  function renderHeatmapPlaceholder() {
-    const grid = document.getElementById('heatmap-grid');
-    if (!grid) return;
-
-    const GENRES = ['Comedy','Action','Drama','Horror','Romance','Animation'];
-    const BINS   = 10;
-
-    grid.style.setProperty('--hm-cols', BINS);
-    grid.innerHTML = '';
-
-    GENRES.forEach((genre, gi) => {
-      for (let bi = 0; bi < BINS; bi++) {
-        // Fake data: bell curve centred around ratings 6-7 with some genre variation
-        const peakBin = 5 + gi * 0.3;
-        const noise   = Math.random() * 0.25;
-        const t       = Math.max(0, 1 - Math.pow((bi - peakBin) / 3, 2) + noise);
-
-        const cell = document.createElement('div');
-        cell.className  = 'hm-cell';
-        cell.dataset.row = gi;
-        cell.style.animationDelay = `${(gi * BINS + bi) * 14}ms`;
-        cell.style.background = t > 0.05 ? lerpColour(t) : 'rgba(255,255,255,0.04)';
-        grid.appendChild(cell);
-      }
-    });
-
-    const labelsEl = document.getElementById('heatmap-genre-labels');
-    if (labelsEl) {
-      labelsEl.innerHTML = '';
-      GENRES.forEach(g => {
-        const div = document.createElement('div');
-        div.className = 'heatmap-genre-label';
-        div.textContent = g;
-        labelsEl.appendChild(div);
-      });
-    }
-
-    const ticks = document.getElementById('heatmap-x-ticks');
-    if (ticks) {
-      ticks.style.setProperty('--hm-cols', BINS);
-      ticks.innerHTML = '';
-      for (let i = 1; i <= BINS; i++) {
-        const span = document.createElement('span');
-        span.className = 'hm-tick';
-        span.textContent = i;
-        ticks.appendChild(span);
-      }
-    }
-
-    syncGenreLabelHeights(GENRES.length, BINS);
-    alignTicks();
-
-    // Decade buttons still work (just re-render placeholder)
-    document.querySelectorAll('#heatmap-decades .chip').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#heatmap-decades .chip').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderHeatmapPlaceholder();
-        const badge = document.getElementById('heatmap-decade-badge');
-        if (badge) badge.textContent = DECADE_LABELS[btn.getAttribute('data-hd')] || btn.getAttribute('data-hd');
-      });
-    });
-
-    // Show a subtle notice
-    const panel = document.querySelector('#heatmap .viz-panel');
-    if (panel) {
-      const notice = document.createElement('p');
-      notice.style.cssText = 'font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center';
-      notice.textContent = 'Preview mode — run generate_heatmap_data.py to load real data';
-      panel.appendChild(notice);
-    }
   }
 
 })();
@@ -1594,7 +1499,6 @@ initCountdownLoader();
 
 (function () {
 
-  /* ── Genre colours (re-use from GENRE_COLORS if available) ─────────── */
   const SK_GENRE_COLORS = {
     Comedy:   '#FFE66D',
     Drama:    '#95E1D3',
@@ -1604,7 +1508,6 @@ initCountdownLoader();
     Thriller: '#E74C3C',
   };
 
-  /* ── Quality tier definitions ──────────────────────────────────────── */
   const TIERS = [
     { key: '1star', label: '★',     stars: '★',         range: '1–2',  color: '#6b6b82' },
     { key: '2star', label: '★★',    stars: '★★',        range: '3–4',  color: '#7a8c9e' },
@@ -1615,7 +1518,6 @@ initCountdownLoader();
 
   const GENRES = ['Comedy', 'Drama', 'Action', 'Horror', 'Romance', 'Thriller'];
 
-  /* ── Colour saturation for b&w → colour transition ─────────────────── */
   // decades before 1960 fade towards greyscale
   function getSaturation(decade) {
     const year = parseInt(decade);
@@ -1636,31 +1538,27 @@ initCountdownLoader();
     return `rgb(${nr},${ng},${nb})`;
   }
 
-  /* ── State ─────────────────────────────────────────────────────────── */
+  
   let skData     = null;
   let skDecades  = [];
   let skDecadeIdx = 0;
   let skPlaying  = false;
   let skTimer    = null;
-  let skSpeed    = 1200;   // ms per decade
+  let skSpeed    = 1200;
 
-  /* ── Load data ─────────────────────────────────────────────────────── */
   fetch('data/sankey_quality.json')
     .then(r => r.json())
     .then(d => {
       skData    = d;
       skDecades = Object.keys(d).sort();
       buildSankeyUI();
-      renderSankey(skDecades[skDecades.length - 1]);   // start at latest decade
+      renderSankey(skDecades[skDecades.length - 1]);
     })
     .catch(err => {
-      console.warn('[Sankey] data load failed, using placeholder:', err);
-      buildSankeyPlaceholder();
+      console.warn('[Sankey] data load failed:', err);
     });
 
-  /* ── Build static UI ───────────────────────────────────────────────── */
   function buildSankeyUI() {
-    // Star legend
     const legendEl = document.getElementById('sankey-star-items');
     if (legendEl) {
       legendEl.innerHTML = '';
@@ -1676,7 +1574,6 @@ initCountdownLoader();
       });
     }
 
-    // Decade timeline
     const timeline = document.getElementById('sankey-timeline');
     if (timeline) {
       timeline.innerHTML = '';
@@ -1693,7 +1590,6 @@ initCountdownLoader();
       });
     }
 
-    // Play button
     const playBtn = document.getElementById('sankey-play-btn');
     if (playBtn) {
       playBtn.addEventListener('click', () => {
@@ -1701,7 +1597,6 @@ initCountdownLoader();
       });
     }
 
-    // Speed slider
     const speedEl = document.getElementById('sankey-speed');
     if (speedEl) {
       speedEl.addEventListener('input', () => {
@@ -1711,7 +1606,6 @@ initCountdownLoader();
     }
   }
 
-  /* ── Play / Stop ───────────────────────────────────────────────────── */
   function startPlay() {
     skPlaying = true;
     setPlayUI(true);
@@ -1746,16 +1640,12 @@ initCountdownLoader();
     if (label) label.textContent = playing ? 'Stop' : 'Play';
   }
 
-  /* ── Render one decade ─────────────────────────────────────────────── */
   function renderSankey(decade) {
-    // Track selected decade index for play
     skDecadeIdx = skDecades.indexOf(decade);
 
-    // Badge
     const badge = document.getElementById('sankey-decade-badge');
     if (badge) badge.textContent = decade;
 
-    // Highlight timeline button
     document.querySelectorAll('.sankey-decade-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.decade === decade);
     });
@@ -1766,7 +1656,6 @@ initCountdownLoader();
     const decadeData = skData?.[decade] || {};
     const sat = getSaturation(decade);
 
-    // Dimensions
     const W = svg.parentElement.offsetWidth || 620;
     const H = Math.max(340, Math.min(480, W * 0.72));
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -1776,29 +1665,23 @@ initCountdownLoader();
     const PAD   = { top: 20, bottom: 20, left: 16, right: 16 };
     const INNER_H = H - PAD.top - PAD.bottom;
 
-    /* ── Layout constants ─────────────────────────────────────────── */
     const NODE_W     = 22;
-    const NODE_GAP   = 10;   // gap between nodes in same column
-    const LEFT_X     = PAD.left + 80;          // genre column right edge
-    const RIGHT_X    = W - PAD.right - NODE_W; // quality column left edge
+    const NODE_GAP   = 10;
+    const LEFT_X     = PAD.left + 80;
+    const RIGHT_X    = W - PAD.right - NODE_W; 
     const LABEL_PAD  = 8;
 
-    /* ── Compute totals ───────────────────────────────────────────── */
-    // Per genre total (for left node heights)
     const genreTotals = {};
     GENRES.forEach(g => {
       genreTotals[g] = TIERS.reduce((s, t) => s + ((decadeData[g]?.[t.key]) || 0), 0);
     });
     const grandTotal = Object.values(genreTotals).reduce((a, b) => a + b, 0) || 1;
 
-    // Per tier total (for right node heights)
     const tierTotals = {};
     TIERS.forEach(t => {
       tierTotals[t.key] = GENRES.reduce((s, g) => s + ((decadeData[g]?.[t.key]) || 0), 0);
     });
 
-    /* ── Build node positions ─────────────────────────────────────── */
-    // Left nodes (genres)
     const totalNodeGapL = NODE_GAP * (GENRES.length - 1);
     const availableHL   = INNER_H - totalNodeGapL;
 
@@ -1810,7 +1693,6 @@ initCountdownLoader();
       return node;
     });
 
-    // Right nodes (quality tiers)
     const totalNodeGapR = NODE_GAP * (TIERS.length - 1);
     const availableHR   = INNER_H - totalNodeGapR;
 
@@ -1822,12 +1704,9 @@ initCountdownLoader();
       return node;
     });
 
-    /* ── Draw ribbons ─────────────────────────────────────────────── */
-    // Track current offset within each node for ribbon stacking
     const genreOffset  = {};  GENRES.forEach(g => genreOffset[g] = 0);
     const tierOffset   = {};  TIERS.forEach(t => tierOffset[t.key] = 0);
 
-    // Sort flow order: draw narrower ribbons on top (ascending count)
     const flows = [];
     GENRES.forEach(g => {
       TIERS.forEach(t => {
@@ -1862,7 +1741,6 @@ initCountdownLoader();
       const x1 = RIGHT_X;
       const cx = (x0 + x1) / 2;
 
-      // Cubic bezier ribbon path
       const d = [
         `M ${x0} ${y0_top}`,
         `C ${cx} ${y0_top}, ${cx} ${y1_top}, ${x1} ${y1_top}`,
@@ -1881,7 +1759,6 @@ initCountdownLoader();
       path.setAttribute('class', 'sankey-ribbon');
       path.style.cursor = 'pointer';
 
-      // Animation: fade + stretch in
       path.style.opacity = '0';
       path.style.transition = 'opacity 0.45s ease';
       setTimeout(() => { path.style.opacity = '1'; }, 30);
@@ -1913,7 +1790,6 @@ initCountdownLoader();
 
     svg.appendChild(ribbonGroup);
 
-    /* ── Draw left nodes (genres) ─────────────────────────────────── */
     genreNodes.forEach(n => {
       const baseColor  = SK_GENRE_COLORS[n.genre] || '#aaa';
       const nodeColor  = desaturateHex(baseColor.replace('#','').length === 6 ? baseColor : rgbToHex(baseColor), sat);
@@ -1928,7 +1804,6 @@ initCountdownLoader();
       rect.setAttribute('class', 'sankey-node-rect');
       svg.appendChild(rect);
 
-      // Genre label (left of node)
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', n.x - LABEL_PAD);
       text.setAttribute('y', n.y + n.h / 2 + 1);
@@ -1942,7 +1817,6 @@ initCountdownLoader();
       svg.appendChild(text);
     });
 
-    /* ── Draw right nodes (quality tiers) ────────────────────────── */
     tierNodes.forEach(n => {
       const tierColor = sat < 0.3
         ? 'rgba(200,200,200,0.7)'
@@ -1958,7 +1832,6 @@ initCountdownLoader();
       rect.setAttribute('class', 'sankey-node-rect');
       svg.appendChild(rect);
 
-      // Star label (right of node)
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', n.x + n.w + LABEL_PAD);
       text.setAttribute('y', n.y + n.h / 2 + 1);
@@ -1969,7 +1842,6 @@ initCountdownLoader();
       svg.appendChild(text);
     });
 
-    /* ── B&W grain overlay for early decades ─────────────────────── */
     if (sat < 0.8) {
       const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       overlay.setAttribute('x', 0); overlay.setAttribute('y', 0);
@@ -1978,7 +1850,6 @@ initCountdownLoader();
       overlay.setAttribute('opacity', String((1 - sat) * 0.18));
       overlay.setAttribute('pointer-events', 'none');
 
-      // Define grain pattern if not present
       let defs = svg.querySelector('defs');
       if (!defs) { defs = document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.prepend(defs); }
       if (!defs.querySelector('#grainPattern')) {
@@ -1995,43 +1866,11 @@ initCountdownLoader();
     }
   }
 
-  /* ── Helper: rgb(...) → hex ────────────────────────────────────────── */
   function rgbToHex(color) {
-    // If already a hex, return as-is
     if (color.startsWith('#')) return color.slice(1);
     const m = color.match(/\d+/g);
     if (!m) return '999999';
     return m.slice(0,3).map(v => parseInt(v).toString(16).padStart(2,'0')).join('');
-  }
-
-  /* ── Placeholder if JSON missing ───────────────────────────────────── */
-  function buildSankeyPlaceholder() {
-    // Inject fake data and render
-    const fakeData = {};
-    const decades = ['1950s','1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
-    decades.forEach(d => {
-      fakeData[d] = {};
-      GENRES.forEach(g => {
-        fakeData[d][g] = {};
-        TIERS.forEach(t => {
-          // Bell-curve-ish fake distribution
-          const base = Math.random() * 400 + 50;
-          fakeData[d][g][t.key] = Math.round(base);
-        });
-      });
-    });
-    skData    = fakeData;
-    skDecades = decades;
-    buildSankeyUI();
-    renderSankey(decades[decades.length - 1]);
-
-    const panel = document.querySelector('#sankey .viz-panel');
-    if (panel) {
-      const notice = document.createElement('p');
-      notice.style.cssText = 'font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center';
-      notice.textContent = 'Preview mode — run generate_sankey_data.py to load real data';
-      panel.appendChild(notice);
-    }
   }
 
 })();
