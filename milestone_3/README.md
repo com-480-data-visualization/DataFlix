@@ -2,8 +2,8 @@
 
 Website: https://com-480-data-visualization.github.io/DataFlix/  
 Repository: https://github.com/com-480-data-visualization/DataFlix
-Process book:
-Video :
+Process book: https://github.com/com-480-data-visualization/DataFlix/blob/master/milestone_3/process_book.pdf
+Video : https://drive.google.com/file/d/1vpp4RunCiOQVyvkbWXCALmJUgyCj8drE/view
 
 ## What it is
 
